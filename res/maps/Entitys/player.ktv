@@ -1,0 +1,36 @@
+Location:
+  X:
+    "54"
+  Y:
+    "26"
+inventory:
+  Slot_0:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_1:
+    type:
+      "Stone"
+    amount:
+      "63"
+  Slot_2:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_3:
+    type:
+      "Stone"
+    amount:
+      "11"
+  Slot_4:
+    type:
+      "Dirt"
+    amount:
+      "32"
+  Equipment_24:
+    type:
+      "DigTool"
+    amount:
+      "1"
