@@ -55,7 +55,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 
 		EntityInventoryData invData = (EntityInventoryData)EntityType.Player.getData(EntityData.ENTITYINVENTOTYDATA);
 		this.itemCollector = new ItemCollector(this, invData.createInventory(), 1.2);
-		this.pathFinder = new PathFinder(this, 30);
+		this.pathFinder = new PathFinder(this, 20);
 		this.player = player;
 	}	
 	
@@ -63,12 +63,14 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 	public void tick(){
 		itemCollector.tick();
 		
+		pathFinder.tick();
+		
 //		System.out.println(this.getLocation() + "|" +this.images[0].getImage().getLocation() + "|" +this.images[0].getImage().disabled + "|"+ layer);
 		if(pathFinder.hasTarget()){
 			int[] directions = this.pathFinder.nextDirection();
 			boolean leftRigth 	= directions[0]==0 || !this.move(Direction.getDirection(directions[0], 0));
 			boolean upDown 		= directions[1]==0 || !this.move(Direction.getDirection(0, directions[1]));
-			if(leftRigth && upDown){
+			if(leftRigth && upDown && pathFinder.isDone()){
 //				System.out.println(currentDroneTarget);
 				if(currentDroneTarget!=null){
 					
@@ -93,7 +95,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		}
 		
 		if(getLastTick() - lastTickAtHost > maxTickAwayFromHost){
-			this.pathFinder.setTarget(player.getLocation());
+			if(!this.pathFinder.hasTarget() || !this.pathFinder.getBlockTarget().isEqual(this.player.getBlockLocation()))this.pathFinder.setBlockTarget(player.getBlockLocation());
 			currentDroneTarget = null;
 			if(this.getLocation().distance_Math(player.getLocation()) < Math.sqrt(this.getWidth()*this.getWidth()+this.getHeight()*this.getHeight())){
 				if(FirstTickAtHost==0)FirstTickAtHost = getLastTick();

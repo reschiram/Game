@@ -307,7 +307,7 @@ public class Map {
 	}
 
 	public Mapdata[] getMapData(Location location) {
-		location.x = getXOver(location.getX()*DEFAULT_SQUARESIZE)/DEFAULT_SQUARESIZE;
+		location.x = getBlockXOver(location.getX());
 		MapChunk chunk = getChunk(location);
 		Mapdata[] data = new Mapdata[4];
 		for(int i = 0; i<2; i++)data[i  ] = chunk.getMapData(location, true )[i];
@@ -368,8 +368,8 @@ public class Map {
 
 	public boolean entityCanAcces(Entity entity, int x, int y) {
 		Location loc = new Location(x, y);
-		Mapdata data =getMapData(loc)[Entity.DEFAULT_ENTITY_UP];
-		if((data !=null && !data.canHost(entity.getWidth(), entity.getHeight())) || !entity.canReach(loc)) return false;
+		Mapdata data = getMapData(loc)[Entity.DEFAULT_ENTITY_UP+DEFAULT_BUILDLAYER];
+		if(((data !=null && !data.canHost(entity.getWidth(), entity.getHeight())))|| !entity.canReach(loc)) return false;
 		return true;
 	}
 }
