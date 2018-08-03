@@ -18,14 +18,11 @@ public class PathFinder {
 
 	private int stage = -1;
 	private Queue<Location> possibleTargets = new Queue<>();
-	private PathNode[][] nodes;
-	private int maxPath;
 	
 	private ArrayList<Location> path = new ArrayList<>();
 	
 	public PathFinder(Entity entity, int maxPath){
 		this.entity = entity;
-		this.maxPath = maxPath;
 	}
 	
 	public boolean hasTarget(){
@@ -37,7 +34,7 @@ public class PathFinder {
 		if(stage==-1){
 			if(path.isEmpty()) target = this.target;
 			else{
-				target = path.get(path.size()-1);
+				target = path.get(0);
 			}
 		}else return new int[]{0,0};
 		
@@ -46,8 +43,8 @@ public class PathFinder {
 		int x = 0;
 		int y = 0;
 		
-     	int dx = Map.getMap().getXOver(entity.getX()+entity.getWidth()/2) - Map.getMap().getXOver(target.getX());
-//		System.out.println((entity.getX()+entity.getWidth()/2)+" - "+target.getX()+" -> "+dx);
+     	int dx = Map.getMap().getXOver(entity.getX()+entity.getWidth()/2) - Map.getMap().getXOver(target.getX()*Map.DEFAULT_SQUARESIZE);
+		System.out.println((entity.getX()+entity.getWidth()/2)+" - "+target.getX()*Map.DEFAULT_SQUARESIZE+" -> "+dx);
 		if(dx>entity.getWidth()/2){
 			if(dx> (Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE-1920))x=Direction.RIGHT.getX();
 			else x = Direction.LEFT.getX();
@@ -56,13 +53,14 @@ public class PathFinder {
 			else x = Direction.RIGHT.getX();
 		}
 
-		int dy = entity.getY()+entity.getHeight()/2-target.getY();
+		int dy = entity.getY()+entity.getHeight()/2-target.getY()*Map.DEFAULT_SQUARESIZE;
 		
 		if(dy>entity.getHeight()/2)y = Direction.UP.getY();
 		else if(dy<-entity.getHeight()/2)y = Direction.DOWN.getY();
 		
 		if(x == 0 && y == 0 && !path.isEmpty()){
-			path.remove(path.size()-1);
+			path.remove(0);
+			return nextDirection();
 		}
 		
 		return new int[]{x,y};
@@ -78,108 +76,35 @@ public class PathFinder {
 			}
 			stage++;
 		}else if(stage == 1){
-			fill(possibleTargets.get());
-			stage++;
-		}else if(stage == 2){
 			getPath(possibleTargets.get());
 			stage = -1;
 		}
 	}
 
-	private void getPath(Location target) {		
+	private void getPath(Location location) {
+		int dx = location.getX()-this.entity.getX()/Map.DEFAULT_SQUARESIZE;
+		if(dx> Map.getMap().getWidth()/2)dx = Map.getMap().getWidth() - dx;
+		if(dx<-Map.getMap().getWidth()/2)dx = Map.getMap().getWidth() + dx;
+		int dy = location.getY()-this.entity.getY()/Map.DEFAULT_SQUARESIZE;
+		double m = ((double)dy)/((double)dx);
 		
-		int maxDistance = target.distance_Math(this.entity.getBlockLocation());
-
-		Direction[] sequence = Direction.values();
-		for(PathNode node = getFromNodes(target.getX(), target.getY(), maxDistance); node!=null && node.getDistance()> 1;){
-			path.add(new Location(Map.getMap().getBlockXOver(node.getLocation().getX())*Map.DEFAULT_SQUARESIZE, node.getLocation().getY()*Map.DEFAULT_SQUARESIZE));
-			for(int i = 0; i<sequence.length; i++){
-				PathNode newNode = getFromNodes(node.getLocation().getX()+sequence[i].getX(), node.getLocation().getY()+sequence[i].getY(), maxDistance);
-				if(newNode !=null && newNode.getDistance()!=-1 && newNode.getDistance()<node.getDistance()){
-					node = newNode;
-					i = sequence.length;
-				}
+		int direcX = 1;
+		if(dx<0)direcX=-1;
+		int direcY = 1;
+		if(dy<0)direcY=-1;
+		int y = 0;
+		for(int x = 0; Math.abs(x)<=Math.abs(dx) && Math.abs(y)<=Math.abs(dy); x+=direcX){
+			int ny = Math.abs((int) Math.round(m*x)-y);
+			for(int py = 0; Math.abs(py)<=ny && Math.abs(x)<=Math.abs(dx) && Math.abs(y+py)<=Math.abs(dy); py+=direcY){
+				path.add(new Location(entity.getBlockLocation().getX()+x, entity.getBlockLocation().getY()+y+py));				
 			}
+			y = (int) Math.round(m*x);
 		}
-	}
-
-	private void fill(Location target) {
-		
-		int w = maxPath/2-2+maxPath;
-		int h = maxPath/2-2+maxPath;
-		
-		int maxDistance = target.distance_Math(this.entity.getBlockLocation());
-		
-		nodes = new PathNode[w][h];
-		ArrayList<PathNode> lastNodes = new ArrayList<>();
-		lastNodes.add(new PathNode(this.entity.getBlockLocation(), 0));
-		addToNodes(lastNodes.get(0), maxDistance);
-		
-		for(int a = lastNodes.get(0).getDistance(); a<maxPath; a++){
-			ArrayList<PathNode> next = new ArrayList<>();
-			for(int i = 0; i<lastNodes.size(); i++){
-				PathNode node = lastNodes.get(i);
-				if(new Location(Map.getMap().getBlockXOver(node.getLocation().getX()), node.getLocation().getY()).isEqual(target)){				
-					return;
-				}
-				
-				if(node.getLastDetectionX() != -1)add(node, next,  1,  0, maxDistance);
-				if(node.getLastDetectionX() !=  1)add(node, next, -1,  0, maxDistance);
-				if(node.getLastDetectionY() != -1)add(node, next,  0,  1, maxDistance);
-				if(node.getLastDetectionY() !=  1)add(node, next,  0, -1, maxDistance);
-				
-			}
-			lastNodes = next;
+		System.out.println(location + " -> " +entity.getBlockLocation());
+		for(Location loc: path){
+			System.out.print(loc + " <-> ");
 		}
-		
-		lastNodes.clear();
-		
-	}
-	
-	private void addToNodes(PathNode node, int maxDistance){
-		int x = node.getLocation().getX()-this.entity.getBlockLocation().getX() + maxPath/2-2;
-		int y = node.getLocation().getY()-this.entity.getBlockLocation().getY() + maxPath/2-2;
-		if(x>0 && x<nodes.length && y>0 && y<nodes[0].length){
-			nodes[x][y] = node;
-		}else if(this.entity.getBlockLocation().distance_Math(node.getLocation())<=maxDistance){
-			if(x<0)x += Map.getMap().getWidth();
-			else if(x>nodes.length) x-= Map.getMap().getWidth();
-			if(x>0 && x<nodes.length && y>0 && y<nodes[0].length){
-				nodes[x][y] = node;
-			}
-		}
-	}
-	
-	private PathNode getFromNodes(int x, int y, int maxDistance){
-		int dx = x-this.entity.getBlockLocation().getX() + maxPath/2-2;
-		int dy = y-this.entity.getBlockLocation().getY() + maxPath/2-2;		
-		if(dx>0 && dx<nodes.length && dy>0 && dy<nodes[0].length){
-			return nodes[dx][dy];
-		}else if(this.entity.getBlockLocation().distance_Math(new Location(x, y))<=maxDistance){
-			if(dx<0)dx += Map.getMap().getWidth();
-			else if(dx>nodes.length)dx-= Map.getMap().getWidth();
-			if(dx>0 && dx<nodes.length && dy>0 && dy<nodes[0].length){
-				return nodes[dx][dy];
-			}
-		}
-		return new PathNode(new Location(-1, -1), -1);
-	}
-
-	private void add(PathNode lastNode, ArrayList<PathNode> list, int x, int y, int maxDistance) {
-		Location loc = new Location(lastNode.getLocation().getX() + x, lastNode.getLocation().getY() +y);	
-		
-		PathNode newNode = getFromNodes(loc.getX(), loc.getY(), maxDistance);
-		if(newNode == null){
-			newNode = new PathNode(loc, lastNode.getDistance()+1);
-			addToNodes(newNode, maxDistance);
-		}else{
-			if(newNode.getDistance()==-1)return;
-			else if(newNode.getDistance()<lastNode.getDistance()+1) return;
-		}
-		
-		if(x!=0)newNode.setLastDetectionX(x);
-		if(y!=0)newNode.setLastDetectionY(y);
-		list.add(newNode);
+		System.out.println();
 	}
 
 	public void setTarget(Location target){
