@@ -2,18 +2,18 @@ package game.map;
 
 import java.util.ArrayList;
 
-import file.File;
+import file.ktv.KTV_File;
 import files.FileManager;
 import game.gridData.map.MapBlock;
 
 public class MapLoader {
 	
 	private Map map;
-	private File mapFile;
+	private KTV_File mapFile;
 	
 	private double progress = 0.0;
 	
-	public MapLoader(File f, int seed){
+	public MapLoader(KTV_File f, int seed){
 		this.mapFile = f;
 		if(f.get("Seed")==null || f.get("Seed").size()==0)createMap(seed);
 	}

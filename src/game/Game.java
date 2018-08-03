@@ -8,6 +8,7 @@ import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
 import Engine.Engine;
 import file.File;
+import file.ktv.KTV_File;
 import data.VehicleResource;
 import files.FileManager;
 import game.entity.loader.EntityLoader;
@@ -46,8 +47,8 @@ public class Game {
 		VehicleResource.create();
 		EntityType.create();
 		
-		for(File f:FileManager.getFileManager().getFillesInFolder("BluePrints")){
-			BluePrint.BLUEPRINTS.add(new BluePrint(f));
+		for(File f:FileManager.getFileManager().getKTVFillesInFolder("BluePrints", false)){
+			BluePrint.BLUEPRINTS.add(new BluePrint((KTV_File)f));
 		}
 		
 		gameInterface = new GameInterface(this);

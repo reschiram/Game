@@ -1,24 +1,25 @@
 package files;
 
 import file.*;
+import file.ktv.KTV_File;
 
 public class FileManager {
 	
-	public static File UUID;
-	public static File MAP_TEST;
-	public static File PLAYER;
+	public static KTV_File UUID;
+	public static KTV_File MAP_TEST;
+	public static KTV_File PLAYER;
 	
-	private static file.FileManager FILEMANAGER;
+	private static filemanager.FileManager FILEMANAGER;
 	
 	public static void Load(){
-		FILEMANAGER = new file.FileManager(true);
+		FILEMANAGER = new filemanager.FileManager(true);
 		
-		UUID = FILEMANAGER.createNewFile("UUID/UUID");
-		MAP_TEST = FILEMANAGER.createNewFile("maps/test");
-		PLAYER = FILEMANAGER.createNewFile("maps/entitys/player");
+		UUID = 		FILEMANAGER.createNewKTVFile("UUID/UUID"			, false);
+		MAP_TEST = 	FILEMANAGER.createNewKTVFile("maps/test"			, false);
+		PLAYER = 	FILEMANAGER.createNewKTVFile("maps/entitys/player"	, false);
 	}
 	
-	public static file.FileManager getFileManager(){
+	public static filemanager.FileManager getFileManager(){
 		return FILEMANAGER;
 	}
 

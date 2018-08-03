@@ -3,7 +3,7 @@ package game.vehicle;
 import java.awt.Point;
 import java.util.ArrayList;
 
-import file.File;
+import file.ktv.KTV_File;
 import files.FileManager;
 import data.VehicleResource;
 
@@ -13,7 +13,7 @@ public class BluePrint {
 	
 	private int[][] vehicleData;
 	private String name;
-	private File file;
+	private KTV_File file;
 	
 	public BluePrint(int width, int height, String name){
 		this.vehicleData = new int[width][height];
@@ -23,11 +23,11 @@ public class BluePrint {
 			}
 		}
 		this.name = name;
-		file = FileManager.getFileManager().createNewFile("BluePrints/"+name);
+		file = FileManager.getFileManager().createNewKTVFile("BluePrints/"+name, false);
 		save();
 	}
 
-	public BluePrint(File f) {
+	public BluePrint(KTV_File f) {
 		this.name = f.get("Name").get(0);
 		this.vehicleData = new int[Integer.parseInt(f.get("Size.Width").get(0))][Integer.parseInt(f.get("Size.Height").get(0))];
 		for(int x = 0; x<vehicleData.length; x++){

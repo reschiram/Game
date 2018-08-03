@@ -3,7 +3,7 @@ package game.entity.loader;
 import java.lang.reflect.InvocationTargetException;
 
 import Data.Location;
-import file.File;
+import file.ktv.KTV_File;
 import files.FileManager;
 import game.entity.Entity;
 import game.entity.type.data.EntityData;
@@ -17,7 +17,7 @@ import game.map.Map;
 
 public class EntityLoader {
 	
-	public void save(Entity entity, File file){
+	public void save(Entity entity, KTV_File file){
 		
 		file.set("Location.X", entity.getBlockLocation().getX()+"");
 		file.set("Location.Y", entity.getBlockLocation().getY()+"");
@@ -48,7 +48,7 @@ public class EntityLoader {
 		FileManager.getFileManager().saveFile(FileManager.PLAYER);
 	}
 	
-	public Entity Load(Class<?> entityClass, File file){
+	public Entity Load(Class<?> entityClass, KTV_File file){
 		
 		Location loc = new Location(Integer.parseInt(file.get("Location.X").get(0)), Integer.parseInt(file.get("Location.Y").get(0)));
 		loc.setLocation(loc.getX()*Map.DEFAULT_SQUARESIZE, loc.getY()*Map.DEFAULT_SQUARESIZE);
