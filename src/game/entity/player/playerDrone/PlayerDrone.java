@@ -9,6 +9,7 @@ import Data.Direction;
 import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
+import data.ButtonTrigger;
 import data.ImageData;
 import data.Mouse;
 import game.entity.Entity;
@@ -41,6 +42,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 	
 	private HashMap<Integer, DroneTarget> targets = new HashMap<>();
 	private DroneTarget currentDroneTarget;
+	private ButtonTrigger targetTrigger = new ButtonTrigger(MouseEvent.BUTTON1);
 	
 	public PlayerDrone(Player player) {
 		super(new ArrayList<>());
@@ -57,12 +59,12 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		this.itemCollector = new ItemCollector(this, invData.createInventory(), 1.2);
 		this.pathFinder = new PathFinder(this, 20);
 		this.player = player;
-	}	
+	}		
 	
 	@Override
 	public void tick(){
 		itemCollector.tick();
-		
+		targetTrigger.tick();
 		pathFinder.tick();
 		
 //		System.out.println(this.getLocation() + "|" +this.images[0].getImage().getLocation() + "|" +this.images[0].getImage().disabled + "|"+ layer);
@@ -95,7 +97,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		}
 		
 		if(getLastTick() - lastTickAtHost > maxTickAwayFromHost){
-			if(!this.pathFinder.hasTarget() || !this.pathFinder.getBlockTarget().isEqual(this.player.getBlockLocation()))this.pathFinder.setBlockTarget(player.getBlockLocation());
+			if(this.pathFinder.hasTarget())System.out.println(this.pathFinder.getBlockTarget() +" -> "+ this.player.getBlockLocation());			
 			currentDroneTarget = null;
 			if(this.getLocation().distance_Math(player.getLocation()) < Math.sqrt(this.getWidth()*this.getWidth()+this.getHeight()*this.getHeight())){
 				if(FirstTickAtHost==0)FirstTickAtHost = getLastTick();
@@ -111,9 +113,9 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 					}
 					pathFinder.setTarget(null);
 				}
-			}
+			}else if(!this.pathFinder.hasTarget() || !this.pathFinder.getBlockTarget().isEqual(this.player.getBlockLocation()))this.pathFinder.setBlockTarget(player.getBlockLocation());
 		}else{
-			if(Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON1)){
+			if(targetTrigger.isTriggered()){
 				nextTarget();
 				currentDroneTarget = null;
 			}

@@ -36,4 +36,8 @@ public class PathNode{
 		this.lastDetectionY = lastDetectionY;
 	}
 
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+
 }
