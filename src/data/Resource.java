@@ -1,7 +1,5 @@
 package data;
 
-import java.awt.Dimension;
-
 import Data.Hitbox;
 import Data.Image.SpriteSheet;
 import anim.AnimationType;
@@ -14,14 +12,22 @@ public abstract class Resource {
 	protected ResourcePart[] resParts;
 	protected AnimationType animType;
 	protected Hitbox hitbox;
+	protected boolean opaque;
+	protected int hp;
 	
-	public Resource(int id, AnimationType animType, SpriteSheet sprites, int[] spriteIDs, ResourcePart[] resParts, Hitbox hitbox) {
+	public Resource(int id, AnimationType animType, SpriteSheet sprites, int[] spriteIDs, ResourcePart[] resParts, Hitbox hitbox, boolean opaque, int hp) {
 		this.id = id;
 		this.sprites = sprites;
 		this.spriteIds = spriteIDs;
 		this.resParts = resParts;		
 		this.animType = animType;
 		this.hitbox = hitbox;
+		this.opaque = opaque;
+		this.hp = hp;
+	}
+	
+	public boolean isOpaque(){
+		return opaque;
 	}
 	
 	public int getID(){
@@ -52,6 +58,10 @@ public abstract class Resource {
 
 	public Hitbox getHitbox() {
 		return hitbox;
+	}
+
+	public int getHP() {
+		return hp;
 	}
 
 }

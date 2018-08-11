@@ -38,12 +38,14 @@ public class PlayerInterface {
 			
 			Mapdata data = Map.getMap().getChunks()[digLocation.x/Map.DEFAULT_CHUNKSIZE][digLocation.y/Map.DEFAULT_CHUNKSIZE].getMapData(digLocation, false)[Entity.DEFAULT_ENTITY_UP];
 			if(data!=null){
-				lastdigged=System.currentTimeMillis();
-				Map.getMap().deleteBlock(digLocation,Entity.DEFAULT_ENTITY_UP, false);
-				this.player.getPlayerDrone().removeTarget(digLocation);
-				if(data.getResource().hasItemType()){
-					for(int i = 0; i<data.getResource().getItemAmount(); i++){
-						new ItemEntity(data.getResource().getItemType(), new Location(digLocation.getX()*Map.DEFAULT_SQUARESIZE, digLocation.getY()*Map.DEFAULT_SQUARESIZE)).show();
+				data.damage(2);
+				if(data.isDestroyed()){
+					lastdigged=System.currentTimeMillis();
+					this.player.getPlayerDrone().removeTarget(digLocation);
+					if(data.getResource().hasItemType()){
+						for(int i = 0; i<data.getResource().getItemAmount(); i++){
+							new ItemEntity(data.getResource().getItemType(), new Location(digLocation.getX()*Map.DEFAULT_SQUARESIZE, digLocation.getY()*Map.DEFAULT_SQUARESIZE)).show();
+						}
 					}
 				}
 			}

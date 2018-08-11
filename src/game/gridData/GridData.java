@@ -10,6 +10,7 @@ import Data.Image.Image;
 import Engine.Engine;
 import data.Resource;
 import game.map.Map;
+import sprites.Sprites;
 
 public abstract class GridData{	
 
@@ -22,6 +23,8 @@ public abstract class GridData{
 	protected Animation anim;
 	protected Resource res;
 	protected int spriteState = 0;
+	protected int hp;
+	protected Image damageLevel;
 	
 	protected boolean created = false;
 	
@@ -35,6 +38,8 @@ public abstract class GridData{
 		if(res.hasAnimation()){
 			this.anim = res.getAnimationType().newAnimation(false, layer, image, res);
 		}
+		hp = resource.getHP();
+		this.damageLevel = new Image(image.getLocation().clone(), blockDimension, "", Sprites.DamageLevel.getSpriteSheet(), null);
 	}
 
 	public Location getLocation(){
@@ -55,16 +60,21 @@ public abstract class GridData{
 
 	public GridData show(){	
 		if(!created){
-//			System.out.println(res.getID()+"->"+image.getSpriteState()+"->"+layer);
 			Engine.getEngine(this, this.getClass()).addImage(image, layer);
 			created = true;
-		}else image.disabled = false;
+			Engine.getEngine(this, this.getClass()).addImage(this.damageLevel, layer);
+			this.damageLevel.disabled = true;
+		}else{
+			image.disabled = false;
+			if(this.isDamaged())this.damageLevel.disabled = false;
+		}
 		if(anim!=null)anim.start();
 		return this;
 	}
 	
 	public void destroyVisual(){
 		Engine.getEngine(this, this.getClass()).removeImage(layer, image);
+		Engine.getEngine(this, this.getClass()).removeImage(layer, damageLevel);
 		if(anim!=null){
 			anim.stop();
 			AnimationManager.remove(anim);
@@ -74,11 +84,13 @@ public abstract class GridData{
 	public void hide(){
 		if(anim!=null)anim.stop();
 		image.disabled = true;
+		this.damageLevel.disabled = true;
 	}
 	
 	public void setLocation(Location loc){
 		this.hitbox = new Hitbox(new Location(loc.getX()*Map.DEFAULT_SQUARESIZE + res.getHitbox().getX(), loc.getY()*Map.DEFAULT_SQUARESIZE + res.getHitbox().getY()), res.getHitbox().getDimension());
-		this.image.setLocation(loc);
+		this.image.setLocation(new Location(loc.getX()*Map.DEFAULT_SQUARESIZE, loc.getY()*Map.DEFAULT_SQUARESIZE));
+		this.damageLevel.setLocation(this.image.getLocation().clone());
 		this.location = loc;
 	}
 	
@@ -99,5 +111,35 @@ public abstract class GridData{
 		boolean overlaps = this.hitbox.overlaps(hb);
 //		System.out.println(hb.toString()+" -> "+this.hitbox.toString() + " -> "+overlaps);
 		return overlaps;
+	}
+	
+	public void damage(int amount){
+		hp-=amount;
+		if(hp<0)hp=0;
+		updateDamageLevel();
+	}
+	
+	
+	private void updateDamageLevel() {
+		if(this.isDamaged() && !isDestroyed()){
+			double d = 1.0-(double)this.hp/(double)this.getResource().getHP();
+			int state = (int)(d*Sprites.DamageLevel.getSpriteSheet().getSpriteAmount());
+			this.damageLevel.setSpriteState(state);
+			this.damageLevel.disabled = this.image.disabled;
+		}
+	}
+
+	public void heal(int amount){
+		hp+=amount;
+		if(hp>this.getResource().getHP())hp = this.getResource().getHP();
+		updateDamageLevel();
+	}
+	
+	public boolean isDamaged(){
+		return hp<this.getResource().getHP();
+	}
+
+	public boolean isDestroyed() {
+		return hp<=0;
 	}
 }

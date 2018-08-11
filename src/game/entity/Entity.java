@@ -160,7 +160,7 @@ public abstract class Entity {
 					while(mx> max/2)mx-=max;
 					mx = Math.abs(mx);
 //					System.out.println(mx);
-					if(canMove(d.getX()*mx, 0)){
+					if(mx != 0 && canMove(d.getX()*mx, 0)){
 						this.setLocation(-(int)(d.getX()*mx)+this.getX(), this.getY());
 						return true;
 					}
@@ -298,7 +298,7 @@ public abstract class Entity {
 	}
 
 	public Location getBlockLocation() {
-		return new Location((int) Math.round((double)hitbox.getX()/(double)Map.DEFAULT_SQUARESIZE), (int) (Math.round((double)hitbox.getY()/(double)Map.DEFAULT_SQUARESIZE)));
+		return new Location((int)(((double)hitbox.getX()+getWidth()/2-1)/(double)Map.DEFAULT_SQUARESIZE), (int) (((double)(hitbox.getY()+getHeight()/2-1)/(double)Map.DEFAULT_SQUARESIZE)));
 	}
 	
 	public Location getTopLeftBlockLocation() {

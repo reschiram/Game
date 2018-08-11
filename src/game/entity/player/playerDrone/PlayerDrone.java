@@ -68,11 +68,12 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		pathFinder.tick();
 		
 //		System.out.println(this.getLocation() + "|" +this.images[0].getImage().getLocation() + "|" +this.images[0].getImage().disabled + "|"+ layer);
+		
 		if(pathFinder.hasTarget()){
 			int[] directions = this.pathFinder.nextDirection();
 			boolean leftRigth 	= directions[0]==0 || !this.move(Direction.getDirection(directions[0], 0));
 			boolean upDown 		= directions[1]==0 || !this.move(Direction.getDirection(0, directions[1]));
-			if(leftRigth && upDown && pathFinder.isDone()){
+			if(leftRigth && upDown && pathFinder.isDone() && getLastTick() - lastTickAtHost <= maxTickAwayFromHost){
 //				System.out.println(currentDroneTarget);
 				if(currentDroneTarget!=null){
 					
@@ -91,15 +92,15 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 					}
 				}else this.pathFinder.setTarget(null);
 			}
-		}else if(!targets.isEmpty()){
+		}else if(!targets.isEmpty() && getLastTick() - lastTickAtHost <= maxTickAwayFromHost){
 			currentDroneTarget = getNextDroneTarget();
 			if(currentDroneTarget!=null)pathFinder.setTarget(currentDroneTarget.getPixelLocation());
 		}
 		
 		if(getLastTick() - lastTickAtHost > maxTickAwayFromHost){
-			if(this.pathFinder.hasTarget())System.out.println(this.pathFinder.getBlockTarget() +" -> "+ this.player.getBlockLocation());			
+//			if(this.pathFinder.hasTarget())System.out.println(this.pathFinder.getBlockTarget() +" -> "+ this.player.getBlockLocation());			
 			currentDroneTarget = null;
-			if(this.getLocation().distance_Math(player.getLocation()) < Math.sqrt(this.getWidth()*this.getWidth()+this.getHeight()*this.getHeight())){
+			if(this.getBlockLocation().isEqual(player.getBlockLocation())){
 				if(FirstTickAtHost==0)FirstTickAtHost = getLastTick();
 				else if(getLastTick()-FirstTickAtHost>100){
 					lastTickAtHost = getLastTick();
@@ -215,7 +216,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 				while(my> max/2)my-=max;
 				my = Math.abs(my);
 //				System.out.println(my);
-				if(canMove(0, direction.getY()*my)){
+				if(my!=0 && canMove(0, direction.getY()*my)){
 					this.setLocation(this.getX(), -(int)(direction.getY()*my)+this.getY());
 					return true;
 				}

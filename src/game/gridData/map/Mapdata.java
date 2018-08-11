@@ -83,5 +83,11 @@ public abstract class Mapdata extends GridData{
 	public boolean canHost(int width, int height) {
 		return Map.DEFAULT_SQUARESIZE - this.res.getHitbox().getWidth() >= width && Map.DEFAULT_SQUARESIZE - this.res.getHitbox().getHeigth() >= height;
 	}
+	
+	@Override
+	public void damage(int amount){
+		super.damage(amount);
+		if(this.isDestroyed())Map.getMap().deleteBlock(location, this.getResource().getLayerUp(), this.getResource().isGround());
+	}
 
 }

@@ -21,10 +21,10 @@ public class VehicleResource extends Resource{
 	
 	public static MapResource create(){			
 
-		BASICARMOR 		= new VehicleResource(2101, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.BASICARMOR 	 , new ResourcePart[]{}														,   0);	
-		ADVANCEDARMOR 	= new VehicleResource(2102, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.ADVANCEDARMOR , new ResourcePart[]{}														,   1);	
-		SUPERIORARMOR 	= new VehicleResource(2103, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.SUPERIORARMOR , new ResourcePart[]{}														,  20);	
-		EPICARMOR 		= new VehicleResource(2104, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.EPICARMOR	 , new ResourcePart[]{}														,  21);	
+		BASICARMOR 		= new VehicleResource(2101, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.BASICARMOR 	 , new ResourcePart[]{}														,   0);	
+		ADVANCEDARMOR 	= new VehicleResource(2102, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.ADVANCEDARMOR , new ResourcePart[]{}														,   1);	
+		SUPERIORARMOR 	= new VehicleResource(2103, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.SUPERIORARMOR , new ResourcePart[]{}														,  20);	
+		EPICARMOR 		= new VehicleResource(2104, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, Sprites.Vehicle.getSpriteSheet()	,AnimationType.NONE	, VehicleArmorData.EPICARMOR	 , new ResourcePart[]{}														,  21);	
 		
 		res = new VehicleResource[4];		
 		res[0] = BASICARMOR;	
@@ -46,8 +46,8 @@ public class VehicleResource extends Resource{
 	private VehicleData partData;
 	private Dimension size;
 	
-	public VehicleResource(int id, Hitbox hitbox, SpriteSheet sprites, AnimationType animtype, VehicleData partData, ResourcePart[] resParts, int... spriteIDs) {
-		super(id, animtype, sprites, spriteIDs, resParts, hitbox);
+	public VehicleResource(int id, Hitbox hitbox, boolean opaque, int hp, SpriteSheet sprites, AnimationType animtype, VehicleData partData, ResourcePart[] resParts, int... spriteIDs) {
+		super(id, animtype, sprites, spriteIDs, resParts, hitbox, opaque, hp);
 		this.partData = partData;
 		int width  = 1;
 		int height = 1;

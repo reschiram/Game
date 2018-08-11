@@ -115,6 +115,7 @@ public class Map {
 	
 	private void update(int x, int y, boolean ground){
 		updateSurface(x, y);
+		updateBlock(x, y, ground);
 		
 		x=getBlockXOver(x+1);
 		updateBlock(x, y, ground);
@@ -132,14 +133,14 @@ public class Map {
 	}
 	
 	private void updateBlock(int x, int y, boolean ground){
-		Mapdata[] data = getChunk(x, y).getMapData(x,y, false);
-		for(int i = 0; i<data.length; i++){
-			if(data[i]!=null && data[i].getResource().hasData() && data[i].getResource().getBlockData() instanceof UpdatableBlockData)((UpdatableBlockData)data[i].getResource().getBlockData()).update(data[i], x, y);
-		}
-		if(ground){
-			data = getChunk(x, y).getMapData(x,y, true);
-			for(int i = 0; i<data.length; i++){
-				if(data[i]!=null && data[i].getResource().hasData() && data[i].getResource().getBlockData() instanceof UpdatableBlockData)((UpdatableBlockData)data[i].getResource().getBlockData()).update(data[i], x, y);
+		boolean found = false;
+		Mapdata[] data = getChunk(x, y).getMapData(x,y);
+		for(int i = data.length-1; i>=0; i--){
+			if(data[i]!=null){
+				if(found)data[i].hide();
+				else data[i].show();
+				if(data[i].getResource().isOpaque())found= true;
+				if(data[i].getResource().hasData() && data[i].getResource().getBlockData() instanceof UpdatableBlockData)((UpdatableBlockData)data[i].getResource().getBlockData()).update(data[i], x, y);
 			}
 		}
 	}
@@ -181,7 +182,7 @@ public class Map {
 		}
 	}
 	
-	private void add(int res,Location location, boolean isGround){
+	public void add(int res,Location location, boolean isGround){
 		if(res==0 || MapResource.getMapResource(res)==null){
 			for(int i = 0; i<2; i++){
 				deleteBlock(location, i, isGround);

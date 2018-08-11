@@ -26,13 +26,13 @@ public class MapResource extends Resource {
 	private static MapResource[] res;
 	
 	public static MapResource create(){		
-		Air_Background 		 = new MapResource(1101, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), null																													, true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0,  0);
-		Dirt_Background		 = new MapResource(1102, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), null 																													, true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0,  1);
-		Dirt_Grass_Background= new MapResource(1103, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), new Grass("Grass")																										, true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18);
+		Air_Background 		 = new MapResource(1101, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, null																														, true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0,  0);
+		Dirt_Background		 = new MapResource(1102, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, null 																													, true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0,  1);
+		Dirt_Grass_Background= new MapResource(1103, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, new Grass("Grass")																										, true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18);
 		
-		Dirt				 = new MapResource(1201, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), new EdgeBlockData("Dirt", new Color(17, 8, 2), new Color(33, 19, 7), new Color(51, 25, 7), new Color(63, 36, 17)) 	    , false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, ItemType.Dirt	, 3,  0);
-		Stone				 = new MapResource(1202, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), null 																													, false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, ItemType.Stone	, 1,  1);		
-		Dirt_Grass			 = new MapResource(1203, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), new Grass("Grass")																										, false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, ItemType.Dirt	, 3,  10, 11, 12, 13, 14, 15, 16, 17, 18);
+		Dirt				 = new MapResource(1201, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, new EdgeBlockData("Dirt", new Color(17, 8, 2), new Color(33, 19, 7), new Color(51, 25, 7), new Color(63, 36, 17)) 	    , false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, ItemType.Dirt	, 3,  0);
+		Stone				 = new MapResource(1202, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, null 																													, false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, ItemType.Stone	, 1,  1);		
+		Dirt_Grass			 = new MapResource(1203, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, new Grass("Grass")																										, false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{}, ItemType.Dirt	, 3,  10, 11, 12, 13, 14, 15, 16, 17, 18);
 		
 //		Water 		= new MapResource(1107, null 				 		, true , Sprites.Ground1,AnimationType.WATER	, 0,  new ResourcePart[]{}														, 60, 61, 62, 63, 64, 65, 66, 67);	
 //		
@@ -65,7 +65,7 @@ public class MapResource extends Resource {
 //																														new ResourcePart(new Location(  1, 2), Sprites.Build	, 30107, 21),
 //																														new ResourcePart(new Location(  2, 2), Sprites.Build	, 30108, 22),}		,  0);	
 		
-		Lamp		= new MapResource(1301, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), new Lamp("Lamp", 10, 1.0)																										, false, Sprites.Blocks.getSpriteSheet(),AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0,  0);	
+		Lamp		= new MapResource(1301, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, 100, new Lamp("Lamp", 10, 1.0)																										, false, Sprites.Blocks.getSpriteSheet(),AnimationType.NONE 	, 0,  new ResourcePart[]{}, null			, 0,  0);	
 		
 		res = new MapResource[7];
 		res[0] = Lamp;
@@ -97,8 +97,8 @@ public class MapResource extends Resource {
 	private ItemType itemType;
 	private int itemAmount;
 	
-	private MapResource(int id, Hitbox hitbox, BlockData blockData, boolean ground, SpriteSheet sprites, AnimationType animType, int layerUp, ResourcePart[] resParts, ItemType type, int itemAmount, int... spriteIDs){
-		super(id, animType, sprites, spriteIDs, resParts, hitbox);
+	private MapResource(int id, Hitbox hitbox, boolean opaque, int hp, BlockData blockData, boolean ground, SpriteSheet sprites, AnimationType animType, int layerUp, ResourcePart[] resParts, ItemType type, int itemAmount, int... spriteIDs){
+		super(id, animType, sprites, spriteIDs, resParts, hitbox, opaque, hp);
 		this.layerUp = layerUp;
 		this.ground = ground;
 		this.blockData = blockData;

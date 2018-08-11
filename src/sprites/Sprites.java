@@ -22,6 +22,7 @@ public class Sprites {
 	
 	public static Sprites Pointer;
 	public static Sprites Marker;
+	public static Sprites DamageLevel;
 	
 	public static Sprites FactoryMenu;
 	public static Sprites FactoryFrame;
@@ -57,6 +58,7 @@ public class Sprites {
 		
 		Pointer					= new Sprites(new Dimension(10						, 10						), new Dimension(8						, 8							), "/sprites/Pointer.png"				, "player"		, false);
 		Marker					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Marker.png"				, "player"		, false);
+		DamageLevel				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/DestructionLevel.png"		, "map"			, false);
 		
 		Slot 					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/slot.png"					, "slot"		, false);
 		Mouse					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), Image.createEmptyImage(40, 40)		, "mouse"		, false);

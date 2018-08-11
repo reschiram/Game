@@ -21,11 +21,10 @@ public class DroneTarget {
 	private Image marker;
 	private int buildID;
 	
-	private long interactionTimerTick = -1;
 	private boolean done = false;
 	
 	public DroneTarget(Location location, int buildID){
-		this.location = location;
+		this.location = location.clone();
 		this.marker = new Image(new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),
 				"", Sprites.Marker.getSpriteSheet(), null);
 		if(buildID==0)marker.setSpriteState(1);
@@ -53,13 +52,11 @@ public class DroneTarget {
 	public boolean interact(){
 		if(done)return true;
 		if(this.buildID==0){
-			if(interactionTimerTick==-1)interactionTimerTick = TickManager.getCurrentTick();
-			if(TickManager.getCurrentTick()-interactionTimerTick > 50){
-				interactionTimerTick = -1;
+			Mapdata data = Map.getMap().getChunks()[location.x/Map.DEFAULT_CHUNKSIZE][location.y/Map.DEFAULT_CHUNKSIZE].getMapData(location, false)[Entity.DEFAULT_ENTITY_UP];
+			data.damage(1);
+			if(data.isDestroyed()){
 				destroyVisulas();
 				this.done = true;
-				Mapdata data = Map.getMap().getChunks()[location.x/Map.DEFAULT_CHUNKSIZE][location.y/Map.DEFAULT_CHUNKSIZE].getMapData(location, false)[Entity.DEFAULT_ENTITY_UP];
-				Map.getMap().deleteBlock(this.location, Entity.DEFAULT_ENTITY_UP, false);
 				if(data.getResource().hasItemType()){
 					for(int i = 0; i<data.getResource().getItemAmount(); i++){
 						new ItemEntity(data.getResource().getItemType(), new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE)).show();
