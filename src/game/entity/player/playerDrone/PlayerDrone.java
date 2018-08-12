@@ -59,10 +59,14 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		this.itemCollector = new ItemCollector(this, invData.createInventory(), 1.2);
 		this.pathFinder = new PathFinder(this, 20);
 		this.player = player;
+		
+		this.moveManager.setDoAccelerateXVelocity(false);
+		this.moveManager.setDoAccelerateYVelocity(false);
 	}		
 	
 	@Override
 	public void tick(){
+		super.tick();
 		itemCollector.tick();
 		targetTrigger.tick();
 		pathFinder.tick();
@@ -71,8 +75,12 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		
 		if(pathFinder.hasTarget()){
 			int[] directions = this.pathFinder.nextDirection();
-			boolean leftRigth 	= directions[0]==0 || !this.move(Direction.getDirection(directions[0], 0));
-			boolean upDown 		= directions[1]==0 || !this.move(Direction.getDirection(0, directions[1]));
+			this.moveManager.move(Direction.getDirection(directions[0], 0			 ));
+			boolean leftRigth 	= directions[0]==0 || this.moveManager.canMoveX()==0;
+			System.out.print(this.moveManager.canMoveX()+"|");
+			this.moveManager.move(Direction.getDirection(			0 , directions[1]));
+			boolean upDown 		= directions[1]==0 || this.moveManager.canMoveY()==0;
+			System.out.println(this.moveManager.canMoveY());
 			if(leftRigth && upDown && pathFinder.isDone() && getLastTick() - lastTickAtHost <= maxTickAwayFromHost){
 //				System.out.println(currentDroneTarget);
 				if(currentDroneTarget!=null){
@@ -191,40 +199,6 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		this.pathFinder.setTarget(new Location(Map.getMap().getXOver(x),y));
 	}
 
-	@Override
-	public int getYSpeed(){
-		return this.speed;
-	}
-	
-	@Override
-	public boolean move(Direction direction){
-		if(direction.getY()==0){
-			return super.move(direction);
-		}
-		if(canMove(0, direction.getY()*speed*-1)){
-			this.setLocation(this.getX(), this.getY()-direction.getY()*speed);
-			return true;
-		}else{
-			int my = ((int)((this.getY()+this.getHeight())/Map.DEFAULT_SQUARESIZE))*Map.DEFAULT_SQUARESIZE-(this.getY());
-//			System.out.println(my+"->"+this.getY());
-			int dy = ((int)(my/Map.DEFAULT_SQUARESIZE))*Map.DEFAULT_SQUARESIZE-my;
-			if(dy!= 0){
-				int max = Map.DEFAULT_SQUARESIZE;
-				if(this.getHeight()<Map.DEFAULT_SQUARESIZE)max = this.getHeight();
-				if(dy==max)return false;
-				while(my<-max/2)my+=max;
-				while(my> max/2)my-=max;
-				my = Math.abs(my);
-//				System.out.println(my);
-				if(my!=0 && canMove(0, direction.getY()*my)){
-					this.setLocation(this.getX(), -(int)(direction.getY()*my)+this.getY());
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	public void addInterActionLocation(int resID, Location location) {
 		int key = location.getX()+location.getY()*Map.getMap().getWidth();
 		if(targets.containsKey(key)){
@@ -262,13 +236,4 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		LightEntityData lightdata = (LightEntityData)EntityType.Drone.getData(EntityData.LIGHTENTITYDATA);
 		return lightdata.getLightStrength();
 	}
-	
-//	@Override
-//	public boolean canMove(int mx, int my){
-//		int x = Math.abs(mx) - Map.DEFAULT_SQUARESIZE;
-//		int y = Math.abs(my) - Map.DEFAULT_SQUARESIZE;
-//		if(mx<0)x*=-1;
-//		if(my<0)y*=-1;
-//		return super.canMove(x, y);
-//	}
 }

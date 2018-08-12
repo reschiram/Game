@@ -62,13 +62,13 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 	public void tick() {	
 		
 		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_W) || Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_SPACE)){
-			move(Direction.UP);
+			this.moveManager.move(Direction.UP);
 		}
 		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_A)){
-			move(Direction.LEFT);
+			this.moveManager.move(Direction.LEFT);
 		}else if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_D)){
-			move(Direction.RIGHT);
-		}
+			this.moveManager.move(Direction.RIGHT);
+		}else this.moveManager.slowDownXVelocity();
 
 		super.tick();
 		

@@ -42,7 +42,7 @@ public class Map {
 	private double ym = 0;
 	private int speed = 5;
 	
-	private double acceleration = 0.15;
+	private double acceleration = 0.2;
 	
 	public Map(int width, int height, int seed){
 		Map = this;
