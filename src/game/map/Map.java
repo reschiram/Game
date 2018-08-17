@@ -333,13 +333,13 @@ public class Map {
 	
 	public int getXOver(int x){
 		if(x<0)x = getWidth()*DEFAULT_SQUARESIZE+x;
-		else if(x> getWidth()*DEFAULT_SQUARESIZE)x = x-getWidth()*DEFAULT_SQUARESIZE;
+		else if(x>= getWidth()*DEFAULT_SQUARESIZE)x = x-getWidth()*DEFAULT_SQUARESIZE;
 		return x;
 	}
 	
 	public int getBlockXOver(int x) {
 		if(x<0)x = getWidth()+x;
-		else if(x> getWidth())x = x-getWidth();
+		else if(x>= getWidth())x = x-getWidth();
 		return x;
 	}
 	

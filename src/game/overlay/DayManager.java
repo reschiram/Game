@@ -16,7 +16,7 @@ public class DayManager {
 		return DAYMANAGER;
 	}
 	
-	private int tickToTime = 80;
+	private int tickToTime = 8000;
 	private Time time;
 	
 	private int layer = 0;	
@@ -61,13 +61,7 @@ public class DayManager {
 	}
 	
 	private int getSunLightLevel(){
-		int maxLevel = Lamp.DEFAULT_LIGHT_STATES-2;
-		int current = (int) (maxLevel*(this.time.getMilliSecond()/(12*60*60*1000.0)));
-//		System.out.println(this.time.getTime()+" -> "+current+" <- "+(this.time.getMilliSecond()/(12*60*60*1000.0))+" | "+maxLevel);
-		current++;
-		if(current>maxLevel)current=(2*maxLevel-current);
-//		System.out.println(this.time.getTime()+"->"+current);
-		return current;
+		return Lamp.DEFAULT_LIGHT_STATES-2;
 	}
 	
 	public DataObject<Integer> getDayLightLevelData(){

@@ -19,7 +19,7 @@ public class AnimationType {
 		CANCEL 	= new AnimationType( 100, "Cancel", CancelAnimation.class);
 		WATER 	= new AnimationType( 100, "Water" , WaterAnimation.class );
 		NONE 	= new AnimationType( 000, "None"  , null				 );	
-		ITEM 	= new AnimationType( 200, "None"  , ItemAnimation.class  );			
+		ITEM 	= new AnimationType(  10, "None"  , ItemAnimation.class  );			
 		return null;
 	}
 	

@@ -76,6 +76,6 @@ public class DroneTarget {
 	}
 
 	public Location getPixelLocation() {
-		return new Location(location.getX() * Map.DEFAULT_SQUARESIZE, location.getY() * Map.DEFAULT_SQUARESIZE);
+		return new Location(location.getX() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, location.getY() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
 	}
 }

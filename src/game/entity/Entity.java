@@ -185,7 +185,6 @@ public abstract class Entity {
 	public void setLightLevel(int lightLevel){
 		 if(isSurface()){
 			int currentSurfaceLightLevel = DayManager.getDayManager().getDayLightLevel();
-	//		System.out.println(currentSurfaceLightLevel+" -> "+lightLevel);
 			if(currentSurfaceLightLevel>=lightLevel){
 				if(!hasCurrentlySurfaceLightLevel || this.lightLevel.getData()!=currentSurfaceLightLevel){
 					hasCurrentlySurfaceLightLevel = true;

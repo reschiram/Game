@@ -7,7 +7,6 @@ import Data.Image.Image;
 import data.ImageData;
 import game.entity.type.EntityType;
 import game.inventory.items.ItemType;
-import game.map.Map;
 
 public class ItemEntity extends Entity{
 
@@ -24,6 +23,8 @@ public class ItemEntity extends Entity{
 		
 		super.create(EntityType.ItemEntity.createAnimation(false, 2+1, itemImage), loc, itemImage.getDimension(), EntityType.ItemEntity.getSpeed(), DEFAULT_DIRECTION, 2+1,
 				new ImageData(new Location(0,0), itemImage));
+		
+		this.moveManager.setDoAccelerateXVelocity(false);
 	}
 	
 	@Override
@@ -34,15 +35,5 @@ public class ItemEntity extends Entity{
 	public ItemType getItemType(){
 		return this.itemType;
 	}
-//	
-//	@Override
-//	public void setLocation(int x, int y){
-//		x = Map.getMap().getXOver(x);
-//		if(x == hitbox.getX() && y == hitbox.getY())return;
-//		for(int i = 0; i<this.images.length; i++){
-//			this.images[i].getImage().setLocation(new Location(this.images[i].getLocation().getX()+x, this.images[i].getLocation().getY()+y));
-//		}
-//		this.hitbox.setLocation(x, y);
-//	}
 
 }

@@ -77,10 +77,9 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 			int[] directions = this.pathFinder.nextDirection();
 			this.moveManager.move(Direction.getDirection(directions[0], 0			 ));
 			boolean leftRigth 	= directions[0]==0 || this.moveManager.canMoveX()==0;
-			System.out.print(this.moveManager.canMoveX()+"|");
 			this.moveManager.move(Direction.getDirection(			0 , directions[1]));
 			boolean upDown 		= directions[1]==0 || this.moveManager.canMoveY()==0;
-			System.out.println(this.moveManager.canMoveY());
+			System.out.println(leftRigth+"|"+upDown+" -> "+directions[0]+"|"+directions[1]);
 			if(leftRigth && upDown && pathFinder.isDone() && getLastTick() - lastTickAtHost <= maxTickAwayFromHost){
 //				System.out.println(currentDroneTarget);
 				if(currentDroneTarget!=null){

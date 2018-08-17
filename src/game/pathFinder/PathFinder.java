@@ -43,22 +43,9 @@ public class PathFinder {
 		
 		if(target == null)return new int[]{0,0};
 		
-		int x = 0;
-		int y = 0;
 		
-     	int dx = Map.getMap().getXOver(entity.getX()+entity.getWidth()/2) - Map.getMap().getXOver(target.getX());
-		if(dx>entity.getWidth()/2){
-			if(dx> (Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE-1920))x=-1;
-			else x = 1;
-		}else if(dx<-entity.getWidth()/2){
-			if(dx<-(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE-1920))x=1;
-			else x = -1;
-		}
-
-		int dy = entity.getY()+entity.getHeight()/2-target.getY();
-		
-		if(dy>entity.getHeight()/2)y = 1;
-		else if(dy<-entity.getHeight()/2)y = -1;
+		int x = getDirectionX(target);
+		int y = getDirectionY(target);
 		
 		if(x == 0 && y == 0){
 			if(!path.isEmpty())path.remove(0);
@@ -66,11 +53,37 @@ public class PathFinder {
 			return nextDirection();
 		}
 		
+//		if(path.size()>1){
+//			Location nextTarget = new Location(path.get(1).getX()+Map.DEFAULT_SQUARESIZE/2, path.get(1).getY()+Map.DEFAULT_SQUARESIZE/2);
+//			System.out.println(x);
+//			if(x == 0)x = getDirectionX(nextTarget);
+//			if(y == 0)y = getDirectionY(nextTarget);
+//		}
+		
 //		System.out.println(dx+"|"+dy+"->"+x+"|"+y);
 		
 		return new int[]{x,y};
 	}
 	
+	private int getDirectionY(Location target) {
+		int dy = entity.getY()+entity.getHeight()/2-target.getY();		
+		if(dy>entity.getHeight()/2)return Direction.UP.getY();
+		else if(dy<-entity.getHeight()/2)return Direction.DOWN.getY();
+		return 0;
+	}
+
+	private int getDirectionX(Location target) {
+     	int dx = Map.getMap().getXOver(entity.getX()+entity.getWidth()/2) - Map.getMap().getXOver(target.getX());
+		if(dx>entity.getWidth()/2){
+			if(dx> (Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE-1920))return Direction.RIGHT.getX();
+			else  return Direction.LEFT.getX();
+		}else if(dx<-entity.getWidth()/2){
+			if(dx<-(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE-1920))return Direction.LEFT.getX();
+			else return Direction.RIGHT.getX();
+		}
+		return 0;
+	}
+
 	public void tick(){		
 		if(stage == 0){
 			path.clear();
@@ -87,7 +100,7 @@ public class PathFinder {
 	}
 
 	private void getPath(Location location) {
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 		int dx = location.getX()-this.entity.getBlockLocation().getX();
 		if(dx> Map.getMap().getWidth()/2)dx = Map.getMap().getWidth() - dx;
 		if(dx<-Map.getMap().getWidth()/2)dx = Map.getMap().getWidth() + dx;
@@ -106,8 +119,8 @@ public class PathFinder {
 			}
 			y = (int) Math.round(m*x);
 		}
-		time-=System.currentTimeMillis();
-		long ob = System.currentTimeMillis();
+//		time-=System.currentTimeMillis();
+//		long ob = System.currentTimeMillis();
 		for(int i = 0; i<path.size(); i++){
 			Location loc = path.get(i);
 			if(!Map.getMap().entityCanAcces(entity, loc.getX()/Map.DEFAULT_SQUARESIZE, loc.getY()/Map.DEFAULT_SQUARESIZE) && i>0){
@@ -117,6 +130,7 @@ public class PathFinder {
 		}
 //		System.out.println("Path: "+this.path);
 //		System.out.println("Time for PathFinder: " + time + " + " + (ob-System.currentTimeMillis()));
+		path.add(new Location(this.target.getX(), this.target.getY()));
 	}
 
 	private int obstacle(int i, Location loc) {

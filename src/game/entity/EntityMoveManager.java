@@ -31,14 +31,14 @@ public class EntityMoveManager {
 			if(this.accelerateY){
 				this.accelerate(0, Map.getMap().getAcceleration());
 			}
-		}else{
-			if(this.moveX != 0 && this.accelerateX){
-				if(this.slowDown && this.velocity.getXSpeed() == 0){
-					this.slowDown = false;
-					this.moveX = 0;
-				}else this.accelerate(this.moveX, 0);
-			}
 		}
+		if(this.moveX != 0 && this.accelerateX){
+			if(this.slowDown && this.velocity.getXSpeed() == 0){
+				this.slowDown = false;
+				this.moveX = 0;
+			}else this.accelerate(this.moveX, 0);
+		}
+		
 		
 		int move = 0;
 		if((move = canMoveX()) != 0){
