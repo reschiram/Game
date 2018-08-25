@@ -102,10 +102,12 @@ public class PathFinder {
 	private void getPath(Location location) {
 //		long time = System.currentTimeMillis();
 		int dx = location.getX()-this.entity.getBlockLocation().getX();
-		if(dx> Map.getMap().getWidth()/2)dx = Map.getMap().getWidth() - dx;
-		if(dx<-Map.getMap().getWidth()/2)dx = Map.getMap().getWidth() + dx;
+		if(dx> Map.getMap().getWidth()/2)dx = dx - Map.getMap().getWidth();
+		if(dx<-Map.getMap().getWidth()/2)dx = dx + Map.getMap().getWidth();
 		int dy = location.getY()-this.entity.getBlockLocation().getY();
 		double m = ((double)dy)/((double)dx);
+		
+		System.out.println(dx+"|"+dy+"->"+m);
 		
 		int direcX = 1;
 		if(dx<0)direcX=-1;
