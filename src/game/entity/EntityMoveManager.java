@@ -13,7 +13,7 @@ public class EntityMoveManager {
 	private Entity entity;
 	
 	private Velocity velocity;
-	private int jump = 6;
+	private int jump = 7;
 	
 	private double moveX = 0.0;
 	private boolean slowDown = false;
@@ -109,10 +109,11 @@ public class EntityMoveManager {
 		for(int y = entity.getY(); y <= entity.getY()+entity.getHeight(); y+=add){
 			int x = entity.getX()+this.velocity.getXSpeed();
 			if(this.velocity.getXSpeed()>0)x+=entity.getWidth()-1;
-			Mapdata data = Map.getMap().getMapData(new Location(Map.getMap().getBlockXOver(x/Map.DEFAULT_SQUARESIZE), y/Map.DEFAULT_SQUARESIZE))[Entity.DEFAULT_ENTITY_UP+Map.DEFAULT_BUILDLAYER];
+			x=Map.getMap().getXOver(x);
+			Mapdata data = Map.getMap().getMapData(new Location(x/Map.DEFAULT_SQUARESIZE, y/Map.DEFAULT_SQUARESIZE))[Entity.DEFAULT_ENTITY_UP+Map.DEFAULT_BUILDLAYER];
 			if(data != null && !data.canHost(entity.getWidth(), entity.getHeight())){
-				int dataX = data.getLocation().getX()*Map.DEFAULT_SQUARESIZE;
-				if(this.velocity.getXSpeed()<0)dataX+=Map.DEFAULT_SQUARESIZE-1;
+				int dataX = Map.getMap().getXOver(data.getLocation().getX()*Map.DEFAULT_SQUARESIZE);
+				if(this.velocity.getXSpeed()<0)dataX=Map.getMap().getXOver(dataX+Map.DEFAULT_SQUARESIZE-1);
 				int dx = dataX-(x-this.velocity.getXSpeed());
 				if(dx>0)dx--;
 				else dx++;

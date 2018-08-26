@@ -41,7 +41,8 @@ public abstract class Mapdata extends GridData{
 					hasCurrentlySurfaceLightLevel = true;
 					this.lightLevel = DayManager.getDayManager().getDayLightLevelData();
 					this.image.setSpriteState(this.getDefaultSpriteState());
-					image.setSpriteID(this.lightLevel);	
+					this.image.setSpriteID(this.lightLevel);
+					this.damageLevel.setSpriteID(this.lightLevel);
 				}	
 				return;	
 			}else hasCurrentlySurfaceLightLevel  = false;
@@ -54,6 +55,7 @@ public abstract class Mapdata extends GridData{
 	protected void updateImage(){
 		this.image.setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel.getData()-1);
 		this.image.setSpriteState(this.getDefaultSpriteState());		
+		this.damageLevel.setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel.getData()-1);
 	}
 	
 	public int getLightLevel(){

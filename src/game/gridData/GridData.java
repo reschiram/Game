@@ -8,6 +8,7 @@ import Data.Animation.Animation;
 import Data.Animation.AnimationManager;
 import Data.Image.Image;
 import Engine.Engine;
+import data.LightSpriteSheet;
 import data.Resource;
 import game.map.Map;
 import sprites.Sprites;
@@ -39,7 +40,7 @@ public abstract class GridData{
 			this.anim = res.getAnimationType().newAnimation(false, layer, image, res);
 		}
 		hp = resource.getHP();
-		this.damageLevel = new Image(image.getLocation().clone(), blockDimension, "", Sprites.DamageLevel.getSpriteSheet(), null);
+		this.damageLevel = new Image(image.getLocation().clone(), blockDimension, "", LightSpriteSheet.getLightSpriteSheet(Sprites.DamageLevel.getSpriteSheet()), null);
 	}
 
 	public Location getLocation(){

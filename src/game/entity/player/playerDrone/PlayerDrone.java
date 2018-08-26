@@ -79,7 +79,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 			boolean leftRigth 	= directions[0]==0 || this.moveManager.canMoveX()==0;
 			this.moveManager.move(Direction.getDirection(			0 , directions[1]));
 			boolean upDown 		= directions[1]==0 || this.moveManager.canMoveY()==0;
-			System.out.println(leftRigth+"|"+upDown+" -> "+directions[0]+"|"+directions[1]);
+//			System.out.println(leftRigth+"|"+upDown+" -> "+directions[0]+"|"+directions[1]);
 			if(leftRigth && upDown && pathFinder.isDone() && getLastTick() - lastTickAtHost <= maxTickAwayFromHost){
 //				System.out.println(currentDroneTarget);
 				if(currentDroneTarget!=null){
@@ -149,15 +149,10 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 	}
 
 	private int getDistance(DroneTarget target, boolean quest) {
-//		System.out.print("---> "+quest+" >>> ");
-//		if(quest)System.out.println(this.getLocation().toString() + "->" +this.getBlockLocation().toString()+"->"+this.getWidth() +"|"+this.getHeight());
-//		System.out.println(this.hitbox.toString() + " -> " + this.images[0].getImage().getLocation().toString());
 		int x = Math.abs(Map.getMap().getXOver(this.getX()+this.getWidth() /2) - Map.getMap().getXOver(target.getLocation().getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
-		if(x>Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)x-=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
+		if(x>(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)/2)x-=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
 		int y = Math.abs(					   this.getY()+this.getHeight()/2  - 					  (target.getLocation().getY()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
-//		System.out.println(Map.getMap().getXOver(this.getX()+this.getWidth ()/2) + " - " + Map.getMap().getXOver(target.getLocation().getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2) + " = " + x);
-//		System.out.println(                     (this.getY()+this.getHeight()/2) + " - " +                      (target.getLocation().getY()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2) + " = " + y);
-//		System.out.println(x+"->"+y);
+
 		return (int) Math.sqrt(x*x+y*y);
 	}
 

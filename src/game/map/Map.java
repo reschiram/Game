@@ -115,24 +115,24 @@ public class Map {
 	
 	private void update(int x, int y, boolean ground){
 		updateSurface(x, y);
-		updateBlock(x, y, ground);
+		updateBlock(x, y);
 		
 		x=getBlockXOver(x+1);
-		updateBlock(x, y, ground);
+		updateBlock(x, y);
 		
 		x=getBlockXOver(x-2);
-		updateBlock(x, y, ground);
+		updateBlock(x, y);
 		
 		x=getBlockXOver(x+1);
 		y++;
-		if(y<Height)updateBlock(x, y, ground);
+		if(y<Height)updateBlock(x, y);
 		
 		y-=2;
-		if(y>0)updateBlock(x, y, ground);
+		if(y>=0)updateBlock(x, y);
 		
 	}
 	
-	private void updateBlock(int x, int y, boolean ground){
+	private void updateBlock(int x, int y){
 		boolean found = false;
 		Mapdata[] data = getChunk(x, y).getMapData(x,y);
 		for(int i = data.length-1; i>=0; i--){
@@ -350,7 +350,7 @@ public class Map {
 	public void finalize(){
 		for(int x = 0; x<Width; x++){
 			for(int y = 0; y<Height; y++){
-				updateBlock(x, y, true);
+				updateBlock(x, y);
 			}
 		}
 		
