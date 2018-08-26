@@ -14,6 +14,7 @@ import game.entity.type.interfaces.EntityLight;
 import game.gridData.map.MapBlock;
 import game.gridData.map.Mapdata;
 import game.map.Map;
+import game.tick.TickManager;
 
 public class LightOverlay {
 	
@@ -117,11 +118,12 @@ public class LightOverlay {
 //						System.out.println(newLightLevel);
 						Mapdata[] block = Map.getMap().getMapData(location);
 						for(int i = 0; i<block.length; i++){
-							if(block[i] !=null)block[i].setLightLevel(newLightLevel);
+							if(block[i] !=null && (block[i].lastLightUpdate() != TickManager.getCurrentTick() || newLightLevel>block[i].getLightLevel()))block[i].setLightLevel(newLightLevel);
 						}
 						Location pixelLoc = new Location(location.getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, location.y*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
 						for(Entity entity: entitys){
-							if(entity.getHitbox().contains(pixelLoc))entity.setLightLevel(newLightLevel);
+							Mapdata b = Map.getMap().getMapData(entity.getBlockLocation())[Map.DEFAULT_GROUNDLAYER];
+							if(entity.getHitbox().contains(pixelLoc))entity.setLightLevel(b.getLightLevel());
 						}
 					}
 				}
