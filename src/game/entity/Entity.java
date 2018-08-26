@@ -136,7 +136,7 @@ public abstract class Entity {
 	}
 
 	public Location getBlockLocation() {
-		return new Location((int)(((double)hitbox.getX()+getWidth()/2-1)/(double)Map.DEFAULT_SQUARESIZE), (int) (((double)(hitbox.getY()+getHeight()/2-1)/(double)Map.DEFAULT_SQUARESIZE)));
+		return new Location((int)(((double)Map.getMap().getXOver(hitbox.getX()+getWidth()/2-1))/(double)Map.DEFAULT_SQUARESIZE), (int) (((double)(hitbox.getY()+getHeight()/2-1)/(double)Map.DEFAULT_SQUARESIZE)));
 	}
 	
 	public Location getTopLeftBlockLocation() {

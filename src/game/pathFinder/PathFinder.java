@@ -26,7 +26,7 @@ public class PathFinder {
 	}
 	
 	public boolean hasTarget(){
-		return target!=null && new Location(target.getX()+Map.DEFAULT_SQUARESIZE/2, target.getY()+Map.DEFAULT_SQUARESIZE/2).distance_Math(entity.getLocation())>entity.getSpeed();
+		return target!=null;
 	}
 	
 	public int[] nextDirection(){
@@ -41,11 +41,14 @@ public class PathFinder {
 			}
 		}else return new int[]{0,0};
 		
+//		System.out.println(target);
 		if(target == null)return new int[]{0,0};
 		
 		
 		int x = getDirectionX(target);
 		int y = getDirectionY(target);
+		
+//		System.out.println(entity.getLocation()+" <> "+target+" -> "+x+"|"+y);
 		
 		if(x == 0 && y == 0){
 			if(!path.isEmpty())path.remove(0);
@@ -59,8 +62,6 @@ public class PathFinder {
 //			if(x == 0)x = getDirectionX(nextTarget);
 //			if(y == 0)y = getDirectionY(nextTarget);
 //		}
-		
-//		System.out.println(dx+"|"+dy+"->"+x+"|"+y);
 		
 		return new int[]{x,y};
 	}
@@ -107,7 +108,7 @@ public class PathFinder {
 		int dy = location.getY()-this.entity.getBlockLocation().getY();
 		double m = ((double)dy)/((double)dx);
 		
-		System.out.println(dx+"|"+dy+"->"+m);
+//		System.out.println(dx+"|"+dy+"->"+m);
 		
 		int direcX = 1;
 		if(dx<0)direcX=-1;
