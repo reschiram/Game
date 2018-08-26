@@ -8,12 +8,14 @@ import data.map.Lamp;
 import game.gridData.GridData;
 import game.map.Map;
 import game.overlay.DayManager;
+import game.tick.TickManager;
 
 public abstract class Mapdata extends GridData{	
 	
 	private DataObject<Integer> lightLevel = new DataObject<Integer>(0);
 	private boolean surface = false;
 	private boolean hasCurrentlySurfaceLightLevel = false;
+	private long lastLightUpdate;
 	
 	public Mapdata(MapResource resource, int layer, Location loc) {
 		super(resource, layer, loc);
@@ -29,6 +31,7 @@ public abstract class Mapdata extends GridData{
 	}
 	
 	public void setLightLevel(int lightLevel){
+		lastLightUpdate = TickManager.getCurrentTick();
 //		System.out.println(location.toString()+" -> "+surface+"|"+lightLevel+"|"+this.lighlevel);
 //		if(surface && lightLevel<=this.lighlevel)return;
 //		this.lighlevel = lightLevel;
@@ -90,6 +93,10 @@ public abstract class Mapdata extends GridData{
 	public void damage(int amount){
 		super.damage(amount);
 		if(this.isDestroyed())Map.getMap().deleteBlock(location, this.getResource().getLayerUp(), this.getResource().isGround());
+	}
+
+	public long lastLightUpdate() {
+		return lastLightUpdate;
 	}
 
 }
