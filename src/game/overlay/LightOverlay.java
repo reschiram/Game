@@ -120,10 +120,12 @@ public class LightOverlay {
 						for(int i = 0; i<block.length; i++){
 							if(block[i] !=null && (block[i].lastLightUpdate() != TickManager.getCurrentTick() || newLightLevel>block[i].getLightLevel()))block[i].setLightLevel(newLightLevel);
 						}
-						Location pixelLoc = new Location(location.getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, location.y*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
+						Location pixelLoc = new Location(Map.getMap().getXOver(location.getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2), location.y*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
 						for(Entity entity: entitys){
-							Mapdata b = Map.getMap().getMapData(entity.getBlockLocation())[Map.DEFAULT_GROUNDLAYER];
-							if(entity.getHitbox().contains(pixelLoc))entity.setLightLevel(b.getLightLevel());
+							if(entity.getHitbox().contains(pixelLoc)){
+								Mapdata b = Map.getMap().getMapData(entity.getBlockLocation())[Map.DEFAULT_GROUNDLAYER];
+								entity.setLightLevel(b.getLightLevel());
+							}
 						}
 					}
 				}
