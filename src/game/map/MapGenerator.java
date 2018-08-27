@@ -128,7 +128,9 @@ public class MapGenerator {
 
 	private void smooth(int[][][] ground, int[][][] build) {
 		int lastGroundBlock = -1;
-		for(int x = 0; x<WIDTH; x++){
+		for(int dx = -1; dx<WIDTH; dx++){
+			int x = dx;
+			if(dx<0)x = ground.length+dx; 
 			boolean found = false;
 			for(int y = 0; y<ground[x].length; y++){
 				if(build[x][y][0]!=0){
@@ -158,17 +160,9 @@ public class MapGenerator {
 			}
 			if(!found)lastGroundBlock=-1;
 		}
-		lastGroundBlock = -1;
-		for(int x = WIDTH-1; x>=-1; x--){
-			int mx = x;
-			if(x==-1)mx=WIDTH+x;
-			boolean found = false;
-			for(int y = 0; y<ground[mx].length; y++){
-				
-			}
-			if(!found)lastGroundBlock=-1;
-		}
-		for(int x = 0; x<WIDTH; x++){
+		for(int dx = -1; dx<WIDTH; dx++){
+			int x = dx;
+			if(dx<0)x = ground.length+dx; 
 			for(int y = 0; y<ground[x].length; y++){
 				if(build[x][y][0]!=0){
 					int mx = x+1;
@@ -184,7 +178,9 @@ public class MapGenerator {
 				}
 			}
 		}
-		for(int x = 0; x<WIDTH; x++){
+		for(int dx = -1; dx<WIDTH; dx++){
+			int x = dx;
+			if(dx<0)x = ground.length+dx; 
 			for(int y = 0; y<ground[x].length; y++){
 				if(build[x][y][0]!=0){
 					int mx = x+1;
