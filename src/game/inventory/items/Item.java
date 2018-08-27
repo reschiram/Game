@@ -27,13 +27,14 @@ public class Item {
 		return type;
 	}
 
-	public boolean canBeStackedWith(Item item) {
+	public int canBeStackedWith(Item item) {
 		if(item.getItemType().equals(this.type)){
 			if(this.amount + item.getAmount() <= this.type.getMaxStackAmount()){
-				return true;
+				return item.getAmount();
 			}
+			return this.type.getMaxStackAmount()-this.amount;
 		}
-		return false;
+		return 0;
 	}
 
 	public boolean isSimilar(Item item) {

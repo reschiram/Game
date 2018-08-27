@@ -14,11 +14,12 @@ public class EquipmentInventory extends Inventory{
 	}
 	
 	@Override
-	public boolean addItem(Item item){
-		boolean added = super.addItem(item);
+	public int addItem(Item item){
+		int added = super.addItem(item);
 		if(item instanceof Equipment){
 			boolean addedToEquipment = addToEquipment(item, true, true);
-			return added || (!added && addedToEquipment);
+			if(added!=0)return added;
+			else if(addedToEquipment)return 0;
 		}
 		return added;
 	}
@@ -83,7 +84,7 @@ public class EquipmentInventory extends Inventory{
 		Item item = null;
 		if(itemType instanceof EquipmentType) item = ((EquipmentType)itemType).createEquipment();
 		else item = new Item(itemType);
-		return this.addItem(item);
+		return this.addItem(item)!=0;
 	}
 	
 	@Override
