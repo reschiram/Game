@@ -199,7 +199,7 @@ public abstract class Entity {
 	}
 
 	private boolean isSurface() {
-		Mapdata data = Map.getMap().getChunks()[this.getX()/(Map.DEFAULT_SQUARESIZE*Map.DEFAULT_CHUNKSIZE)][this.getY()/(Map.DEFAULT_SQUARESIZE*Map.DEFAULT_CHUNKSIZE)].getMapData(this.getTopLeftBlockLocation(), true)[0];
+		Mapdata data = Map.getMap().getMapData(this.getBlockLocation())[DEFAULT_ENTITY_UP];
 //		System.out.println(data);
 		if(data!=null){
 //			System.out.println(data.isSurface());
