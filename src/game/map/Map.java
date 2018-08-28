@@ -9,6 +9,7 @@ import Engine.Engine;
 import data.MapResource;
 import data.Mouse;
 import data.ResourcePart;
+import data.map.Lamp;
 import data.map.UpdatableBlockData;
 import game.tick.TickManager;
 import game.entity.Entity;
@@ -106,14 +107,14 @@ public class Map {
 		Mapdata[] parts = b.create();
 		for(int i = 1; i<parts.length; i++){
 			getChunk(parts[i].getLocation()).set(parts[i]);
-			update(parts[i].getLocation().getX(), parts[i].getLocation().getY(), false);
+			update(parts[i].getLocation().getX(), parts[i].getLocation().getY());
 		}
 		b.show();
 		getChunk(location).set(b);
-		update(location.getX(), location.getY(), false);
+		update(location.getX(), location.getY());
 	}
 	
-	private void update(int x, int y, boolean ground){
+	private void update(int x, int y){
 		updateSurface(x, y);
 		updateBlock(x, y);
 		
@@ -146,19 +147,13 @@ public class Map {
 	}
 
 	private void updateSurface(int dx, int dy){
-		boolean surface = true;
-		for(int y = 0; y<=this.getHeight(); y++){
-			MapChunk chunk = chunks[dx/DEFAULT_CHUNKSIZE][y/DEFAULT_CHUNKSIZE];
-			if(chunk!=null){
-				Mapdata[] data = chunk.getMapData()[dx-((dx/DEFAULT_CHUNKSIZE)*DEFAULT_CHUNKSIZE)][y-((y/DEFAULT_CHUNKSIZE)*DEFAULT_CHUNKSIZE)];
-				for(int i = 0; i<data.length; i++){
-					if(data[i] != null && data[i].isSurface() != surface) data[i].setSurface(surface);
-				}
-				if(data[Entity.DEFAULT_ENTITY_UP+DEFAULT_BUILDLAYER]!=null){
-					if(y>dy && !surface)return;
-					surface = false;
-				}
+		int surface = Lamp.DEFAULT_SURFACE_LEVELS-1;
+		for(int y = 0; y<=this.getHeight() && (surface  != 0 || y>dy); y++){
+			Mapdata[] data = getMapData(new Location(dx, y));
+			for(int i = 0; i<data.length; i++){
+				if(data[i]!=null)data[i].setSurface(surface);
 			}
+			if(data[DEFAULT_BUILDLAYER]!=null && surface>0)surface--;
 		}
 	}
 	
@@ -169,11 +164,11 @@ public class Map {
 				MapBlock b = (MapBlock)mapdata;
 				for(MapDummieBlock part: b.blockParts){
 					getChunk(part.getLocation()).remove(part);
-					update(part.getLocation().getX(), part.getLocation().getY(), false);
+					update(part.getLocation().getX(), part.getLocation().getY());
 				}
 				mapdata.destroyVisual();
 				getChunk(b.getLocation()).remove(b);
-				update(b.getLocation().getX(), b.getLocation().getY(), false);
+				update(b.getLocation().getX(), b.getLocation().getY());
 			}else if(mapdata instanceof MapDummieBlock){
 				MapDummieBlock part = (MapDummieBlock)mapdata;
 				MapBlock block = part.getBlock();
@@ -351,18 +346,7 @@ public class Map {
 		for(int x = 0; x<Width; x++){
 			for(int y = 0; y<Height; y++){
 				updateBlock(x, y);
-			}
-		}
-		
-		for(int x = 0; x<this.Width; x++){
-			for(int y = 0; y<this.Height; y++){
-				MapChunk chunk = chunks[x/DEFAULT_CHUNKSIZE][y/DEFAULT_CHUNKSIZE];
-				if(chunk!=null){
-					Mapdata[] data = chunk.getMapData(x, y);
-					for(int i = 0; i<4; i++){
-						if(data[i]!=null)data[i].setLightLevel(DayManager.getDayManager().getDayLightLevel());
-					}
-				}
+				updateSurface(x, y);
 			}
 		}
 	}

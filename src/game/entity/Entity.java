@@ -17,6 +17,7 @@ import game.entity.type.data.EntityData;
 import game.gridData.map.Mapdata;
 import game.map.Map;
 import game.overlay.DayManager;
+import game.tick.TickManager;
 
 public abstract class Entity {
 	
@@ -40,7 +41,7 @@ public abstract class Entity {
 	protected EntityMoveManager moveManager;
 	
 	private DataObject<Integer> lightLevel;
-	private boolean hasCurrentlySurfaceLightLevel;
+	private long lastLightUpdate;
 	
 	public Entity(ArrayList<EntityType> entityTypes){
 		this.entityTypes = entityTypes;
@@ -183,30 +184,10 @@ public abstract class Entity {
 	}
 	
 	public void setLightLevel(int lightLevel){
-		 if(isSurface()){
-			int currentSurfaceLightLevel = DayManager.getDayManager().getDayLightLevel();
-			if(currentSurfaceLightLevel>=lightLevel){
-				if(!hasCurrentlySurfaceLightLevel || this.lightLevel.getData()!=currentSurfaceLightLevel){
-					hasCurrentlySurfaceLightLevel = true;
-					this.lightLevel = DayManager.getDayManager().getDayLightLevelData();
-					for(ImageData image:images)image.getImage().setSpriteID(this.lightLevel);
-				}	
-				return;	
-			}else hasCurrentlySurfaceLightLevel  = false;
-		}
+		if(this.lightLevel!=null && this.lightLevel.getData()==lightLevel)return;
 		this.lightLevel = new DataObject<Integer>(lightLevel);
 		for(ImageData image:images)image.getImage().setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel-1);
-	}
-
-	private boolean isSurface() {
-		Mapdata data = Map.getMap().getMapData(this.getBlockLocation())[DEFAULT_ENTITY_UP];
-//		System.out.println(data);
-		if(data!=null){
-//			System.out.println(data.isSurface());
-			return data.isSurface();
-		}
-		return false;
-		
+		this.lastLightUpdate = TickManager.getCurrentTick();
 	}
 
 	public Hitbox getHitbox() {
@@ -223,5 +204,9 @@ public abstract class Entity {
 	
 	public void move(Direction d){
 		this.moveManager.move(d);
+	}
+
+	public long getLastLightUpdate() {
+		return lastLightUpdate;
 	}
 }

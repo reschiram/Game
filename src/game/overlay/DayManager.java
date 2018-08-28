@@ -22,8 +22,8 @@ public class DayManager {
 	private int layer = 0;	
 	private StringRenderOperation go;
 	
-	private int currentDayLightLevel = 0;
-	private DataObject<Integer> currentDayLightLevelData = new DataObject<Integer>(Lamp.DEFAULT_LIGHT_STATES-1);
+	private int currentDayLightLevel = Lamp.DEFAULT_LIGHT_STATES-2;
+	private DataObject<Integer> currentDayLightLevelData = new DataObject<Integer>(currentDayLightLevel);
 	
 	public DayManager(){
 		System.out.println("new DayManager");
