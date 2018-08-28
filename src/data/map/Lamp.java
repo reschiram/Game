@@ -3,6 +3,7 @@ package data.map;
 public class Lamp extends BlockData{
 	
 	public static int DEFAULT_LIGHT_STATES = 40;
+	public static int DEFAULT_SURFACE_LEVELS = 3;
 	
 	private int lightDistance;
 	private double lightStrength;

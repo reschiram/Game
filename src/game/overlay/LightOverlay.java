@@ -124,7 +124,7 @@ public class LightOverlay {
 						for(Entity entity: entitys){
 							if(entity.getHitbox().contains(pixelLoc)){
 								Mapdata b = Map.getMap().getMapData(entity.getBlockLocation())[Map.DEFAULT_GROUNDLAYER];
-								entity.setLightLevel(b.getLightLevel());
+								if(entity.getLastLightUpdate() != TickManager.getCurrentTick() || entity.getLightLevel()<b.getLightLevel())entity.setLightLevel(b.getLightLevel());
 							}
 						}
 					}

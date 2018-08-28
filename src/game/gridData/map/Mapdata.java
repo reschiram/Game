@@ -13,8 +13,7 @@ import game.tick.TickManager;
 public abstract class Mapdata extends GridData{	
 	
 	private DataObject<Integer> lightLevel = new DataObject<Integer>(0);
-	private boolean surface = false;
-	private boolean hasCurrentlySurfaceLightLevel = false;
+	private int surfaceLevel = 0;
 	private long lastLightUpdate;
 	
 	public Mapdata(MapResource resource, int layer, Location loc) {
@@ -31,26 +30,12 @@ public abstract class Mapdata extends GridData{
 	}
 	
 	public void setLightLevel(int lightLevel){
-		lastLightUpdate = TickManager.getCurrentTick();
-//		System.out.println(location.toString()+" -> "+surface+"|"+lightLevel+"|"+this.lighlevel);
-//		if(surface && lightLevel<=this.lighlevel)return;
-//		this.lighlevel = lightLevel;
-//		this.updateImage();
-		 if(surface){
-			int currentSurfaceLightLevel = DayManager.getDayManager().getDayLightLevel();
-//			System.out.println(currentSurfaceLightLevel+" -> "+lightLevel);
-			if(currentSurfaceLightLevel>=lightLevel){
-				if(!hasCurrentlySurfaceLightLevel || this.lightLevel.getData()!=currentSurfaceLightLevel){
-					hasCurrentlySurfaceLightLevel = true;
-					this.lightLevel = DayManager.getDayManager().getDayLightLevelData();
-					this.image.setSpriteState(this.getDefaultSpriteState());
-					this.image.setSpriteID(this.lightLevel);
-					this.damageLevel.setSpriteID(this.lightLevel);
-				}	
-				return;	
-			}else hasCurrentlySurfaceLightLevel  = false;
+		if(isSurface()){
+			int newLightLevel = DayManager.getDayManager().getDayLightLevel()/(Lamp.DEFAULT_SURFACE_LEVELS-surfaceLevel);
+			if(newLightLevel>lightLevel)lightLevel = newLightLevel;
 		}
 		this.lightLevel = new DataObject<Integer>(lightLevel);
+		lastLightUpdate = TickManager.getCurrentTick();
 		updateImage();
 	}
 	
@@ -66,23 +51,12 @@ public abstract class Mapdata extends GridData{
 	}
 
 	public boolean isSurface() {
-		return surface;
+		return surfaceLevel!=0;
 	}
 
-	public void setSurface(boolean surface) {
-		this.surface = surface;
+	public void setSurface(int surfaceLevel) {
+		this.surfaceLevel = surfaceLevel;
 		setLightLevel(0);
-		/*
-		int groundDistance = this.getLocation().getY()-Map.DEFAULT_GROUNDLEVEL;
-		if(groundDistance<0)groundDistance = 0;
-		int lightlevel = Lamp.DEFAULT_LIGHT_STATES-2;
-		if(lightlevel<=0){
-			lightlevel = 0;
-			this.surface = false;
-		}
-		if(surface)this.setLightLevel(lightlevel);
-		else this.setLightLevel(0);
-		*/
 	}
 
 	public boolean canHost(int width, int height) {
