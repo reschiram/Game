@@ -185,9 +185,14 @@ public abstract class Entity {
 	
 	public void setLightLevel(int lightLevel){
 		if(this.lightLevel!=null && this.lightLevel.getData()==lightLevel)return;
+		Mapdata block = Map.getMap().getMapData(this.getBlockLocation())[Map.DEFAULT_GROUNDLAYER];
+		if(block!=null && block.isSurface()){
+			int newLightLevel = block.getLightLevel();
+			if(newLightLevel>lightLevel)lightLevel = newLightLevel;
+		}
 		this.lightLevel = new DataObject<Integer>(lightLevel);
-		for(ImageData image:images)image.getImage().setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel-1);
 		this.lastLightUpdate = TickManager.getCurrentTick();
+		for(ImageData image:images)image.getImage().setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel-1);
 	}
 
 	public Hitbox getHitbox() {
