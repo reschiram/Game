@@ -49,7 +49,7 @@ public class Sprites {
 		Blocks  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "blocks"		, false);  		
 		Vehicle	  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/vehicle.png"				, "vehicle"		, false);
 		
-		Items	  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "items"		, false); 
+		Items	  				= new Sprites(new Dimension(26						, 26						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/items.png"					, "items"		, false); 
 		Equipment  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "items"		, false);   
 		
 		PlayerHead 				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/playerhead.png"			, "player"		, false);
