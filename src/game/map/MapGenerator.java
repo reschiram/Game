@@ -1,6 +1,7 @@
 package game.map;
 
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import Data.Image.Sprite;
 import Data.Image.SpriteSheet;
@@ -87,37 +88,46 @@ public class MapGenerator {
 		int stonelevel = Integer.parseInt((seed+"").charAt(0)+"");
 		if(stonelevel<5)stonelevel = 5;
 		
-		for(int x = 0; x<ground.length; x++){
+		Random rnd = new Random((long) Math.pow(seed, 2));
+		
+		int layerWidth  = WIDTH/10+rnd.nextInt(10);
+		int layerHeigth = HEIGHT/10+rnd.nextInt(10);
+		
+		double split = (WIDTH-1.0)/2.0;
+		double widthD  = (double)WIDTH /(double)layerWidth ;
+		double heigthD = (double)HEIGHT/(double)layerHeigth;
+		
+		for(int x = 0; x<WIDTH; x++){
 			int grass = -1;
-			for(int y = 0; y<ground[x].length; y++){
-				if(build[x][y][0]==MapResource.Dirt.getID() && grass==-1 && ground[x][y][0] != MapResource.Air_Background.getID()){
-//					int mx = x+1;
-//					if(mx>=WIDTH)mx-=WIDTH;
-//					boolean right = false;
-//					boolean rigthUP = false;
-//					if(build[mx][y  ][0]!=0)right   = true;
-//					if(build[mx][y-1][0]!=0)rigthUP = true;
-//					mx = x-1;	
-//					if(mx<0)mx+=WIDTH;
-//					boolean left = false;
-//					boolean leftUP = false;
-//					if(build[mx][y  ][0]!=0)left   = true;
-//					if(build[mx][y-1][0]!=0)leftUP = true;
-//					if		( left && right){
-//						if(leftUP) 			build[x][y][0]=MapResource.Dirt_Grass_T_LU.getID();
-//						else if(rigthUP)	build[x][y][0]=MapResource.Dirt_Grass_T_RU.getID();
-//						else 				build[x][y][0]=MapResource.Dirt_Grass_T   .getID();
-//					}else if( left &&!right){
-//						build[x][y][0]=MapResource.Dirt_Grass_TR.getID();
-//					}else if(!left && right){
-//						build[x][y][0]=MapResource.Dirt_Grass_TL.getID();
-//					}else if(!left &&!right)build[x][y][0]=MapResource.Dirt_Grass_TLR.getID();
+			for(int y = 0; y<HEIGHT; y++){
+				if(build[x][y][0]!=0 && grass==-1){
 					build [x][y][0]=MapResource.Dirt_Grass.getID();
 					ground[x][y][0]=MapResource.Dirt_Grass_Background.getID();
 					grass = y;
 				}else if(grass!=-1){
 					if(y<stonelevel+grass)build[x][y][0]  = MapResource.Dirt.getID();
-					else build[x][y][0]  = MapResource.Stone.getID();
+					else{
+						double dx = Math.abs(Math.ceil(x-split))/widthD;
+						double dy = y/heigthD;
+						int d = (int) (dx+dy);
+						
+						double chance = rnd.nextInt((int) (1000-(d*(4000.0/(HEIGHT+WIDTH)))+HEIGHT-y))/1000.0;
+						chance+=0.001;
+						if(chance>0.7){
+							build[x][y][0] = MapResource.Dirt.getID();
+						}else if(chance>0.2){
+							build[x][y][0]  = MapResource.Stone.getID();
+						}else if(chance>0.5){
+							build[x][y][0]  = MapResource.Coal.getID();
+						}else if(chance>0.01){
+							build[x][y][0]  = MapResource.Iron_Ore.getID();
+						}else if(chance>0.003){
+							build[x][y][0]  = MapResource.Silver_Ore.getID();
+						}else if(chance>0.001){
+							build[x][y][0]  = MapResource.Gold_Ore.getID();
+						}else 
+							build[x][y][0]  = MapResource.Stone.getID();
+						}
 					ground[x][y][0] = MapResource.Dirt_Background.getID();
 				}
 			}
