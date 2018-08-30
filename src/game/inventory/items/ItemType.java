@@ -9,6 +9,10 @@ public class ItemType {
 
 	public static ItemType Dirt;
 	public static ItemType Stone;
+	public static ItemType Iron_Ore;
+	public static ItemType Gold_Ore;
+	public static ItemType Silver_Ore;
+	public static ItemType Coal;
 	
 	public static EquipmentType DigTool;
 
@@ -22,9 +26,14 @@ public class ItemType {
 	}
 	
 	public static void Load(){
-		Dirt  	= new ItemType		("Dirt"		, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												0);
-		Stone 	= new ItemType		("Stone"	, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												1);
-		DigTool	= new EquipmentType	("DigTool"	,  1, LightSpriteSheet.getLightSpriteSheet(Sprites.Equipment	.getSpriteSheet()), game.inventory.equipment.tools.DigTool.class, 	1);
+		Dirt  		= new ItemType		("Dirt"			, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												15);
+		Stone 		= new ItemType		("Stone"		, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												12);
+		Iron_Ore 	= new ItemType		("Iron_Ore"		, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												10);
+		Gold_Ore 	= new ItemType		("Gold_Ore"		, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												11);
+		Silver_Ore 	= new ItemType		("Silver_Ore"	, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												13);
+		Coal	 	= new ItemType		("Coal"			, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												14);
+		
+		DigTool		= new EquipmentType	("DigTool"		,  1, LightSpriteSheet.getLightSpriteSheet(Sprites.Equipment	.getSpriteSheet()), game.inventory.equipment.tools.DigTool.class, 	 1);
 	
 		types = new ItemType[]{Dirt, Stone, DigTool};
 	}

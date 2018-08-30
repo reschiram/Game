@@ -15,7 +15,6 @@ import game.tick.TickManager;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.gridData.map.*;
-import game.overlay.DayManager;
 
 public class Map {
 	
@@ -51,7 +50,7 @@ public class Map {
 		Engine.getEngine(this, this.getClass()).addLayer(true , false, false, 2,3);
 		this.Width   = width;
 		this.Height  = height;
-		this.chunks  = new MapChunk[this.Width/DEFAULT_CHUNKSIZE +1][this.Height/DEFAULT_CHUNKSIZE +1]   ;
+		this.chunks  = new MapChunk[this.Width/DEFAULT_CHUNKSIZE +1][this.Height/DEFAULT_CHUNKSIZE +1];
 		
 		this.seed = seed;
 
@@ -191,11 +190,10 @@ public class Map {
 		return getChunk(location.x, location.y);
 	}
 	
-	private MapChunk getChunk(int x, int y) {
+	public MapChunk getChunk(int x, int y) {
 //		System.out.print(x+"|"+y+" -> ");
 		x/=DEFAULT_CHUNKSIZE;
 		y/=DEFAULT_CHUNKSIZE;
-//		System.out.println(x+"|"+y+" -> "+this.Width+"|"+this.Height+" -> "+this.chunks.length+"|"+this.chunks[0].length);
 		if(this.chunks[x][y]==null)this.chunks[x][y] = new MapChunk(x*DEFAULT_CHUNKSIZE, y*DEFAULT_CHUNKSIZE, DEFAULT_CHUNKSIZE, DEFAULT_CHUNKSIZE);
 		return this.chunks[x][y];
 	}
