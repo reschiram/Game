@@ -15,12 +15,9 @@ import game.map.Map;
 import sprites.Sprites;
 
 public class PlayerInterface {
-
-	private static int DEFAULT_DIG_DELAY = 800;
 	private static Point screenCenter = new Point(1920/2, 1080/2);
 	
 	private Player player;
-	private long lastdigged = System.currentTimeMillis();
 	private Dimension ellipseSize;
 	private Image pointer;
 	
@@ -32,7 +29,7 @@ public class PlayerInterface {
 	}
 	
 	public void tick() {
-		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_E) && System.currentTimeMillis()-lastdigged > DEFAULT_DIG_DELAY){
+		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_E)){
 			Location digLocation = new Location(Map.getMap().getXOver(this.pointer.getX()+Map.getMap().getMoved().getX()+pointer.getWidth()/2)/Map.DEFAULT_SQUARESIZE,
 												(int)(this.pointer.getY()+Map.getMap().getMoved().getY()+pointer.getHeigth()/2	)/Map.DEFAULT_SQUARESIZE);
 			
@@ -40,7 +37,6 @@ public class PlayerInterface {
 			if(data!=null){
 				data.damage(2);
 				if(data.isDestroyed()){
-					lastdigged=System.currentTimeMillis();
 					this.player.getPlayerDrone().removeTarget(digLocation);
 					if(data.getResource().hasItemType()){
 						for(int i = 0; i<data.getResource().getItemAmount(); i++){

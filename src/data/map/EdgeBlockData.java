@@ -68,21 +68,27 @@ public class EdgeBlockData extends UpdatableBlockData{
 		
 		int x = Map.getMap().getXOver((mx-1)*Map.DEFAULT_SQUARESIZE)/Map.DEFAULT_SQUARESIZE;
 		int state = 0;
-		if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][ y   /Map.DEFAULT_CHUNKSIZE].getMapData(x, y  , false)[0]!=null)state +=  1;
+		Mapdata currentData = Map.getMap().getChunk(x,y).getMapData(x, y  , false)[0];
+		if(currentData!=null && currentData.getResource().getID()==this.resource)state +=  1;
 //		if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][(y-1)/Map.DEFAULT_CHUNKSIZE].getMapData(x, y-1, false)[0]!=null)state +=  2;
 //		if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][(y+1)/Map.DEFAULT_CHUNKSIZE].getMapData(x, y+1, false)[0]!=null)state +=  4;
 		
 		x 	 = Map.getMap().getXOver((mx+1)*Map.DEFAULT_SQUARESIZE)/Map.DEFAULT_SQUARESIZE;
-		if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][ y   /Map.DEFAULT_CHUNKSIZE].getMapData(x, y  , false)[0]!=null)state +=  10;
+		currentData = Map.getMap().getChunk(x,y).getMapData(x, y  , false)[0];
+		if(currentData!=null && currentData.getResource().getID()==this.resource)state +=  10;
 //		if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][(y-1)/Map.DEFAULT_CHUNKSIZE].getMapData(x, y-1, false)[0]!=null)state +=  20;
 //		if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][(y+1)/Map.DEFAULT_CHUNKSIZE].getMapData(x, y+1, false)[0]!=null)state +=  40;
 		
 		x = mx;
-		if(y+1<Map.getMap().getHeight()){
-			if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][(y+1)/Map.DEFAULT_CHUNKSIZE].getMapData(x, y+1, false)[0]!=null)state += 100;		
+		y+=1;
+		if(y<Map.getMap().getHeight()){
+			currentData = Map.getMap().getChunk(x,y).getMapData(x, y  , false)[0];
+			if(currentData!=null && currentData.getResource().getID()==this.resource)state += 100;		
 		}
-		if(y-1>=0){
-			if(Map.getMap().getChunks()[x/Map.DEFAULT_CHUNKSIZE][(y-1)/Map.DEFAULT_CHUNKSIZE].getMapData(x, y-1, false)[0]!=null)state +=1000;
+		y-=2;
+		if(y>=0){
+			currentData = Map.getMap().getChunk(x,y).getMapData(x, y  , false)[0];
+			if(currentData!=null && currentData.getResource().getID()==this.resource)state +=1000;
 		}
 		
 		if(state<10){

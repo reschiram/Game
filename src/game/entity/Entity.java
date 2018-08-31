@@ -192,7 +192,7 @@ public abstract class Entity {
 		}
 		this.lightLevel = new DataObject<Integer>(lightLevel);
 		this.lastLightUpdate = TickManager.getCurrentTick();
-		for(ImageData image:images)image.getImage().setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel-1);
+		for(ImageData image:images)image.getImage().setSpriteID(this.lightLevel);
 	}
 
 	public Hitbox getHitbox() {

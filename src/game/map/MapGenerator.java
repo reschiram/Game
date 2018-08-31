@@ -3,6 +3,7 @@ package game.map;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import Data.Direction;
 import Data.Image.Sprite;
 import Data.Image.SpriteSheet;
 import data.MapResource;
@@ -111,29 +112,66 @@ public class MapGenerator {
 						double dy = y/heigthD;
 						int d = (int) (dx+dy);
 						
-						double chance = rnd.nextInt((int) (1000-(d*(4000.0/(HEIGHT+WIDTH)))+HEIGHT-y))/1000.0;
-						chance+=0.001;
-						if(chance>0.7){
-							build[x][y][0] = MapResource.Dirt.getID();
-						}else if(chance>0.2){
-							build[x][y][0]  = MapResource.Stone.getID();
-						}else if(chance>0.5){
-							build[x][y][0]  = MapResource.Coal.getID();
-						}else if(chance>0.01){
-							build[x][y][0]  = MapResource.Iron_Ore.getID();
-						}else if(chance>0.003){
-							build[x][y][0]  = MapResource.Silver_Ore.getID();
-						}else if(chance>0.001){
-							build[x][y][0]  = MapResource.Gold_Ore.getID();
-						}else 
-							build[x][y][0]  = MapResource.Stone.getID();
+						int chance = rnd.nextInt((int) (10000-(d*(40000.0/(HEIGHT+WIDTH)))+(HEIGHT-y)*10));
+						chance+=1;
+						
+						if(build[x][y][0]==0 || build[x][y][0]==MapResource.Dirt.getID())build[x][y][0]  = MapResource.Stone.getID();
+						if(chance>80){
+						}else if(chance>70){
+							generate(x, y, build, ground, MapResource.Dirt.getID(), 0.1, rnd);
+//							System.out.println(x+"|"+y+"-> Dirt");
+						}else if(chance>25){
+							generate(x, y, build, ground, MapResource.Coal.getID(), 0.1, rnd);
+//							System.out.println(x+"|"+y+"-> Coal");
+						}else if(chance>10){
+							generate(x, y, build, ground, MapResource.Iron_Ore.getID(), 0.2, rnd);
+//							System.out.println(x+"|"+y+"-> Iron_Ore");
+						}else if(chance>4){
+							generate(x, y, build, ground, MapResource.Silver_Ore.getID(), 0.4, rnd);
+//							System.out.println(x+"|"+y+"-> Silver_Ore");
+						}else if(chance>1){
+							generate(x, y, build, ground, MapResource.Gold_Ore.getID(), 0.5, rnd);
+//							System.out.println(x+"|"+y+"-> Gold_Ore");
 						}
+					}
 					ground[x][y][0] = MapResource.Dirt_Background.getID();
 				}
 			}
 		}
 		
 		return new Map(ground, build, seed);
+	}
+
+	private void generate(int x, int y, int[][][] build, int[][][] ground, int id, double d, Random rnd) {
+		int[][] generation = generateArea(x, y, x+5, y+5, id, new int[10][10], 1.0, d, rnd);
+		for(int gx = 0; gx<generation.length; gx++){
+			for(int gy = 0; gy<generation[0].length; gy++){
+				if(generation[gx][gy]!=0){
+					int px = x+gx-5;
+					if(px>=WIDTH)px-=WIDTH;
+					else if(px<0)px+=WIDTH;
+					if(gy+y-5>0 && gy+y-5<HEIGHT){
+						build[px][gy+y-5][0] = id;
+					}
+				}
+			}
+		}
+	}
+	
+	private int[][] generateArea(int sx, int sy, int x, int y, int id, int[][] generate, double probability, double reduction, Random rnd){
+		if(x-sx>0 && x-sx<generate.length && y-sy>0 && y-sy<generate.length){
+			if(generate[x-sx][y-sy]!=0)return generate;
+			else{
+				double random = rnd.nextDouble();
+				if(random<probability){
+					generate[x-sx][y-sy] = id;
+					for(Direction d: Direction.values()){
+						generateArea(sx, sy, x+d.getX(), y+d.getY(), id, generate, probability-reduction*(rnd.nextDouble()+0.3), reduction, rnd);
+					}
+				}
+			}
+		}
+		return generate;
 	}
 
 	private void smooth(int[][][] ground, int[][][] build) {

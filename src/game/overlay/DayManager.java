@@ -53,15 +53,21 @@ public class DayManager {
 		this.time.addMilliSeconds(tickToTime);
 		go.setText("Time: "+this.time.getTime());
 		int newDayLightLevel = getSunLightLevel();
-//		System.out.println(newDayLightLevel);
 		if(currentDayLightLevel!=newDayLightLevel){
+			System.out.println(newDayLightLevel);
 			this.currentDayLightLevel = newDayLightLevel;
-			this.currentDayLightLevelData.setData(Lamp.DEFAULT_LIGHT_STATES-newDayLightLevel-2);
+			this.currentDayLightLevelData.setData(newDayLightLevel);
 		}
 	}
 	
 	private int getSunLightLevel(){
-		return Lamp.DEFAULT_LIGHT_STATES-2;
+		int max = Lamp.DEFAULT_LIGHT_STATES-1;
+		double x = time.getMilliSecond()/(1000.0*60.0*60.0);
+		double a = -0.00009*Math.pow(x, 3);
+		double b = 0.001098692*Math.pow(x, 2);
+		double c = 0.025471385*x;
+		double f = ((a+b+c)*(1.0/0.35))+0.05;
+		return (int) Math.ceil(max*f);
 	}
 	
 	public DataObject<Integer> getDayLightLevelData(){

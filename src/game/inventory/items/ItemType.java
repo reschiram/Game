@@ -35,7 +35,7 @@ public class ItemType {
 		
 		DigTool		= new EquipmentType	("DigTool"		,  1, LightSpriteSheet.getLightSpriteSheet(Sprites.Equipment	.getSpriteSheet()), game.inventory.equipment.tools.DigTool.class, 	 1);
 	
-		types = new ItemType[]{Dirt, Stone, DigTool};
+		types = new ItemType[]{Dirt, Stone, Iron_Ore, Gold_Ore, Silver_Ore, Coal, DigTool};
 	}
 	
 	protected SpriteSheet sheet;

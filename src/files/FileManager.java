@@ -1,6 +1,5 @@
 package files;
 
-import file.*;
 import file.ktv.KTV_File;
 
 public class FileManager {
