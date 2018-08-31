@@ -140,7 +140,9 @@ public class LightOverlay {
 				if(location.getX()>=0 && location.getY()>=0){
 					Mapdata[] block = Map.getMap().getMapData(location);
 					for(int i = 0; i<block.length; i++){
-						if(block[i] !=null) block[i].setLightLevel(0);
+						if(block[i] !=null){
+							block[i].setLightLevel(0);
+						}
 					}
 					Location pixelLoc = new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.y*Map.DEFAULT_SQUARESIZE);
 					for(Entity entity: entitys){

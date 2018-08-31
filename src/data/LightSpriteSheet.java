@@ -24,11 +24,13 @@ public class LightSpriteSheet extends SpriteSheet{
 				this.sprites[x][y] = sheet.getSprites()[x][y].clone();
 				BufferedImage originSprite = this.sprites[x][y].getImage(0);
 				
-				for(int i = 1; i<Lamp.DEFAULT_LIGHT_STATES; i++){
+				for(int i = Lamp.DEFAULT_LIGHT_STATES; i>0; i--){
 					BufferedImage bi = Image.cloneImage(this.sprites[x][y].getImage(0));
-					double alpha = (Math.log((i)+1)/Math.log(Lamp.DEFAULT_LIGHT_STATES+1))-(Math.exp(-(i))/Math.exp(Lamp.DEFAULT_LIGHT_STATES));
+					double alpha = Math.pow(10, (Math.log10(2)/((double)(Lamp.DEFAULT_LIGHT_STATES)))*((double)(i)));
+					alpha-=1.0;
+//					double alpha = (Math.log((i)+1)/Math.log(Lamp.DEFAULT_LIGHT_STATES+1))-(Math.exp(-(i))/Math.exp(Lamp.DEFAULT_LIGHT_STATES));
 //					System.out.println("ALPHA->"+alpha);
-					if(i == Lamp.DEFAULT_LIGHT_STATES-1)alpha = 1.0;
+//					if(i == 1)alpha = 1.0;
 					
 					Color c = new Color(0, 0, 0, (int) (alpha*255));//(int)((((double)i)/((double)(Lamp.DEFAULT_LIGHT_STATES-1.0)))*255));
 					emptyImage.setRGB(0, 0, c.getRGB());

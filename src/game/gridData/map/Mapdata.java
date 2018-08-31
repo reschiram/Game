@@ -30,20 +30,24 @@ public abstract class Mapdata extends GridData{
 	}
 	
 	public void setLightLevel(int lightLevel){
+		lastLightUpdate = TickManager.getCurrentTick();
 		if(isSurface()){
 			int newLightLevel = DayManager.getDayManager().getDayLightLevel()/(Lamp.DEFAULT_SURFACE_LEVELS-surfaceLevel);
-			if(newLightLevel>lightLevel)lightLevel = newLightLevel;
+			if(newLightLevel>lightLevel){
+				this.lightLevel = DayManager.getDayManager().getDayLightLevelData();
+				updateImage();
+				return;
+			}
 		}
-		this.lightLevel = new DataObject<Integer>(lightLevel);
-		lastLightUpdate = TickManager.getCurrentTick();
+		this.lightLevel = new DataObject<Integer>(lightLevel+1);
 		updateImage();
 	}
 	
 	@Override
 	protected void updateImage(){
-		this.image.setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel.getData()-1);
+		this.image.setSpriteID(lightLevel);
 		this.image.setSpriteState(this.getDefaultSpriteState());		
-		this.damageLevel.setSpriteID(Lamp.DEFAULT_LIGHT_STATES-lightLevel.getData()-1);
+		this.damageLevel.setSpriteID(lightLevel);
 	}
 	
 	public int getLightLevel(){
