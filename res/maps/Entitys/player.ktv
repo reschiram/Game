@@ -1,14 +1,14 @@
 Location:
   X:
-    "66"
+    "0"
   Y:
-    "10"
+    "63"
 inventory:
   Slot_0:
     type:
       "Dirt"
     amount:
-      "64"
+      "54"
   Slot_1:
     type:
       "Stone"
@@ -16,34 +16,24 @@ inventory:
       "64"
   Slot_2:
     type:
-      "Dirt"
+      "Coal"
     amount:
-      "64"
+      "54"
   Slot_3:
     type:
       "Stone"
     amount:
-      "40"
+      "64"
   Slot_4:
     type:
-      "Dirt"
+      "Iron_Ore"
     amount:
-      "64"
+      "4"
   Slot_5:
     type:
-      "Dirt"
+      "Stone"
     amount:
-      "64"
-  Slot_6:
-    type:
-      "Dirt"
-    amount:
-      "64"
-  Slot_7:
-    type:
-      "Dirt"
-    amount:
-      "50"
+      "40"
   Equipment_24:
     type:
       "DigTool"

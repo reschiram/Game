@@ -54,7 +54,6 @@ public class DayManager {
 		go.setText("Time: "+this.time.getTime());
 		int newDayLightLevel = getSunLightLevel();
 		if(currentDayLightLevel!=newDayLightLevel){
-			System.out.println(newDayLightLevel);
 			this.currentDayLightLevel = newDayLightLevel;
 			this.currentDayLightLevelData.setData(newDayLightLevel);
 		}

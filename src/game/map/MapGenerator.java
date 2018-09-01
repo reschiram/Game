@@ -115,35 +115,45 @@ public class MapGenerator {
 						int chance = rnd.nextInt((int) (10000-(d*(40000.0/(HEIGHT+WIDTH)))+(HEIGHT-y)*10));
 						chance+=1;
 						
-						if(build[x][y][0]==0 || build[x][y][0]==MapResource.Dirt.getID())build[x][y][0]  = MapResource.Stone.getID();
+						if(build[x][y][0] == 0 || build[x][y][0]==MapResource.Dirt.getID())build[x][y][0]  = MapResource.Stone.getID();
 						if(chance>80){
 						}else if(chance>70){
-							generate(x, y, build, ground, MapResource.Dirt.getID(), 0.1, rnd);
+							generate(x, y, build, ground, MapResource.Dirt.getID(), 0.1, rnd, 10);
 //							System.out.println(x+"|"+y+"-> Dirt");
 						}else if(chance>25){
-							generate(x, y, build, ground, MapResource.Coal.getID(), 0.1, rnd);
+							generate(x, y, build, ground, MapResource.Coal.getID(), 0.1, rnd, 10);
 //							System.out.println(x+"|"+y+"-> Coal");
 						}else if(chance>10){
-							generate(x, y, build, ground, MapResource.Iron_Ore.getID(), 0.2, rnd);
+							generate(x, y, build, ground, MapResource.Iron_Ore.getID(), 0.2, rnd, 10);
 //							System.out.println(x+"|"+y+"-> Iron_Ore");
-						}else if(chance>4){
-							generate(x, y, build, ground, MapResource.Silver_Ore.getID(), 0.4, rnd);
+						}else if(chance>6){
+							generate(x, y, build, ground, MapResource.Silver_Ore.getID(), 0.4, rnd, 10);
 //							System.out.println(x+"|"+y+"-> Silver_Ore");
-						}else if(chance>1){
-							generate(x, y, build, ground, MapResource.Gold_Ore.getID(), 0.5, rnd);
+						}else if(chance>3){
+							generate(x, y, build, ground, MapResource.Gold_Ore.getID(), 0.5, rnd, 10);
 //							System.out.println(x+"|"+y+"-> Gold_Ore");
+						}else if(chance>0){
+							System.out.println(x+"|"+y+"->"+chance);
+							build[x][y][0] = -1;
 						}
 					}
 					ground[x][y][0] = MapResource.Dirt_Background.getID();
 				}
 			}
 		}
-		
+
+	
+		for(int x = 0; x<WIDTH; x++){
+			for(int y = 0; y<HEIGHT; y++){
+				if(build[x][y][0]==-1)generate(x, y, build, ground, -1, 0.05, rnd, (int) (15*(1.0+2*((double)y/(double)HEIGHT))));			
+			}
+		}
+			
 		return new Map(ground, build, seed);
 	}
 
-	private void generate(int x, int y, int[][][] build, int[][][] ground, int id, double d, Random rnd) {
-		int[][] generation = generateArea(x, y, x+5, y+5, id, new int[10][10], 1.0, d, rnd);
+	private void generate(int x, int y, int[][][] build, int[][][] ground, int id, double d, Random rnd, int size) {
+		int[][] generation = generateArea(x, y, x+size/2, y+size/2, id, new int[size][size], 1.0, d, rnd);
 		for(int gx = 0; gx<generation.length; gx++){
 			for(int gy = 0; gy<generation[0].length; gy++){
 				if(generation[gx][gy]!=0){
@@ -151,7 +161,11 @@ public class MapGenerator {
 					if(px>=WIDTH)px-=WIDTH;
 					else if(px<0)px+=WIDTH;
 					if(gy+y-5>0 && gy+y-5<HEIGHT){
-						build[px][gy+y-5][0] = id;
+						if(id == -1){
+							build[px][gy+y-5][0] = 0;
+						}else if(build[px][gy+y-5][0]!=-1){
+							build[px][gy+y-5][0] = id;
+						}
 					}
 				}
 			}
