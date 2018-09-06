@@ -1,9 +1,11 @@
 package game.map;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Random;
 
 import Data.Direction;
+import Data.Location;
 import Data.Image.Sprite;
 import Data.Image.SpriteSheet;
 import data.MapResource;
@@ -98,6 +100,8 @@ public class MapGenerator {
 		double widthD  = (double)WIDTH /(double)layerWidth ;
 		double heigthD = (double)HEIGHT/(double)layerHeigth;
 		
+		ArrayList<CaveGenerator> caves = new ArrayList<>();
+		
 		for(int x = 0; x<WIDTH; x++){
 			int grass = -1;
 			for(int y = 0; y<HEIGHT; y++){
@@ -133,8 +137,17 @@ public class MapGenerator {
 							generate(x, y, build, ground, MapResource.Gold_Ore.getID(), 0.5, rnd, 10);
 //							System.out.println(x+"|"+y+"-> Gold_Ore");
 						}else if(chance>0){
-							System.out.println(x+"|"+y+"->"+chance);
-							build[x][y][0] = -1;
+							int amount =  rnd.nextInt(1+(int)(6*((double)y/(double)HEIGHT)))+3;
+							for(int i = 0; i<amount; i++){
+								int cx = i*3+rnd.nextInt(3);
+								int cy = i*1+rnd.nextInt(1);
+								if(((int)(i/2))*2!=i){
+									cx=-cx;
+									cy=-cy;
+								}
+								System.out.println(x+"|"+cx+" -> "+cy+"|"+y);
+								caves.add(new CaveGenerator(new Location(x+cx, y+cy), 3+rnd.nextInt(1+(int)(2*((double)y/(double)HEIGHT))), rnd.nextInt(1+(int)(3*((double)y/(double)HEIGHT)))));
+							}
 						}
 					}
 					ground[x][y][0] = MapResource.Dirt_Background.getID();
@@ -145,7 +158,9 @@ public class MapGenerator {
 	
 		for(int x = 0; x<WIDTH; x++){
 			for(int y = 0; y<HEIGHT; y++){
-				if(build[x][y][0]==-1)generate(x, y, build, ground, -1, 0.05, rnd, (int) (15*(1.0+2*((double)y/(double)HEIGHT))));			
+				for(CaveGenerator gen: caves){
+					if(gen.contains(x, y, rnd))build[x][y][0] = 0;
+				}
 			}
 		}
 			
@@ -161,11 +176,7 @@ public class MapGenerator {
 					if(px>=WIDTH)px-=WIDTH;
 					else if(px<0)px+=WIDTH;
 					if(gy+y-5>0 && gy+y-5<HEIGHT){
-						if(id == -1){
-							build[px][gy+y-5][0] = 0;
-						}else if(build[px][gy+y-5][0]!=-1){
-							build[px][gy+y-5][0] = id;
-						}
+						build[px][gy+y-5][0] = id;
 					}
 				}
 			}

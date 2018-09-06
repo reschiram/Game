@@ -1,14 +1,14 @@
 Location:
   X:
-    "0"
+    "196"
   Y:
-    "63"
+    "20"
 inventory:
   Slot_0:
     type:
       "Dirt"
     amount:
-      "54"
+      "64"
   Slot_1:
     type:
       "Stone"
@@ -18,7 +18,7 @@ inventory:
     type:
       "Coal"
     amount:
-      "54"
+      "64"
   Slot_3:
     type:
       "Stone"
@@ -33,7 +33,82 @@ inventory:
     type:
       "Stone"
     amount:
-      "40"
+      "64"
+  Slot_6:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_7:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_8:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_9:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_10:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_11:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_12:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_13:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_14:
+    type:
+      "Dirt"
+    amount:
+      "11"
+  Slot_15:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_16:
+    type:
+      "Coal"
+    amount:
+      "39"
+  Slot_17:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_18:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_19:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_20:
+    type:
+      "Stone"
+    amount:
+      "49"
   Equipment_24:
     type:
       "DigTool"

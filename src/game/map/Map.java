@@ -18,7 +18,7 @@ import game.gridData.map.*;
 
 public class Map {
 	
-	public static int DEFAULT_SQUARESIZE  = 40;
+	public static int DEFAULT_SQUARESIZE  = 64;
 	public static int DEFAULT_CHUNKSIZE   = 10;
 	public static int DEFAULT_GROUNDLAYER =  0;
 	public static int DEFAULT_BUILDLAYER  =  2;

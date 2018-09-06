@@ -2,6 +2,7 @@ package game.map;
 
 import java.util.ArrayList;
 
+import data.MapResource;
 import file.ktv.KTV_File;
 import files.FileManager;
 import game.gridData.map.MapBlock;
