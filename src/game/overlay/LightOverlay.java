@@ -20,11 +20,15 @@ public class LightOverlay {
 	
 	private Dimension WindowDimension = new Dimension((int)(1920*1.5), (int)(1080*1.5));
 	private ArrayList<LightObject> lights = new ArrayList<>(); 
+	private int tickCount;
 	
 	public LightOverlay(int layer){
 	}
 	
 	public void tick(){
+		tickCount++;
+		if(tickCount<4)return;
+		tickCount = 0;
 		Location loadLocation = new Location((int)(Map.getMap().getMoved().getX())-(int)(WindowDimension.getWidth()/(1.5*2)), Map.getMap().getMoved().getY()-(int)(WindowDimension.getHeight()/(1.5*2)));
 		if(loadLocation.getY()<0)loadLocation.setLocation(loadLocation.getX(), 0);
 		
@@ -136,7 +140,7 @@ public class LightOverlay {
 	private void reset(LightObject light, ArrayList<Entity> entitys) {
 		for(int x = -light.getLightDistance(); x<light.getLightDistance(); x++){
 			for(int y = -light.getLightDistance(); y<light.getLightDistance(); y++){
-				Location location = new Location(light.getLocation().getX()+x, light.getLocation().getY()+y); 
+				Location location = new Location(Map.getMap().getBlockXOver(light.getLocation().getX()+x), light.getLocation().getY()+y); 
 				if(location.getX()>=0 && location.getY()>=0){
 					Mapdata[] block = Map.getMap().getMapData(location);
 					for(int i = 0; i<block.length; i++){

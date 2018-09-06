@@ -32,9 +32,9 @@ public abstract class Mapdata extends GridData{
 	public void setLightLevel(int lightLevel){
 		lastLightUpdate = TickManager.getCurrentTick();
 		if(isSurface()){
-			int newLightLevel = DayManager.getDayManager().getDayLightLevel()/(Lamp.DEFAULT_SURFACE_LEVELS-surfaceLevel);
+			int newLightLevel = DayManager.getDayManager().getDayLightLevel(this.surfaceLevel)/(Lamp.DEFAULT_SURFACE_LEVELS-surfaceLevel);
 			if(newLightLevel>lightLevel){
-				this.lightLevel = DayManager.getDayManager().getDayLightLevelData();
+				this.lightLevel = DayManager.getDayManager().getDayLightLevelData(this.surfaceLevel);
 				updateImage();
 				return;
 			}
@@ -64,7 +64,7 @@ public abstract class Mapdata extends GridData{
 	}
 
 	public boolean canHost(int width, int height) {
-		return Map.DEFAULT_SQUARESIZE - this.res.getHitbox().getWidth() >= width && Map.DEFAULT_SQUARESIZE - this.res.getHitbox().getHeigth() >= height;
+		return (Map.DEFAULT_SQUARESIZE - this.res.getHitbox().getWidth() >= width && Map.DEFAULT_SQUARESIZE - this.res.getHitbox().getHeigth() >= height) || !((MapResource)this.res).isSolid();
 	}
 	
 	@Override

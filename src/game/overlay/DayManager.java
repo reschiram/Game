@@ -2,6 +2,7 @@ package game.overlay;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 import Data.DataObject;
 import Data.Location;
@@ -22,15 +23,25 @@ public class DayManager {
 	private int layer = 0;	
 	private StringRenderOperation go;
 	
-	private int currentDayLightLevel = Lamp.DEFAULT_LIGHT_STATES-2;
-	private DataObject<Integer> currentDayLightLevelData = new DataObject<Integer>(currentDayLightLevel);
+	private ArrayList<DataObject<Integer>> currentDayLightLevelData = new ArrayList<DataObject<Integer>>();
 	
 	public DayManager(){
 		System.out.println("new DayManager");
+		updateCurrentDayLightLevel(Lamp.DEFAULT_SURFACE_LEVELS-1);
 		DAYMANAGER = this; 
 		this.time = new Time(12,0,0);
 	}
 	
+	private void updateCurrentDayLightLevel(int newLightLevel) {
+		for(int i = 0; i<Lamp.DEFAULT_SURFACE_LEVELS; i++){
+			if(currentDayLightLevelData.size()>i){
+				this.currentDayLightLevelData.get(i).setData((int) Math.ceil(newLightLevel*((double)i/(double)Lamp.DEFAULT_SURFACE_LEVELS)));
+			}else{
+				this.currentDayLightLevelData.add(new DataObject<Integer>((int) Math.ceil(newLightLevel*((double)i/(double)Lamp.DEFAULT_SURFACE_LEVELS))));
+			}
+		}
+	}
+
 	public void createTime(int layer, Location loc){
 		go = new StringRenderOperation(loc, new Dimension(100,  50), "Time: "+this.time.getTime(), null, Color.WHITE);
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(go, layer);
@@ -53,9 +64,8 @@ public class DayManager {
 		this.time.addMilliSeconds(tickToTime);
 		go.setText("Time: "+this.time.getTime());
 		int newDayLightLevel = getSunLightLevel();
-		if(currentDayLightLevel!=newDayLightLevel){
-			this.currentDayLightLevel = newDayLightLevel;
-			this.currentDayLightLevelData.setData(newDayLightLevel);
+		if(currentDayLightLevelData.get(0).getData()!=newDayLightLevel){
+			updateCurrentDayLightLevel(newDayLightLevel);
 		}
 	}
 	
@@ -69,12 +79,12 @@ public class DayManager {
 		return (int) Math.ceil(max*f);
 	}
 	
-	public DataObject<Integer> getDayLightLevelData(){
-		return this.currentDayLightLevelData;
+	public DataObject<Integer> getDayLightLevelData(int state){
+		return this.currentDayLightLevelData.get(state);
 	}
 	
-	public int getDayLightLevel(){
-		return this.currentDayLightLevel;
+	public int getDayLightLevel(int state){
+		return this.currentDayLightLevelData.get(state).getData();
 	}
 
 }

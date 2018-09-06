@@ -96,6 +96,7 @@ public abstract class Entity {
 	
 	public void tick(){
 		this.moveManager.tick();
+		this.setLightLevel(Map.getMap().getMapData(this.getBlockLocation())[Map.DEFAULT_GROUNDLAYER].getLightLevel());
 	}
 	
 	public boolean canReach(Location target) {

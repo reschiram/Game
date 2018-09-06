@@ -61,7 +61,7 @@ public class Game {
 
 	public void start() {		
 		mapLoader = new MapLoader(FileManager.MAP_TEST,39485636);
-		mapLoader.loadMap();
+		if(mapLoader.getMap()==null)mapLoader.loadMap();
 		map = mapLoader.getMap();	
 		
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(PlayerPosition, 10);
