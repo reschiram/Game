@@ -1,6 +1,7 @@
 package data.map;
 
 import data.MapResource;
+import game.gridData.map.Mapdata;
 
 public abstract class BlockData {
 	
@@ -14,7 +15,11 @@ public abstract class BlockData {
 		return this.name;
 	}
 	
-	public void load(MapResource resource){
+	public void loadData(MapResource res){
+		
+	}
+	
+	public void load(Mapdata mapdata){
 		
 	}
 

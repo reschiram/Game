@@ -27,7 +27,7 @@ public class EntityType {
 		LightEntity	 	= new EntityType( 0, null																				 , null																	,
 								null				, new Integer[]{0});
 		Drone 			= new EntityType( 5, new Dimension(Map.DEFAULT_SQUARESIZE/2, Map.DEFAULT_SQUARESIZE/2), LightSpriteSheet.getLightSpriteSheet(Sprites.Player.getSpriteSheet()),AnimationType.NONE, new Integer[]{0}, new LightEntityData(3, 0.5), new EntityInventoryData( 9, 0));
-		Player		 	= new EntityType( 4, new Dimension((int) (Map.DEFAULT_SQUARESIZE*0.8), (int) (Map.DEFAULT_SQUARESIZE*0.8)), LightSpriteSheet.getLightSpriteSheet(Sprites.Player.getSpriteSheet()),AnimationType.NONE, new Integer[]{0}, new LightEntityData(4, 0.6), new EntityInventoryData(24, 4));
+		Player		 	= new EntityType( 4, new Dimension((int) (Map.DEFAULT_SQUARESIZE*0.8), (int) (Map.DEFAULT_SQUARESIZE*0.8)), LightSpriteSheet.getLightSpriteSheet(Sprites.Player.getSpriteSheet()),AnimationType.NONE, new Integer[]{0}, new LightEntityData(4, 0.6), new EntityInventoryData(48, 4));
 		ItemEntity 		= new EntityType(10, new Dimension((int)(Map.DEFAULT_SQUARESIZE*0.5), (int)(Map.DEFAULT_SQUARESIZE*0.5)	), null																	,
 								AnimationType.ITEM	, new Integer[]{0});
 	}

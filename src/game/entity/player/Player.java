@@ -20,6 +20,7 @@ import game.inventory.Inventory;
 import game.inventory.ItemCollector;
 import game.inventory.equipment.Equipment;
 import game.inventory.equipment.EquipmentInventory;
+import game.inventory.equipment.tools.BuildTool;
 import game.inventory.equipment.tools.DigTool;
 import game.map.Map;
 
@@ -32,7 +33,6 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 	
 	private PlayerDrone drone;
 	private EquipmentInventory inventory;
-	private int currentEquipment;
 	
 	public Player(Location location){
 		super(new ArrayList<>());
@@ -52,6 +52,7 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		this.inventory = (EquipmentInventory) itemCollector.getInventory();
 		
 		this.inventory.addItem(new DigTool());
+		this.inventory.addItem(new BuildTool());
 		
 		drone = new PlayerDrone(this);
 		drone.show();
@@ -74,11 +75,6 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		
 		playerInterface.tick();
 		itemCollector.tick();
-		
-		if(inventory.getEquipment(currentEquipment)!=null){
-			Equipment equip = inventory.getEquipment(currentEquipment);
-			if(equip.isTriggered())equip.use(this);
-		}
 	}
 	
 	@Override

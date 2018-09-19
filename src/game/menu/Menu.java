@@ -35,7 +35,7 @@ public class Menu {
 	public void addButton(int id, Image I, Action a){
 		if(!buttons.containsKey(id))buttons.put(id, new ArrayList<Button>());
 		if(!buttonActive.containsKey(id))buttonActive.put(id, true);
-		Button button = new Button(a, I);
+		Button button = new Button(a, layer, I);
 		buttons.get(id).add(button);
 		I.disabled = true;
 		Engine.getEngine(this, this.getClass()).addImage(I, layer+1);
@@ -54,7 +54,7 @@ public class Menu {
 		if(visible){
 			changeSize = 1;	
 			for(int id: buttonActive.keySet()){
-				for(Button button: buttons.get(id))button.getImage().disabled = true;
+				for(Button button: buttons.get(id))button.hide();
 			}
 		}
 	}
@@ -70,7 +70,7 @@ public class Menu {
 					for(int id: buttonActive.keySet()){
 //						System.out.println("VIEW"+buttonActive.get(id)+":"+buttons.get(id));
 						if(buttonActive.get(id))for(Button button: buttons.get(id)){
-							button.getImage().disabled = false;
+							button.show();
 //							System.out.println(button);
 						}
 					}
@@ -95,9 +95,9 @@ public class Menu {
 			if(visible){
 				for(int id: buttonActive.keySet()){
 					if(buttonActive.get(id))for(Button button: buttons.get(id)){
-						if(button.getImage().getHitbox().contains(Engine.getInputManager().MousePosition())){
+						if(button.getImage(0).getHitbox().contains(Engine.getInputManager().MousePosition())){
 							if(Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON1) && !button.isActive()){
-								button.getAction().act(this);
+								button.tick();
 								button.setActive(true);
 							}else if(!Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON1) && button.isActive()){
 								button.setActive(false);
@@ -124,7 +124,7 @@ public class Menu {
 		buttonActive.put(id, false);
 		for(Button button:buttons.get(id)){
 //			System.out.println(button);
-			button.getImage().disabled = true;
+			button.hide();
 		}
 	}
 	
@@ -132,14 +132,14 @@ public class Menu {
 		if(buttonActive.get(id)==true)return;
 		buttonActive.put(id, true);
 		for(Button button:buttons.get(id)){
-			button.getImage().disabled = false;
+			button.show();
 		}
 	}
 
 	public void hideDirect() {
 		if(visible){
 			for(int id: buttonActive.keySet()){
-				for(Button button: buttons.get(id))button.getImage().disabled = true;
+				for(Button button: buttons.get(id))button.hide();
 			}
 			background.disabled = true;
 			visible = false;

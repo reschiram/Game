@@ -1,134 +1,93 @@
 package game.overlay;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 
-import Data.Hitbox;
+import Data.Direction;
 import Data.Location;
+import Data.Queue;
 import data.map.Lamp;
+import game.GameManager;
 import game.entity.Entity;
-import game.entity.manager.EntityManager;
-import game.entity.type.EntityType;
-import game.entity.type.data.EntityData;
-import game.entity.type.interfaces.EntityLight;
-import game.gridData.map.MapBlock;
 import game.gridData.map.Mapdata;
 import game.map.Map;
+import game.pathFinder.PathNode;
 import game.tick.TickManager;
 
 public class LightOverlay {
 	
-	private Dimension WindowDimension = new Dimension((int)(1920*1.5), (int)(1080*1.5));
-	private ArrayList<LightObject> lights = new ArrayList<>(); 
-	private int tickCount;
-	
-	public LightOverlay(int layer){
+	private static long GeneralUpdate = 0;
+	public static boolean IsGenerellUpdate(){
+		return GeneralUpdate == TickManager.getCurrentTick(); 
 	}
 	
-	public void tick(){
-		tickCount++;
-		if(tickCount<4)return;
-		tickCount = 0;
-		Location loadLocation = new Location((int)(Map.getMap().getMoved().getX())-(int)(WindowDimension.getWidth()/(1.5*2)), Map.getMap().getMoved().getY()-(int)(WindowDimension.getHeight()/(1.5*2)));
-		if(loadLocation.getY()<0)loadLocation.setLocation(loadLocation.getX(), 0);
-		
-		Hitbox hbLeft = new Hitbox(Map.getMap().getXOver(loadLocation.getX()), loadLocation.getY(),
-				(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)-Map.getMap().getXOver(loadLocation.getX()), (int) WindowDimension.getHeight());
-		
-//		System.out.println(hbLeft.toString());
-		
-		if(hbLeft.getWidth()>WindowDimension.getWidth())hbLeft.setDimension(0,0);
-		else{
-			loadLocation.setLocation(0, loadLocation.getY());
-		}
-		
-		Hitbox hbRight = new Hitbox(loadLocation.getX(), loadLocation.getY(), (int) (WindowDimension.getWidth()-hbLeft.getWidth()), (int) WindowDimension.getHeight());
-
-//		System.out.println(hbLeft.toString()+ " -> " +hbRight.toString());
-		
-		ArrayList<MapBlock> Lampblocks = Map.getMap().getBlocks(Lamp.class, hbRight.getLocation(), hbRight.getDimension());		
-		ArrayList<Entity> Lampentitys = EntityManager.getEntityManager().getEntityPixelLocation(EntityType.LightEntity, hbRight.getLocation(), hbRight.getDimension());
-		ArrayList<Entity> entitys = EntityManager.getEntityManager().getEntityPixelLocation(EntityType.Entity, hbRight.getLocation(), hbRight.getDimension());
-		
-		if(hbLeft.getWidth()>0){
-			Lampblocks .addAll(Map.getMap().getBlocks(Lamp.class, hbLeft.getLocation(), hbLeft.getDimension()));
-			Lampentitys.addAll(EntityManager.getEntityManager().getEntityPixelLocation(EntityType.LightEntity, hbLeft.getLocation(), hbLeft.getDimension()));
-			entitys    .addAll(EntityManager.getEntityManager().getEntityPixelLocation(EntityType.Entity, hbLeft.getLocation(), hbLeft.getDimension()));
-		}
-		
-//		System.out.println(Lampentitys.size());
-		for(int a = 0; a<lights.size(); a++){
-			LightObject light = lights.get(a);			
-			if(light.getMaster() instanceof MapBlock){
-				
-				boolean contains = false;
-				for(int i = 0; i<Lampblocks.size(); i++){
-					if(light.getMaster().equals(Lampblocks.get(i))){
-						contains = true;
-						Lampblocks.remove(i);
-						i--;
-					}
+	
+	private ArrayList<LightObject> lights = new ArrayList<>(); 	
+	
+	public void register(Mapdata data){
+		LightObject lightObject = new LightObject(data, data.getLocation(), ((Lamp)data.getResource().getBlockData()).getLightDistance(), ((Lamp)data.getResource().getBlockData()).getLightStrength());
+		lights.add(lightObject);
+		ArrayList<LightObject> lights = new ArrayList<>();
+		lights.add(lightObject);
+		updateLights(lights);
+	}
+	
+	public void update(Mapdata data, boolean removed){
+		ArrayList<LightObject> lights = new ArrayList<>();
+		for(int i = 0; i<this.lights.size(); i++){
+			LightObject light = this.lights.get(i);
+			if(removed){
+				if(light.getMaster().equals(data)){
+					removeLight(light, lights);
 				}
-				if(!contains){
-					lights.remove(a);
-					a--;
-					reset(light, entitys);
-				}
-			}else if(light.getMaster() instanceof Entity && ((Entity)light.getMaster()).hasData(EntityData.LIGHTENTITYDATA)){
-				
-				boolean contains = false;
-				for(int i = 0; i<Lampentitys.size(); i++){
-					if(light.getMaster().equals(Lampentitys.get(i))){
-						contains = true;
-						if(!light.getLocation().isEqual(Lampentitys.get(i).getBlockLocation())){
-							reset(light, entitys);
-							light.setLocation(Lampentitys.get(i).getBlockLocation());
+			}else if(light.contains(data.getLocation()) && GameManager.hasStarted()){
+				removeLight(light, lights);
+				lights.add(light);
+				this.lights.add(light);
+			}
+		}
+		updateLights(lights);
+	}
+	
+	private void removeLight(LightObject light, ArrayList<LightObject> lights) {
+		this.lights.remove(light);
+		for(int x = (int) (-light.getLightDistance()*light.getLightStrength()); x<=light.getLightDistance()*light.getLightStrength(); x++){
+			for(int y = (int) (-light.getLightDistance()*light.getLightStrength()); y<=light.getLightDistance()*light.getLightStrength() && x+y<=light.getLightDistance()*light.getLightStrength(); y++){
+				Location loc = new Location(Map.getMap().getBlockXOver(x+light.getLocation().getX()), light.getLocation().getY()+y);
+				if(loc.getY()>0 && loc.getY()<Map.getMap().getHeight()){
+					Mapdata[] data = Map.getMap().getMapData(loc);
+					for(int i = 0; i<data.length; i++){
+						if(data[i]!=null)data[i].resetLight();
+						for(LightObject new_light : this.lights){
+							if(new_light.contains(loc) && !lights.contains(new_light))lights.add(new_light);
 						}
-//						System.out.println(contains);
-						Lampentitys.remove(i);
-						i--;
 					}
-				}
-				if(!contains){
-					reset(light, entitys);
-					lights.remove(a);
-					a--;
 				}
 			}
 		}
-		
-		for(Mapdata Lampblock : Lampblocks ){
-			lights.add(new LightObject(Lampblock , Lampblock .getLocation(),
-					((Lamp)Lampblock.getResource().getBlockData()).getLightDistance()	, ((Lamp)Lampblock.getResource().getBlockData()).getLightStrength()	));
-		}
-		for(Entity  LampEntity: Lampentitys){
-			lights.add(new LightObject(LampEntity, LampEntity.getBlockLocation(),
-					((EntityLight)LampEntity).getLightDistance()						, ((EntityLight)LampEntity).getLightStrength()						)); 
-		}
-		
-//		System.out.println(DayManager.getDayManager().getDayLightLevel()+"->"+lights.size());
-		
-		for(LightObject light: lights){
-			int maxDistance = (int) Math.sqrt(light.getLightDistance()*light.getLightDistance());
-			for(int x = -light.getLightDistance(); x<light.getLightDistance(); x++){
-				for(int y = -light.getLightDistance(); y<light.getLightDistance(); y++){
-					
-					int distance = (int)Math.sqrt(x*x+y*y); 					
-					Location location = new Location(light.getLocation().getX()+x, light.getLocation().getY()+y); 
-					location.x = Map.getMap().getXOver(location.getX()*Map.DEFAULT_SQUARESIZE)/Map.DEFAULT_SQUARESIZE;
-					if(distance <= maxDistance && location.getX()>=0 && location.getY()>=0){
-						int newLightLevel = (int) Math.round((Lamp.DEFAULT_LIGHT_STATES-1)*(1.0-(double)((double)distance/(double)maxDistance)));
-						newLightLevel= (int) Math.round(newLightLevel*light.getLightStrength());
-//						System.out.println(newLightLevel);
-						Mapdata[] block = Map.getMap().getMapData(location);
-						for(int i = 0; i<block.length; i++){
-							if(block[i] !=null && (block[i].lastLightUpdate() != TickManager.getCurrentTick() || newLightLevel>block[i].getLightLevel()))block[i].setLightLevel(newLightLevel);
-						}
-						Location pixelLoc = new Location(Map.getMap().getXOver(location.getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2), location.y*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
-						for(Entity entity: entitys){
-							if(entity.getHitbox().contains(pixelLoc)){
-								Mapdata b = Map.getMap().getMapData(entity.getBlockLocation())[Map.DEFAULT_GROUNDLAYER];
-								if(entity.getLastLightUpdate() != TickManager.getCurrentTick() || b.getLightLevel()>entity.getLightLevel())entity.setLightLevel(b.getLightLevel());
+	}
+
+	public void updateComplete(){
+		GeneralUpdate = TickManager.getCurrentTick();
+		updateLights(this.lights);
+	}
+
+	private void updateLights(ArrayList<LightObject> lights) {
+		for(int i = 0; i<lights.size(); i++){
+			LightObject currentLight = lights.get(i);
+			Queue<PathNode> last = new Queue<>();
+			last.add(new PathNode(currentLight.getLocation(), 0));
+			updateMapData(last.get(), currentLight);
+			while(!last.isEmpty()){
+				PathNode lastNode = last.get();
+				last.remove();
+				if(lastNode.getDistance()/currentLight.getLightStrength()<currentLight.getLightDistance())for(Direction d: Direction.values()){
+					if(!d.equals(Direction.NONE)){
+						PathNode nextNode = new PathNode(new Location(Map.getMap().getBlockXOver(lastNode.getLocation().getX()+d.getX()), lastNode.getLocation().getY()+d.getY()), lastNode.getDistance()+1);
+						int changed = updateMapData(nextNode, currentLight);
+						if(changed==2)last.add(nextNode);
+						if(changed == 2 && !lights.equals(this.lights)){
+							for(LightObject newLight: this.lights){
+								if(newLight.contains(nextNode.getLocation()) && newLight.contains(lights.get(0).getLocation()) && !lights.contains(newLight))lights.add(newLight);
 							}
 						}
 					}
@@ -136,25 +95,24 @@ public class LightOverlay {
 			}
 		}
 	}
-
-	private void reset(LightObject light, ArrayList<Entity> entitys) {
-		for(int x = -light.getLightDistance(); x<light.getLightDistance(); x++){
-			for(int y = -light.getLightDistance(); y<light.getLightDistance(); y++){
-				Location location = new Location(Map.getMap().getBlockXOver(light.getLocation().getX()+x), light.getLocation().getY()+y); 
-				if(location.getX()>=0 && location.getY()>=0){
-					Mapdata[] block = Map.getMap().getMapData(location);
-					for(int i = 0; i<block.length; i++){
-						if(block[i] !=null){
-							block[i].setLightLevel(0);
-						}
-					}
-					Location pixelLoc = new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.y*Map.DEFAULT_SQUARESIZE);
-					for(Entity entity: entitys){
-						if(entity.getHitbox().contains(pixelLoc))entity.setLightLevel(0);
-					}
-				}
+	
+	private int updateMapData(PathNode lightNode, LightObject currentLight) {
+		if(lightNode.getLocation().getY()<0 || lightNode.getLocation().getY()>=Map.getMap().getHeight())return 0;
+		Mapdata[] data = Map.getMap().getMapData(lightNode.getLocation());
+		if(data[Map.DEFAULT_BUILDLAYER+Entity.DEFAULT_ENTITY_UP] != null && data[Map.DEFAULT_BUILDLAYER+Entity.DEFAULT_ENTITY_UP].getResource().isOpaque()){
+			lightNode.setDistance((int) (lightNode.getDistance()+((currentLight.getLightDistance()*0.2)/currentLight.getLightStrength())));
+			if(lightNode.getDistance()/currentLight.getLightStrength()>currentLight.getLightDistance())return 0;
+		}
+		int changed = 0;
+		for(int a = 0; a<data.length; a++){
+			if(data[a]!=null){
+				double newLightLevel = currentLight.getLightStrength()*(1.0-((double)lightNode.getDistance()/(double)currentLight.getLightDistance()));
+				changed = data[a].setLightLevel(((int) Math.ceil(newLightLevel*(Lamp.DEFAULT_LIGHT_STATES-2)))+1);
 			}
 		}
+		return changed;
 	}
-
 }
+	
+	
+	

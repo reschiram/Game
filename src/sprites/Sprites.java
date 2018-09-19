@@ -74,10 +74,10 @@ public class Sprites {
 		StatsMenu				= new Sprites(new Dimension(200						, 400						), new Dimension(200					, 400						), "/sprites/StatsMenu.png"				, "menu"		, false);
 		Backgrounds				= new Sprites(new Dimension(1920					, 1080						), new Dimension(1920					, 1080						), "/sprites/Backgrounds.png"			, "background"	, false);
 		
-		VehiclePartTypesIcons	= new Sprites(new Dimension(40						, 40							), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/VehiclePartTypesIcons.png"	, "Icon"		, false);
+		VehiclePartTypesIcons	= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/VehiclePartTypesIcons.png"	, "Icon"		, false);
 		
 		MapGenerations			= new Sprites(new Dimension(20						, 21						), new Dimension(20						, 21						), "/sprites/MapGeneration.png"			, "map"			, false);
-		Edges					= new Sprites(new Dimension(40						, 40							), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Edges.png"					, "edges"		, false);
+		Edges					= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Edges.png"					, "edges"		, false);
 		return null;
 	}
 	

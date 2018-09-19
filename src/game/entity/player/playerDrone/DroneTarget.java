@@ -2,15 +2,15 @@ package game.entity.player.playerDrone;
 
 import java.awt.Dimension;
 
-import Data.Hitbox;
 import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
+import data.MapResource;
 import game.entity.Entity;
 import game.entity.ItemEntity;
 import game.gridData.map.Mapdata;
+import game.inventory.crafting.Recipe;
 import game.map.Map;
-import game.tick.TickManager;
 import sprites.Sprites;
 
 public class DroneTarget {
@@ -22,9 +22,12 @@ public class DroneTarget {
 	private int buildID;
 	
 	private boolean done = false;
+
+	private PlayerDrone drone;
 	
-	public DroneTarget(Location location, int buildID){
+	public DroneTarget(PlayerDrone drone,Location location, int buildID){
 		this.location = location.clone();
+		this.drone = drone;
 		this.marker = new Image(new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),
 				"", Sprites.Marker.getSpriteSheet(), null);
 		if(buildID==0)marker.setSpriteState(1);
@@ -57,10 +60,25 @@ public class DroneTarget {
 			if(data.isDestroyed()){
 				destroyVisulas();
 				this.done = true;
-				if(data.getResource().hasItemType()){
-					for(int i = 0; i<data.getResource().getItemAmount(); i++){
-						new ItemEntity(data.getResource().getItemType(), new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE)).show();
+				if(data.getResource().hasDrops()){
+					data.getResource().drop(location);
+				}
+			}
+		}else{
+			Mapdata data = Map.getMap().getChunks()[location.x/Map.DEFAULT_CHUNKSIZE][location.y/Map.DEFAULT_CHUNKSIZE].getMapData(location, false)[Entity.DEFAULT_ENTITY_UP];
+			if(data!=null){
+				data.damage(1);
+				if(data.isDestroyed()){
+					if(data.getResource().hasDrops()){
+						data.getResource().drop(location);
 					}
+				}
+			}else{
+				Recipe recipe = Recipe.getRecipe(buildID);
+				if(recipe!=null && recipe.craft(drone.getInventory())){
+					Map.getMap().add(buildID, location, MapResource.getMapResource(buildID).isGround());
+					this.done = true;
+					drone.removeTarget(this.getLocation());
 				}
 			}
 		}

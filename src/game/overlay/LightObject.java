@@ -1,6 +1,7 @@
 package game.overlay;
 
 import Data.Location;
+import game.map.Map;
 
 public class LightObject {
 	
@@ -34,6 +35,13 @@ public class LightObject {
 
 	public double getLightStrength() {
 		return lightStrength;
+	}
+
+	public boolean contains(Location loc) {
+		int dy = Math.abs(this.getLocation().getY()-loc.getY());
+		int dx = Math.abs(this.getLocation().getX()-loc.getX());
+		if(dx>Map.getMap().getWidth()/2)dx=Map.getMap().getWidth()-dx;
+		return (dx+dy)/lightStrength<lightDistance;
 	}
 
 }

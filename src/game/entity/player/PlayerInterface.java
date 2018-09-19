@@ -11,6 +11,8 @@ import data.Mouse;
 import game.entity.Entity;
 import game.entity.ItemEntity;
 import game.gridData.map.Mapdata;
+import game.inventory.equipment.Equipment;
+import game.inventory.equipment.EquipmentInventory;
 import game.map.Map;
 import sprites.Sprites;
 
@@ -20,6 +22,8 @@ public class PlayerInterface {
 	private Player player;
 	private Dimension ellipseSize;
 	private Image pointer;
+	
+	private int currentEquipment;
 	
 	public PlayerInterface(Player player) {
 		this.player = player;
@@ -38,15 +42,27 @@ public class PlayerInterface {
 				data.damage(2);
 				if(data.isDestroyed()){
 					this.player.getPlayerDrone().removeTarget(digLocation);
-					if(data.getResource().hasItemType()){
-						for(int i = 0; i<data.getResource().getItemAmount(); i++){
-							new ItemEntity(data.getResource().getItemType(), new Location(digLocation.getX()*Map.DEFAULT_SQUARESIZE, digLocation.getY()*Map.DEFAULT_SQUARESIZE)).show();
-						}
+					if(data.getResource().hasDrops()){
+						data.getResource().drop(digLocation);
 					}
 				}
 			}
 		}
+		
 		movePointer();
+		
+		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_1)){
+			this.currentEquipment = 0;
+		}else if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_2)){
+			this.currentEquipment = 1;
+		}else if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_3)){			
+			this.currentEquipment = 2;
+		}
+		
+		if(((EquipmentInventory)player.getInventory()).getEquipment(currentEquipment)!=null){
+			Equipment equip = ((EquipmentInventory)player.getInventory()).getEquipment(currentEquipment);
+			if(equip.isTriggered())equip.use(player);
+		}
 	}
 	
 	private void movePointer() {

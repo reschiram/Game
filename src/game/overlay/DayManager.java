@@ -9,6 +9,7 @@ import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
 import Engine.Engine;
 import data.map.Lamp;
+import game.Game;
 
 public class DayManager {
 		
@@ -17,7 +18,7 @@ public class DayManager {
 		return DAYMANAGER;
 	}
 	
-	private int tickToTime = 8000;
+	private int tickToTime = 80;
 	private Time time;
 	
 	private int layer = 0;	
@@ -35,7 +36,7 @@ public class DayManager {
 	private void updateCurrentDayLightLevel(int newLightLevel) {
 		for(int i = 0; i<Lamp.DEFAULT_SURFACE_LEVELS; i++){
 			if(currentDayLightLevelData.size()>i){
-				this.currentDayLightLevelData.get(i).setData((int) Math.ceil(newLightLevel*((double)i/(double)Lamp.DEFAULT_SURFACE_LEVELS)));
+				this.currentDayLightLevelData.get(i).setData((int) Math.ceil(newLightLevel*((double)i/(double)(Lamp.DEFAULT_SURFACE_LEVELS-1))));
 			}else{
 				this.currentDayLightLevelData.add(new DataObject<Integer>((int) Math.ceil(newLightLevel*((double)i/(double)Lamp.DEFAULT_SURFACE_LEVELS))));
 			}
@@ -60,13 +61,16 @@ public class DayManager {
 		Engine.getEngine(this, this.getClass()).removeGraphicOperation(go, layer);
 	}
 	
+	int changed = 0;
 	public void tick(){
 		this.time.addMilliSeconds(tickToTime);
 		go.setText("Time: "+this.time.getTime());
 		int newDayLightLevel = getSunLightLevel();
-		if(currentDayLightLevelData.get(0).getData()!=newDayLightLevel){
+		if(changed < 10 ||currentDayLightLevelData.get(currentDayLightLevelData.size()-1).getData()!=newDayLightLevel){
 			updateCurrentDayLightLevel(newDayLightLevel);
+			Game.getLightOverlay().updateComplete();
 		}
+		changed++;
 	}
 	
 	private int getSunLightLevel(){

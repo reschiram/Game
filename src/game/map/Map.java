@@ -12,6 +12,7 @@ import data.ResourcePart;
 import data.map.Lamp;
 import data.map.UpdatableBlockData;
 import game.tick.TickManager;
+import game.Game;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.gridData.map.*;
@@ -107,10 +108,12 @@ public class Map {
 		for(int i = 1; i<parts.length; i++){
 			getChunk(parts[i].getLocation()).set(parts[i]);
 			update(parts[i].getLocation().getX(), parts[i].getLocation().getY());
+			Game.getLightOverlay().update(parts[i], false);
 		}
 		b.show();
 		getChunk(location).set(b);
 		update(location.getX(), location.getY());
+		Game.getLightOverlay().update(b, false);
 	}
 	
 	private void update(int x, int y){
@@ -147,12 +150,16 @@ public class Map {
 
 	private void updateSurface(int dx, int dy){
 		int surface = Lamp.DEFAULT_SURFACE_LEVELS-1;
-		for(int y = 0; y<=this.getHeight() && (surface  != 0 || y>dy); y++){
+		for(int y = 0; y<=this.getHeight(); y++){
 			Mapdata[] data = getMapData(new Location(dx, y));
+			int found = -1;
 			for(int i = 0; i<data.length; i++){
-				if(data[i]!=null)data[i].setSurface(surface);
+				if(data[i]!=null){
+					found = i;
+					data[i].setSurface(surface);
+				}
 			}
-			if(data[DEFAULT_BUILDLAYER]!=null && surface>0)surface--;
+			if(surface>0  && (data[DEFAULT_BUILDLAYER]!=null || (found!=-1 && surface!=Lamp.DEFAULT_SURFACE_LEVELS-1)) && data[found].getResource().isOpaque())surface--;
 		}
 	}
 	
@@ -164,10 +171,12 @@ public class Map {
 				for(MapDummieBlock part: b.blockParts){
 					getChunk(part.getLocation()).remove(part);
 					update(part.getLocation().getX(), part.getLocation().getY());
+					Game.getLightOverlay().update(part, false);
 				}
 				mapdata.destroyVisual();
 				getChunk(b.getLocation()).remove(b);
 				update(b.getLocation().getX(), b.getLocation().getY());
+				Game.getLightOverlay().update(mapdata, false);
 			}else if(mapdata instanceof MapDummieBlock){
 				MapDummieBlock part = (MapDummieBlock)mapdata;
 				MapBlock block = part.getBlock();

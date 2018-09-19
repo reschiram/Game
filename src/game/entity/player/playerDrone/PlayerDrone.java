@@ -22,6 +22,7 @@ import game.entity.type.interfaces.EntityInventory;
 import game.entity.type.interfaces.EntityLight;
 import game.inventory.Inventory;
 import game.inventory.ItemCollector;
+import game.inventory.crafting.Recipe;
 import game.inventory.items.Item;
 import game.map.Map;
 import game.pathFinder.PathFinder;
@@ -43,6 +44,7 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 	private HashMap<Integer, DroneTarget> targets = new HashMap<>();
 	private DroneTarget currentDroneTarget;
 	private ButtonTrigger targetTrigger = new ButtonTrigger(MouseEvent.BUTTON1);
+	private Inventory collections = new Inventory(30);
 	
 	public PlayerDrone(Player player) {
 		super(new ArrayList<>());
@@ -117,6 +119,13 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 						if(item!=null && this.player.getInventory().canAdd(item.getItemType())){
 							player.getInventory().addItem(item);
 							this.itemCollector.getInventory().removeItem(item);
+						}
+					}
+					for(int i = 0; i<collections.getSize(); i++){
+						Item item = this.collections.getItem(i);
+						if(item != null){
+							int amount = player.getInventory().removeItem(item);
+							this.itemCollector.getInventory().addItem(new Item(item.getItemType(), item.getAmount()-amount));
 						}
 					}
 					pathFinder.setTarget(null);
@@ -198,13 +207,28 @@ public class PlayerDrone extends Entity implements EntityInventory, EntityLight{
 		if(targets.containsKey(key)){
 			if(targets.get(key).getID() == resID) return;
 		}
-		targets.put(location.getX()+location.getY()*Map.getMap().getWidth(), new DroneTarget(location, resID).createVisuals());
+		DroneTarget target = new DroneTarget(this, location, resID).createVisuals();
+		Recipe recipe = Recipe.getRecipe(resID);
+		if(recipe!=null){
+			for(Item item: recipe.getItems()){
+				this.collections.addItem(item.clone());
+			}
+		}
+		targets.put(location.getX()+location.getY()*Map.getMap().getWidth(), target);
 	}
 
 	public void removeTarget(Location loc) {
 		int key = loc.getX()+loc.getY()*Map.getMap().getWidth();
 		if(targets.containsKey(key)){
-			this.targets.get(key).destroyVisulas();
+			DroneTarget target = this.targets.get(key);
+			Recipe recipe = Recipe.getRecipe(target.getID());
+			if(recipe!=null){
+				for(Item item: recipe.getItems()){
+					this.collections.removeItem(item.clone());
+				}
+			}
+			target.destroyVisulas();
+			
 			this.targets.remove(key);
 		}
 		if(currentDroneTarget!=null && this.currentDroneTarget.getLocation().equals(loc)){
