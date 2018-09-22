@@ -61,16 +61,14 @@ public class DayManager {
 		Engine.getEngine(this, this.getClass()).removeGraphicOperation(go, layer);
 	}
 	
-	int changed = 0;
 	public void tick(){
 		this.time.addMilliSeconds(tickToTime);
 		go.setText("Time: "+this.time.getTime());
 		int newDayLightLevel = getSunLightLevel();
-		if(changed < 10 ||currentDayLightLevelData.get(currentDayLightLevelData.size()-1).getData()!=newDayLightLevel){
+		if(currentDayLightLevelData.get(currentDayLightLevelData.size()-1).getData()!=newDayLightLevel){
 			updateCurrentDayLightLevel(newDayLightLevel);
 			Game.getLightOverlay().updateComplete();
 		}
-		changed++;
 	}
 	
 	private int getSunLightLevel(){

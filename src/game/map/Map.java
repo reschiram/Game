@@ -45,6 +45,8 @@ public class Map {
 	
 	private double acceleration = 0.2;
 	
+	private boolean finalized = false;
+	
 	public Map(int width, int height, int seed){
 		Map = this;
 		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0,1);
@@ -117,7 +119,8 @@ public class Map {
 	}
 	
 	private void update(int x, int y){
-		updateSurface(x, y);
+		if(!finalized)return;
+		updateSurface(x);
 		updateBlock(x, y);
 		
 		x=getBlockXOver(x+1);
@@ -148,7 +151,7 @@ public class Map {
 		}
 	}
 
-	private void updateSurface(int dx, int dy){
+	private void updateSurface(int dx){
 		int surface = Lamp.DEFAULT_SURFACE_LEVELS-1;
 		for(int y = 0; y<=this.getHeight(); y++){
 			Mapdata[] data = getMapData(new Location(dx, y));
@@ -171,12 +174,12 @@ public class Map {
 				for(MapDummieBlock part: b.blockParts){
 					getChunk(part.getLocation()).remove(part);
 					update(part.getLocation().getX(), part.getLocation().getY());
-					Game.getLightOverlay().update(part, false);
+					Game.getLightOverlay().update(part, true);
 				}
 				mapdata.destroyVisual();
 				getChunk(b.getLocation()).remove(b);
 				update(b.getLocation().getX(), b.getLocation().getY());
-				Game.getLightOverlay().update(mapdata, false);
+				Game.getLightOverlay().update(mapdata, true);
 			}else if(mapdata instanceof MapDummieBlock){
 				MapDummieBlock part = (MapDummieBlock)mapdata;
 				MapBlock block = part.getBlock();
@@ -353,9 +356,10 @@ public class Map {
 		for(int x = 0; x<Width; x++){
 			for(int y = 0; y<Height; y++){
 				updateBlock(x, y);
-				updateSurface(x, y);
 			}
+			updateSurface(x);
 		}
+		this.finalized = true;
 	}
 
 	public boolean entityCanAcces(Entity entity, int x, int y) {
