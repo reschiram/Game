@@ -68,6 +68,8 @@ public class Game {
 		if(mapLoader.getMap()==null)mapLoader.loadMap();
 		map = mapLoader.getMap();	
 		
+		LIGHTOVERLAY.load(map);
+		
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(PlayerPosition, 10);
 		
 		dayManager.createTime(10, new Location(PlayerPosition.Hitbox.getX(), PlayerPosition.Hitbox.getY()+20));
@@ -91,6 +93,8 @@ public class Game {
 			this.map.getEntityManager().tick();
 			this.dayManager.			tick();
 			this.inventoryMenu.			tick();
+			
+			LIGHTOVERLAY.				tick();
 			
 			this.PlayerPosition.setText("Player-Position: X:"+player.getBlockLocation().getX()+" Y:"+player.getBlockLocation().getY());
 			
