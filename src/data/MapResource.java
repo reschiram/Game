@@ -33,58 +33,69 @@ public class MapResource extends Resource {
 	
 	public static MapResource create(){		
 		//<--- Background --->
-		Air_Background 		 	= new MapResource(1101, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, null,
+		Air_Background 		 	= new MapResource(1101, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, true, 100,
+										null,
 										true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										null,
 										0);
-		Dirt_Background		 	= new MapResource(1102, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, null,
+		Dirt_Background		 	= new MapResource(1102, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										null,
 										true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										null,
 										1);
 		
-		Dirt_Grass_Background	= new MapResource(1103, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new Grass("Grass"),
+		Dirt_Grass_Background	= new MapResource(1103, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new Grass("Grass"),
 										true , Sprites.Ground.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										null,
 										10, 11, 12, 13, 14, 15, 16, 17, 18);
 		
 		//<--- Build --->
-		Dirt					= new MapResource(1201, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new EdgeBlockData("Dirt"			, new Color( 21, 12,  3), new Color( 33, 19,  7), new Color( 51, 25,  7), new Color( 63, 36, 17)),
+		Dirt					= new MapResource(1201, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new EdgeBlockData("Dirt"			, new Color( 21, 12,  3), new Color( 33, 19,  7), new Color( 51, 25,  7), new Color( 63, 36, 17)),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Dirt		, 1, 3)),
 										0);
 		
-		Dirt_Grass				= new MapResource(1202, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new Grass("Grass"),
+		Dirt_Grass				= new MapResource(1202, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new Grass("Grass"),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Dirt		, 1, 3)),
 										10, 11, 12, 13, 14, 15, 16, 17, 18);
 		
-		Stone					= new MapResource(1203, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new EdgeBlockData("Stone"		, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
+		Stone					= new MapResource(1203, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new EdgeBlockData("Stone"		, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Stone		, 1, 3)),
 										1);	
 		
-		Iron_Ore				= new MapResource(1204, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new EdgeBlockData("Iron_Ore"		, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
+		Iron_Ore				= new MapResource(1204, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new EdgeBlockData("Iron_Ore"		, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Iron_Ore	, 1, 2)),
 										20);		
 		
-		Gold_Ore				= new MapResource(1205, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new EdgeBlockData("Gold_Ore"		, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
+		Gold_Ore				= new MapResource(1205, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new EdgeBlockData("Gold_Ore"		, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE 	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Gold_Ore	, 1, 2)),
 										21);
 		
-		Silver_Ore				= new MapResource(1206, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new EdgeBlockData("Silver_Ore"	, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
+		Silver_Ore				= new MapResource(1206, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new EdgeBlockData("Silver_Ore"	, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Silver_Ore	, 1, 2)),
 										22);	
 		
-		Coal					= new MapResource(1207, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), true, true, 100, new EdgeBlockData("Coal"			, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
+		Coal					= new MapResource(1207, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, true, true, 100,
+										new EdgeBlockData("Coal"			, new Color( 30, 30, 30), new Color( 40, 40, 40), new Color( 50, 50, 50), new Color( 60, 60, 60)),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Coal		, 1, 3)),
 										23);	
 		
 		//<--- Only crafting --->
-		Lamp					= new MapResource(1301, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),false,false, 100, new Lamp("Lamp", 10, 0.9),
+		Lamp					= new MapResource(1301, new Hitbox(0, 0, Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE), false, false, false, 100, 
+										new Lamp("Lamp", 10, 0.9),
 										false, Sprites.Blocks.getSpriteSheet(), AnimationType.NONE	, 0,  new ResourcePart[]{},
 										new Drops(new Drop(ItemType.Stone		, 3, 3), new Drop(ItemType.Coal		, 1, 1)),
 										30);	
@@ -124,14 +135,16 @@ public class MapResource extends Resource {
 	private BlockData blockData;
 	private Drops drops;
 	private boolean solid;
+	private boolean isAlwaysSurface;
 	
-	private MapResource(int id, Hitbox hitbox, boolean solid, boolean opaque, int hp, BlockData blockData, boolean ground, SpriteSheet sprites, AnimationType animType, int layerUp, ResourcePart[] resParts, Drops drops, int... spriteIDs){
+	private MapResource(int id, Hitbox hitbox, boolean isAlwaysSurface, boolean solid, boolean opaque, int hp, BlockData blockData, boolean ground, SpriteSheet sprites, AnimationType animType, int layerUp, ResourcePart[] resParts, Drops drops, int... spriteIDs){
 		super(id, animType, sprites, spriteIDs, resParts, hitbox, opaque, hp);
 		this.layerUp = layerUp;
 		this.ground = ground;
 		this.blockData = blockData;
 		this.drops = drops;
 		this.solid = solid;
+		this.isAlwaysSurface = isAlwaysSurface;
 	}
 	
 	public boolean isGround(){
@@ -170,6 +183,10 @@ public class MapResource extends Resource {
 
 	public boolean isSolid() {
 		return solid;
+	}
+
+	public boolean isAlwaysSurface() {
+		return isAlwaysSurface;
 	}
 	
 }

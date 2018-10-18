@@ -9,7 +9,10 @@ import Data.Image.Image;
 import Engine.Engine;
 import data.Mouse;
 import game.entity.Entity;
-import game.entity.ItemEntity;
+import game.entity.player.playerDrone.Drone;
+import game.entity.player.playerDrone.module.CTBModule;
+import game.entity.player.playerDrone.module.CTDModule;
+import game.entity.player.playerDrone.module.CTModule;
 import game.gridData.map.Mapdata;
 import game.inventory.equipment.Equipment;
 import game.inventory.equipment.EquipmentInventory;
@@ -41,7 +44,16 @@ public class PlayerInterface {
 			if(data!=null){
 				data.damage(2);
 				if(data.isDestroyed()){
-					this.player.getPlayerDrone().removeTarget(digLocation);
+					for(Drone drone: this.player.getPlayerDrones()){
+						CTModule module = (CTModule) drone.getModule(CTDModule.class);
+						if(module!=null){
+							module.removeTarget(digLocation);
+						}
+						module = (CTModule) drone.getModule(CTBModule.class);
+						if(module!=null){
+							module.removeTarget(digLocation);
+						}
+					}
 					if(data.getResource().hasDrops()){
 						data.getResource().drop(digLocation);
 					}

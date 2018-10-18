@@ -2,16 +2,19 @@ package game.pathFinder;
 
 import java.util.ArrayList;
 
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
 import Data.Direction;
 import Data.Location;
 import game.entity.Entity;
 import game.gridData.map.Mapdata;
 import game.map.Map;
+import game.tick.TickManager;
 
 public class PathFinder {
 	
 	private static int maxRange = 3;
-	private static int maxRangeObstacle = 14;
+	private static int maxRangeObstacle = 20;
 	
 	private Entity entity;
 	private Location target;
@@ -20,6 +23,8 @@ public class PathFinder {
 	private Location possibleTargets;
 	
 	private ArrayList<Location> path = new ArrayList<>();
+	
+	private boolean blocking = false;
 	
 	public PathFinder(Entity entity, int maxPath){
 		this.entity = entity;
@@ -169,7 +174,7 @@ public class PathFinder {
 								Location newPixelLoc = new Location(newLoc.getX()*Map.DEFAULT_SQUARESIZE, newLoc.getY()*Map.DEFAULT_SQUARESIZE);
 								for(int a = i+1; a<path.size(); a++){
 									Location pathNode = path.get(a);
-									if(pathNode.isEqual(newPixelLoc) || pathNode.distance_Math(newPixelLoc)<Math.sqrt(2)*Map.DEFAULT_SQUARESIZE-1){
+									if(pathNode.isEqual(newPixelLoc) || pathNode.distance_Math(newPixelLoc)<Math.sqrt(2)*Map.DEFAULT_SQUARESIZE){
 										Mapdata pathData = Map.getMap().getMapData(new Location(pathNode.getX()/Map.DEFAULT_SQUARESIZE, pathNode.getY()/Map.DEFAULT_SQUARESIZE))[Map.DEFAULT_BUILDLAYER+Entity.DEFAULT_ENTITY_UP];
 										if(pathData == null || pathData.canHost(entity.getWidth(), entity.getHeight())){
 											getPath(i, a-1, loc, nodes, nodes[x][y]);
@@ -215,6 +220,7 @@ public class PathFinder {
 	}
 
 	public void setTarget(Location target){
+		if(this.blocking)return;
 		this.target = target;
 		if(target==null){
 			stage = -1;
@@ -266,6 +272,7 @@ public class PathFinder {
 	}
 
 	public void setBlockTarget(Location target) {
+		if(this.blocking)return;
 		if(target == null)setTarget(null);
 		else setTarget(new Location(target.getX()*Map.DEFAULT_SQUARESIZE, target.getY()*Map.DEFAULT_SQUARESIZE));
 		
@@ -277,5 +284,14 @@ public class PathFinder {
 
 	public Location getBlockTarget() {
 		return new Location(target.getX()/Map.DEFAULT_SQUARESIZE, target.getY()/Map.DEFAULT_SQUARESIZE);
+	}
+
+	public void setBlocked(boolean blocking) {
+		this.blocking = blocking;
+	}
+
+	public boolean reachedDestination() {
+		if(!this.hasTarget())return true;
+		else return this.isDone() && this.path.isEmpty();
 	}
 }

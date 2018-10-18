@@ -16,7 +16,6 @@ public class ButtonTrigger {
 	}
 	
 	public void tick(){
-//		System.out.println(Engine.getInputManager().getKeyDown().contains(keyCode) +"|"+ Engine.getInputManager().getMouseButton().contains(keyCode));
 		if(ButtonPressed()){
 			if(!isTriggered && !isPressed)isTriggered = true;
 			isPressed = true;
@@ -40,6 +39,10 @@ public class ButtonTrigger {
 		boolean triggered = isTriggered==true;
 		isTriggered = false;
 		return triggered;
+	}
+
+	public int getKey() {
+		return keyCode;
 	}
 
 }

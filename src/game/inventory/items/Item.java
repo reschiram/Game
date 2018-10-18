@@ -49,5 +49,10 @@ public class Item {
 	public Item clone(){
 		return new Item(type, amount);
 	}
+	
+	@Override
+	public String toString(){
+		return this.type.getID()+":"+amount;
+	}
 
 }
