@@ -2,11 +2,13 @@ package game.inventory.items;
 
 import Data.Image.SpriteSheet;
 import data.LightSpriteSheet;
+import data.MapResource;
 import game.inventory.equipment.EquipmentType;
 import sprites.Sprites;
 
 public class ItemType {
 
+	public static ItemType Lamp;
 	public static ItemType Dirt;
 	public static ItemType Stone;
 	public static ItemType Iron_Ore;
@@ -15,6 +17,7 @@ public class ItemType {
 	public static ItemType Coal;
 	
 	public static EquipmentType DigTool;
+	public static EquipmentType BuildTool;
 
 	public static ItemType[] types;
 	
@@ -23,6 +26,16 @@ public class ItemType {
 			if(type.getID().equals(id))return type;
 		}
 		return null;
+	}
+
+	public static void LoadMapresources() {
+		Dirt		.MapID = MapResource.Dirt		.getID();
+		Stone		.MapID = MapResource.Stone		.getID();
+		Iron_Ore	.MapID = MapResource.Iron_Ore	.getID();
+		Gold_Ore	.MapID = MapResource.Gold_Ore	.getID();
+		Silver_Ore	.MapID = MapResource.Silver_Ore	.getID();
+		Coal		.MapID = MapResource.Coal		.getID();
+		Lamp		.MapID = MapResource.Lamp		.getID();
 	}
 	
 	public static void Load(){
@@ -33,15 +46,19 @@ public class ItemType {
 		Silver_Ore 	= new ItemType		("Silver_Ore"	, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												13);
 		Coal	 	= new ItemType		("Coal"			, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Items		.getSpriteSheet()), 												14);
 		
-		DigTool		= new EquipmentType	("DigTool"		,  1, LightSpriteSheet.getLightSpriteSheet(Sprites.Equipment	.getSpriteSheet()), game.inventory.equipment.tools.DigTool.class, 	 1);
+		DigTool		= new EquipmentType	("DigTool"		,  1, LightSpriteSheet.getLightSpriteSheet(Sprites.Equipment	.getSpriteSheet()), game.inventory.equipment.tools.DigTool	.class, 1);
+		BuildTool	= new EquipmentType	("BuildTool"	,  1, LightSpriteSheet.getLightSpriteSheet(Sprites.Equipment	.getSpriteSheet()), game.inventory.equipment.tools.BuildTool.class, 1);
+		
+		Lamp 		= new ItemType		("Lamp"			, 64, LightSpriteSheet.getLightSpriteSheet(Sprites.Blocks		.getSpriteSheet()), 												30);
 	
-		types = new ItemType[]{Dirt, Stone, Iron_Ore, Gold_Ore, Silver_Ore, Coal, DigTool};
+		types = new ItemType[]{Dirt, Stone, Iron_Ore, Gold_Ore, Silver_Ore, Coal, Lamp, DigTool, BuildTool};
 	}
 	
 	protected SpriteSheet sheet;
 	protected int[] ids;
 	protected int maxStackAmount;
 	protected String id;
+	private int MapID;
 	
 	protected ItemType(String id, int maxStackAmount, SpriteSheet sheet, int... ids){
 		this.sheet = sheet;
@@ -64,6 +81,10 @@ public class ItemType {
 	
 	public String getID() {
 		return id;
+	}
+
+	public int getMapID() {
+		return MapID;
 	}
 	
 }

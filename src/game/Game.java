@@ -26,12 +26,16 @@ import game.vehicle.BluePrint;
 import game.vehicle.data.VehicleData;
 
 public class Game {
+
+	private static LightOverlay LIGHTOVERLAY;
+	public static LightOverlay getLightOverlay() {
+		return LIGHTOVERLAY;
+	}
 	
 	private Player player;
 	private Map map;
 	private GameInterface gameInterface;
 	private MapLoader mapLoader;
-	private LightOverlay lightOverlay;
 	private DayManager dayManager;
 	private EquipmentInventoryMenu inventoryMenu;
 	
@@ -54,15 +58,17 @@ public class Game {
 		gameInterface = new GameInterface(this);
 		Engine.getEngine(this, this.getClass()).addLayer(false, true, false, 4,5,6,8);
 		
-		lightOverlay = new LightOverlay(8);
+		LIGHTOVERLAY = new LightOverlay();
 		
 		dayManager = new DayManager();
 	}
 
 	public void start() {		
 		mapLoader = new MapLoader(FileManager.MAP_TEST,39485636);
-		mapLoader.loadMap();
+		if(mapLoader.getMap()==null)mapLoader.loadMap();
 		map = mapLoader.getMap();	
+		
+		LIGHTOVERLAY.load(map);
 		
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(PlayerPosition, 10);
 		
@@ -76,15 +82,19 @@ public class Game {
 		inventoryMenu.createVisuals().hide();		
 		
 		started = true;
+		
+		LIGHTOVERLAY.updateComplete();
+		map.finalize();
 	}
 
 	public void tick() {
 		if(this.started){
 			this.gameInterface.			tick();
 			this.map.getEntityManager().tick();
-			this.lightOverlay.			tick();
 			this.dayManager.			tick();
 			this.inventoryMenu.			tick();
+			
+			LIGHTOVERLAY.				tick();
 			
 			this.PlayerPosition.setText("Player-Position: X:"+player.getBlockLocation().getX()+" Y:"+player.getBlockLocation().getY());
 			

@@ -1,8 +1,8 @@
 Location:
   X:
-    "66"
+    "5"
   Y:
-    "10"
+    "29"
 inventory:
   Slot_0:
     type:
@@ -13,39 +13,219 @@ inventory:
     type:
       "Stone"
     amount:
-      "64"
+      "40"
   Slot_2:
     type:
-      "Dirt"
+      "Coal"
     amount:
-      "64"
+      "61"
   Slot_3:
     type:
       "Stone"
     amount:
-      "40"
+      "64"
   Slot_4:
     type:
-      "Dirt"
+      "Iron_Ore"
     amount:
       "64"
   Slot_5:
     type:
-      "Dirt"
+      "Stone"
     amount:
       "64"
   Slot_6:
     type:
-      "Dirt"
+      "Stone"
     amount:
       "64"
   Slot_7:
     type:
+      "Stone"
+    amount:
+      "64"
+  Slot_8:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_9:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_10:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_11:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_12:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_13:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_14:
+    type:
       "Dirt"
     amount:
-      "50"
-  Equipment_24:
+      "64"
+  Slot_15:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_16:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_17:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_18:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_19:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_20:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_21:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_22:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_23:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_24:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_25:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_26:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_27:
+    type:
+      "Gold_Ore"
+    amount:
+      "3"
+  Slot_28:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_29:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_30:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_31:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_33:
+    type:
+      "Coal"
+    amount:
+      "64"
+  Slot_34:
+    type:
+      "Iron_Ore"
+    amount:
+      "8"
+  Slot_35:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_36:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_37:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_38:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_39:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_40:
+    type:
+      "Dirt"
+    amount:
+      "64"
+  Slot_41:
+    type:
+      "Dirt"
+    amount:
+      "30"
+  Slot_42:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Slot_43:
+    type:
+      "Stone"
+    amount:
+      "64"
+  Equipment_48:
     type:
       "DigTool"
+    amount:
+      "1"
+  Equipment_49:
+    type:
+      "BuildTool"
     amount:
       "1"

@@ -25,7 +25,8 @@ public class EdgeBlockData extends UpdatableBlockData{
 		colors[3] = color4;
 	}
 	
-	public void load(MapResource resource){
+	@Override
+	public void loadData(MapResource resource){
 		SpriteSheet edges = Sprites.Edges.getSpriteSheet();
 		BufferedImage[] bis = new BufferedImage[edges.getSpriteAmount()];
 		int[] ids = new int[edges.getSpriteAmount()];

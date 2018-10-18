@@ -1,39 +1,41 @@
 package game.entity.player.playerDrone;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 
-import Data.Hitbox;
 import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
-import game.entity.Entity;
-import game.entity.ItemEntity;
-import game.gridData.map.Mapdata;
+import game.entity.player.playerDrone.module.CTBModule;
+import game.entity.player.playerDrone.module.CTDModule;
+import game.entity.player.playerDrone.module.CTModule;
 import game.map.Map;
-import game.tick.TickManager;
 import sprites.Sprites;
 
-public class DroneTarget {
+public abstract class DroneTarget {
 	
 	private static int MARKERLEVEL = 3;
 	
-	private Location location;
-	private Image marker;
-	private int buildID;
+	protected Location location;
+	protected Image marker;
 	
-	private boolean done = false;
+	protected boolean done = false;
+
+	protected ArrayList<Drone> drones = new ArrayList<>();
 	
-	public DroneTarget(Location location, int buildID){
+	public DroneTarget(Location location, Drone... drones){
 		this.location = location.clone();
+		for(Drone drone: drones)addDrone(drone);
 		this.marker = new Image(new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),
 				"", Sprites.Marker.getSpriteSheet(), null);
-		if(buildID==0)marker.setSpriteState(1);
-		this.buildID = buildID;
 	}
 	
+	public void addDrone(Drone drone) {
+		this.drones.add(drone);
+	}
+
 	public DroneTarget createVisuals(){
 		Engine.getEngine(this, this.getClass()).addImage(marker, MARKERLEVEL);
-		this.done = false;
 		return this;
 	}
 	
@@ -50,25 +52,17 @@ public class DroneTarget {
 	}
 
 	public boolean interact(){
-		if(done)return true;
-		if(this.buildID==0){
-			Mapdata data = Map.getMap().getChunks()[location.x/Map.DEFAULT_CHUNKSIZE][location.y/Map.DEFAULT_CHUNKSIZE].getMapData(location, false)[Entity.DEFAULT_ENTITY_UP];
-			data.damage(1);
-			if(data.isDestroyed()){
-				destroyVisulas();
-				this.done = true;
-				if(data.getResource().hasItemType()){
-					for(int i = 0; i<data.getResource().getItemAmount(); i++){
-						new ItemEntity(data.getResource().getItemType(), new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE)).show();
-					}
-				}
+		if(done){
+			while(this.drones.size()>0){
+				Drone drone = this.drones.get(0);
+				CTModule module = (CTModule) drone.getModule(CTBModule.class);
+				if(module != null)module.removeTarget(this.location);
+				module = (CTModule) drone.getModule(CTDModule.class);
+				if(module!=null)module.removeTarget(this.location);
 			}
+			return true;
 		}
 		return false;
-	}
-
-	public int getID() {
-		return buildID;
 	}
 
 	public Location getLocation() {
@@ -78,4 +72,12 @@ public class DroneTarget {
 	public Location getPixelLocation() {
 		return new Location(location.getX() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, location.getY() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
 	}
+
+	public void removeDrone(Drone drone) {
+		this.drones.remove(drone);
+		if(this.drones.isEmpty()){
+			this.destroyVisulas();
+		}
+	}
+
 }

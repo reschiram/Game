@@ -80,8 +80,8 @@ public class EntityMoveManager {
 	}
 
 	private boolean isOnGround() {
-		for(int x = entity.getX(); x <= entity.getX()+entity.getWidth(); x+=Map.DEFAULT_SQUARESIZE-1){
-			int y = entity.getY()+entity.getHeight()+1;
+		for(int x = entity.getX(); x <= entity.getX()+entity.getWidth(); x+=Math.min(Map.DEFAULT_SQUARESIZE-1, entity.getWidth()-1)){
+			int y = entity.getY()+entity.getHeight();
 			Mapdata[] data = Map.getMap().getMapData(new Location(Map.getMap().getBlockXOver(x/Map.DEFAULT_SQUARESIZE), y/Map.DEFAULT_SQUARESIZE));
 			if(data[Entity.DEFAULT_ENTITY_UP+Map.DEFAULT_BUILDLAYER] != null && !data[Entity.DEFAULT_ENTITY_UP+Map.DEFAULT_BUILDLAYER].canHost(entity.getWidth(), entity.getHeight()))return true;
 		}

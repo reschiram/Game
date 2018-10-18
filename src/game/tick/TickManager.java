@@ -9,6 +9,12 @@ public class TickManager {
 	private static long TICKS = 0;
 	private static long StartTime = 0;
 	
+	private static boolean released = false;
+	public static void Release(){
+		released = true;
+		StartTime = System.currentTimeMillis();
+	}
+	
 	public TickManager(GameManager gM){
 		new Thread(new Runnable(){
 			@Override
@@ -18,6 +24,7 @@ public class TickManager {
 //					time = System.currentTimeMillis();
 					gM.tick();
 					int wait = (int) (TICK_DURATION - getLatency()*TICK_DURATION);
+					if(!released)wait = 10;
 //					System.out.println(wait);
 					if(wait>0){
 						synchronized (Thread.currentThread()) {
@@ -29,7 +36,7 @@ public class TickManager {
 						}
 					}
 //					System.out.println(TICKS+" -> "+(System.currentTimeMillis()-StartTime-TICK_DURATION*TICKS)+" -> "+wait);
-					TICKS++;
+					if(released)TICKS++;
 				}
 			}
 		}).start();

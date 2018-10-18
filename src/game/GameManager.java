@@ -15,6 +15,7 @@ import data.MapResource;
 import data.Mouse;
 import files.FileManager;
 import game.dev.mapEditor.MapEditor;
+import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
 import game.tick.TickManager;
 import menu.LoadScreen;
@@ -28,6 +29,11 @@ public class GameManager {
 	private StringRenderOperation LatencyCounter;
 	
 	LoadScreen LoadScreen;
+
+	private static boolean HasStarted = false;
+	public static boolean hasStarted() {
+		return HasStarted;
+	}
 	
 	public GameManager(){
 		new Engine(1920, 1080, new Dimension(800,800));
@@ -43,9 +49,11 @@ public class GameManager {
 		AnimationType.create();
 		ItemType.Load();
 		MapResource.create();
+		ItemType.LoadMapresources();
+		Recipe.Load();
 		LoadScreen.setProgress(0.3);
 		
-		this.setKillAble();		
+		this.setKillAble();			
 		new TickManager(this);	
 		LoadScreen.setProgress(0.4);
 		
@@ -57,7 +65,9 @@ public class GameManager {
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(FPSCounter, 10);
 		LatencyCounter = new StringRenderOperation(new Location(1800,80), new Dimension(120, 50), "Latency:"+TickManager.getLatency()+" tick(s)", null, Color.WHITE);
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(LatencyCounter, 10);
-		start();				
+		start();			
+		HasStarted = true;
+		TickManager.Release();
 		LoadScreen.destroyVisuals();
 	}
 	

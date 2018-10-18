@@ -44,5 +44,15 @@ public class Item {
 	public boolean canAdd(ItemType itemType) {
 		return this.type.equals(itemType) && this.amount+1 <= this.type.getMaxStackAmount();
 	}
+	
+	@Override
+	public Item clone(){
+		return new Item(type, amount);
+	}
+	
+	@Override
+	public String toString(){
+		return this.type.getID()+":"+amount;
+	}
 
 }

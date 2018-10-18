@@ -45,23 +45,23 @@ public class Sprites {
 
 	public static Sprites create() {
 		
-		Ground 		 			= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/ground.png"				, "ground"		, false);
-		Blocks  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "blocks"		, false);  		
-		Vehicle	  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/vehicle.png"				, "vehicle"		, false);
+		Ground 		 			= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/ground.png"				, "ground"		, false);
+		Blocks  				= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "blocks"		, false);  		
+		Vehicle	  				= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/vehicle.png"				, "vehicle"		, false);
 		
-		Items	  				= new Sprites(new Dimension(26						, 26						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/items.png"					, "items"		, false); 
-		Equipment  				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "items"		, false);   
+		Items	  				= new Sprites(new Dimension(26						, 26						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/items.png"				, "items"		, false); 
+		Equipment  				= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/blocks.png"				, "items"		, false);   
 		
-		PlayerHead 				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/playerhead.png"			, "player"		, false);
-		PlayerBody				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/playerbody.png"			, "player"		, false);
-		Player					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, 50						), "/sprites/Player.png"				, "player"		, false);
+		PlayerHead 				= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/playerhead.png"			, "player"		, false);
+		PlayerBody				= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/playerbody.png"			, "player"		, false);
+		Player					= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, 50						), "/sprites/Player.png"				, "player"		, false);
 		
 		Pointer					= new Sprites(new Dimension(10						, 10						), new Dimension(8						, 8							), "/sprites/Pointer.png"				, "player"		, false);
-		Marker					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Marker.png"				, "player"		, false);
-		DamageLevel				= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/DestructionLevel.png"		, "map"			, false);
+		Marker					= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Marker.png"				, "player"		, false);
+		DamageLevel				= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/DestructionLevel.png"		, "map"			, false);
 		
-		Slot 					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/slot.png"					, "slot"		, false);
-		Mouse					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), Image.createEmptyImage(40, 40)		, "mouse"		, false);
+		Slot 					= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/slot.png"					, "slot"		, false);
+		Mouse					= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), Image.createEmptyImage(40, 40)		, "mouse"		, false);
 		Arrows					= new Sprites(new Dimension(30					 	, 30					  	), new Dimension(30					 	, 30					  	), "/sprites/arrows.png"				, "menu"		, false);
 		Buttons 				= new Sprites(new Dimension(123					 	, 50					  	), new Dimension(123					, 50						), "/sprites/buttons.png"				, "menu"		, false);
 		Sidebar 				= new Sprites(new Dimension(300					 	, 1049					  	), new Dimension(300					, 1049						), "/sprites/sidebar3.png"				, "menu"		, false);
@@ -74,10 +74,10 @@ public class Sprites {
 		StatsMenu				= new Sprites(new Dimension(200						, 400						), new Dimension(200					, 400						), "/sprites/StatsMenu.png"				, "menu"		, false);
 		Backgrounds				= new Sprites(new Dimension(1920					, 1080						), new Dimension(1920					, 1080						), "/sprites/Backgrounds.png"			, "background"	, false);
 		
-		VehiclePartTypesIcons	= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/VehiclePartTypesIcons.png"	, "Icon"		, false);
+		VehiclePartTypesIcons	= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/VehiclePartTypesIcons.png"	, "Icon"		, false);
 		
 		MapGenerations			= new Sprites(new Dimension(20						, 21						), new Dimension(20						, 21						), "/sprites/MapGeneration.png"			, "map"			, false);
-		Edges					= new Sprites(new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Edges.png"					, "edges"		, false);
+		Edges					= new Sprites(new Dimension(40						, 40						), new Dimension(Map.DEFAULT_SQUARESIZE	, Map.DEFAULT_SQUARESIZE	), "/sprites/Edges.png"					, "edges"		, false);
 		return null;
 	}
 	

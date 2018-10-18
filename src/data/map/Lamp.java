@@ -1,5 +1,8 @@
 package data.map;
 
+import game.Game;
+import game.gridData.map.Mapdata;
+
 public class Lamp extends BlockData{
 	
 	public static int DEFAULT_LIGHT_STATES = 40;
@@ -20,5 +23,10 @@ public class Lamp extends BlockData{
 	
 	public double getLightStrength(){
 		return lightStrength;
+	}
+	
+	@Override
+	public void load(Mapdata data){
+		Game.getLightOverlay().register(data);
 	}
 }

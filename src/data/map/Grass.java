@@ -42,7 +42,7 @@ public class Grass extends UpdatableBlockData{
 	}
 	
 	@Override
-	public void load(MapResource res){
+	public void loadData(MapResource res){
 		this.res = res;
 	}
 

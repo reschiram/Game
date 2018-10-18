@@ -10,13 +10,11 @@ import Data.Location;
 import Data.Animation.Animation;
 import Engine.Engine;
 import data.ImageData;
-import data.map.Lamp;
 import game.entity.manager.EntityManager;
 import game.entity.type.EntityType;
 import game.entity.type.data.EntityData;
 import game.gridData.map.Mapdata;
 import game.map.Map;
-import game.overlay.DayManager;
 import game.tick.TickManager;
 
 public abstract class Entity {
@@ -96,6 +94,7 @@ public abstract class Entity {
 	
 	public void tick(){
 		this.moveManager.tick();
+		this.setLightLevel(Map.getMap().getMapData(this.getBlockLocation())[Map.DEFAULT_GROUNDLAYER].getLightLevel());
 	}
 	
 	public boolean canReach(Location target) {

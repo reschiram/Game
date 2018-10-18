@@ -36,11 +36,11 @@ public class EquipmentInventory extends Inventory{
 	}
 
 	@Override
-	public boolean removeItem(Item item){
-		boolean removed = super.removeItem(item);
+	public int removeItem(Item item){
+		int removed = super.removeItem(item);
 		if(item instanceof Equipment){
 			boolean removedFromEquipment = removeFromEquipment(item, true);
-			return removed || (!removed && removedFromEquipment);
+			return (removed==0 || (removed!=0 && removedFromEquipment)) ? 0 : item.getAmount();
 		}
 		return removed;
 	}

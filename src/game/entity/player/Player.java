@@ -9,7 +9,8 @@ import Data.Image.Image;
 import Engine.Engine;
 import data.ImageData;
 import game.entity.Entity;
-import game.entity.player.playerDrone.PlayerDrone;
+import game.entity.player.playerDrone.Drone;
+import game.entity.player.playerDrone.DroneConstructor;
 import game.entity.type.EntityType;
 import game.entity.type.data.EntityData;
 import game.entity.type.data.EntityInventoryData;
@@ -18,8 +19,8 @@ import game.entity.type.interfaces.EntityInventory;
 import game.entity.type.interfaces.EntityLight;
 import game.inventory.Inventory;
 import game.inventory.ItemCollector;
-import game.inventory.equipment.Equipment;
 import game.inventory.equipment.EquipmentInventory;
+import game.inventory.equipment.tools.BuildTool;
 import game.inventory.equipment.tools.DigTool;
 import game.map.Map;
 
@@ -30,9 +31,8 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 	private PlayerInterface playerInterface;
 	private ItemCollector itemCollector;
 	
-	private PlayerDrone drone;
+	private ArrayList<Drone> drones = new ArrayList<>();
 	private EquipmentInventory inventory;
-	private int currentEquipment;
 	
 	public Player(Location location){
 		super(new ArrayList<>());
@@ -52,9 +52,17 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		this.inventory = (EquipmentInventory) itemCollector.getInventory();
 		
 		this.inventory.addItem(new DigTool());
+		this.inventory.addItem(new BuildTool());
 		
-		drone = new PlayerDrone(this);
+		Drone drone = DroneConstructor.constructStarterDrone(this);
 		drone.show();
+		this.drones.add(drone);
+		drone = DroneConstructor.constructStarterBuildDrone(this);
+		drone.show();
+		this.drones.add(drone);
+		drone = DroneConstructor.constructStarterDestructionDrone(this);
+		drone.show();
+		this.drones.add(drone);
 		
 	}
 	
@@ -74,11 +82,6 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		
 		playerInterface.tick();
 		itemCollector.tick();
-		
-		if(inventory.getEquipment(currentEquipment)!=null){
-			Equipment equip = inventory.getEquipment(currentEquipment);
-			if(equip.isTriggered())equip.use(this);
-		}
 	}
 	
 	@Override
@@ -94,8 +97,8 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		return itemCollector.getInventory();
 	}
 
-	public PlayerDrone getPlayerDrone() {
-		return drone;
+	public ArrayList<Drone> getPlayerDrones() {
+		return drones;
 	}
 
 	@Override

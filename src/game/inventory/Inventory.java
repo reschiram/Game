@@ -2,7 +2,6 @@ package game.inventory;
 
 import game.inventory.items.Item;
 import game.inventory.items.ItemType;
-import game.tick.TickManager;
 
 public class Inventory {
 	
@@ -33,16 +32,20 @@ public class Inventory {
 		return item.getAmount();
 	}
 	
-	public boolean removeItem(Item item){
+	public int removeItem(Item item){
 		for(int i = 0; i < this.items.length; i++){
 			if(items[i]!=null && items[i].isSimilar(item)){
 				int amount = items[i].getAmount()-item.getAmount();
-				if(amount<=0)items[i] = null;
-				else items[i].setAmount(amount);
-				return true;
+				if(amount<=0){
+					items[i] = null;
+					if(amount<0){
+						return removeItem(new Item(item.getItemType(), Math.abs(amount)));
+					}else return 0;
+				}else items[i].setAmount(amount);
+				return 0;
 			}
 		}
-		return false;
+		return item.getAmount();
 	}
 	
 	public int getSize(){
@@ -83,6 +86,17 @@ public class Inventory {
 
 	public void setItem(int slot, Item item) {
 		this.items[slot] = item;
+	}
+
+	public boolean hasItem(Item item) {
+		int amount = item.getAmount();
+		for(Item inv_item: items){
+			if(inv_item!=null && inv_item.getItemType().equals(item.getItemType())){
+				amount-=inv_item.getAmount();
+				if(amount<=0)return true;
+			}
+		}
+		return false;
 	}
 
 }
