@@ -162,7 +162,7 @@ public class Map {
 					data[i].setSurface(surface);
 				}
 			}
-			if(surface>0  && (data[DEFAULT_BUILDLAYER]!=null || (found!=-1 && surface!=Lamp.DEFAULT_SURFACE_LEVELS-1)) && data[found].getResource().isOpaque())surface--;
+			if(surface>0  && (data[DEFAULT_BUILDLAYER]!=null || (found!=-1 && surface!=Lamp.DEFAULT_SURFACE_LEVELS-1)) && data[found].getResource().isOpaque() && !data[found].isAlwaysSurface())surface--;
 		}
 	}
 	

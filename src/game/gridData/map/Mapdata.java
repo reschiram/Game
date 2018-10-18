@@ -4,6 +4,8 @@ import Data.DataObject;
 import Data.Location;
 import data.LightSpriteSheet;
 import data.MapResource;
+import data.map.Lamp;
+import game.Game;
 import game.gridData.GridData;
 import game.map.Map;
 import game.overlay.DayManager;
@@ -55,8 +57,31 @@ public abstract class Mapdata extends GridData{
 	}
 
 	public void setSurface(int surfaceLevel) {
+		if(isAlwaysSurface()){
+			if(!this.isSurface()){
+				this.surfaceLevel = Lamp.DEFAULT_SURFACE_LEVELS-1;
+				this.setLightLevel(1);
+			}
+			else return;
+		}
+		boolean wasSurface = isSurface();
 		this.surfaceLevel = surfaceLevel;
 		if(isSurface())this.setLightLevel(1);
+		else if(wasSurface){
+			this.setLightLevel(1);
+			Game.getLightOverlay().update(this, false);
+		}
+	}
+
+	public boolean isAlwaysSurface() {
+		if(this.getResource().isGround() && this.getResource().isAlwaysSurface()){
+			Mapdata[] data = Map.getMap().getMapData(this.location);
+			for(int i = Map.DEFAULT_BUILDLAYER; i<data.length; i++){
+				if(data[i]!=null && data[i].getResource().isOpaque())return false;
+			}
+			return true;
+		}		
+		return false;
 	}
 
 	public boolean canHost(int width, int height) {
