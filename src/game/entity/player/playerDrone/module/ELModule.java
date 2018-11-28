@@ -24,15 +24,15 @@ public class ELModule extends DroneModule{
 			this.recharge();
 		}
 		if(energyLoad == 0 || isLoading ){
-			if(!this.drone.getPathFinder().hasTarget() || !this.drone.getPathFinder().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation())){
-				this.drone.getPathFinder().setBlocked(false);
-				this.drone.getPathFinder().setBlockTarget(this.drone.getHost().getBlockLocation());
-				this.drone.getPathFinder().setBlocked(true);
+			if(!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation())){
+				this.drone.getPathController().setBlocked(false);
+				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
+				this.drone.getPathController().setBlocked(true);
 			}
 			this.isLoading = true;
 		}
 		if(energyLoad > 0.8*maxEnergyLoad){
-			this.drone.getPathFinder().setBlocked(false);
+			this.drone.getPathController().setBlocked(false);
 			this.isLoading = false;
 		}
 	}

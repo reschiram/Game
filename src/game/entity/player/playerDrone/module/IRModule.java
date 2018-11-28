@@ -14,11 +14,11 @@ public class IRModule extends DroneModule{
 	public void tick() {
 		if(!this.requestedItems.isEmpty() && collectItems()){
 			if(this.drone.getBlockLocation().distance_Math(this.drone.getHost().getBlockLocation()) != 0){
-				if(!this.drone.getPathFinder().hasTarget() || ((this.drone.getPathFinder().reachedDestination() && !this.drone.isWorking()) || !this.drone.getPathFinder().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))){
-					this.drone.getPathFinder().setBlockTarget(this.drone.getHost().getBlockLocation());
+				if(!this.drone.getPathController().hasTarget() || ((this.drone.getPathController().reachedDestination() && !this.drone.isWorking()) || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))){
+					this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
 				}
 			}else{
-				this.drone.getPathFinder().setTarget(null);
+				this.drone.getPathController().setTarget(null);
 				
 				Inventory pInv = this.drone.getHost().getInventory();
 				Inventory dInv = ((InvModule)this.drone.getModule(InvModule.class)).getInventory();

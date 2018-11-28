@@ -213,4 +213,8 @@ public abstract class Entity {
 	public long getLastLightUpdate() {
 		return lastLightUpdate;
 	}
+
+	public int getID() {
+		return id;
+	}
 }

@@ -12,11 +12,11 @@ import game.entity.player.Player;
 import game.entity.player.playerDrone.module.DroneModule;
 import game.entity.type.EntityType;
 import game.map.Map;
-import game.pathFinder.PathFinder;
+import game.pathFinder.PathController;
 
 public class Drone extends Entity{
 
-	protected PathFinder pathFinder;
+	protected PathController pathFinder;
 	protected Player player;
 	
 	protected int[] lastMoved = new int[]{0,0};
@@ -35,7 +35,7 @@ public class Drone extends Entity{
 				DEFAULT_DIRECTION, Map.DEFAULT_BUILDLAYER+DEFAULT_ENTITY_UP+1, new ImageData(new Location(0,0), image));
 		
 		this.player = player;		
-		this.pathFinder = new PathFinder(this, 20);
+		this.pathFinder = new PathController(this, Map.getMap().getPathSystem());
 		
 		this.moveManager.setDoAccelerateXVelocity(false);
 		this.moveManager.setDoAccelerateYVelocity(false);
@@ -44,7 +44,6 @@ public class Drone extends Entity{
 	@Override
 	public void tick(){
 		super.tick();
-		this.pathFinder.tick();
 		
 		if(pathFinder.hasTarget()){
 			int[] directions = this.pathFinder.nextDirection();
@@ -67,7 +66,7 @@ public class Drone extends Entity{
 		return lastMoved;
 	}
 
-	public PathFinder getPathFinder() {
+	public PathController getPathController() {
 		return this.pathFinder;
 	}
 

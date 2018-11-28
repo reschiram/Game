@@ -16,15 +16,16 @@ import game.Game;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.gridData.map.*;
+import game.pathFinder.system.PathSystem;
 
 public class Map {
 	
-	public static int DEFAULT_SQUARESIZE  = 64;
-	public static int DEFAULT_CHUNKSIZE   = 10;
-	public static int DEFAULT_GROUNDLAYER =  0;
-	public static int DEFAULT_BUILDLAYER  =  2;
+	public static final int DEFAULT_SQUARESIZE  = 64;
+	public static final int DEFAULT_CHUNKSIZE   = 10;
+	public static final int DEFAULT_GROUNDLAYER =  0;
+	public static final int DEFAULT_BUILDLAYER  =  2;
 	
-	public static int DEFAULT_GROUNDLEVEL = 50; 
+	public static final int DEFAULT_GROUNDLEVEL = 50; 
 	
 	private static Map Map;
 	public static Map getMap() {
@@ -38,6 +39,7 @@ public class Map {
 	
 	private MapChunk[][] chunks;	
 	private EntityManager entityManager;
+	private PathSystem pathSystem;
 
 	private double xm = 0;
 	private double ym = 0;
@@ -59,6 +61,8 @@ public class Map {
 
 		entityManager = new EntityManager(chunks.length, chunks[0].length);
 		Engine.setGameWidth(Width*DEFAULT_SQUARESIZE);
+		
+		pathSystem = new PathSystem(this);
 	}
 	
 	public Map(int[][][] ground, int[][][] build, int seed){
@@ -82,6 +86,8 @@ public class Map {
 
 		entityManager = new EntityManager(chunks.length, chunks[0].length);
 		Engine.setGameWidth(Width*DEFAULT_SQUARESIZE);
+		
+		pathSystem = new PathSystem(this);
 	}
 
 	public boolean hasResource(MapResource res, int x, int y){
@@ -367,5 +373,9 @@ public class Map {
 		Mapdata data = getMapData(loc)[Entity.DEFAULT_ENTITY_UP+DEFAULT_BUILDLAYER];
 		if(((data !=null && !data.canHost(entity.getWidth(), entity.getHeight())))|| !entity.canReach(loc)) return false;
 		return true;
+	}
+
+	public PathSystem getPathSystem() {
+		return pathSystem;
 	}
 }
