@@ -11,6 +11,10 @@ import java.util.Arrays;
 import data.DataPackage;
 import data.PackageType;
 import data.Queue;
+import data.events.client.ClientLostConnectionToServerEvent;
+import data.exceptions.UnsupportedPackageException;
+import data.exceptions.client.ServerNotFoundException;
+import data.exceptions.handler.DefaultExceptionHandler;
 
 public class ClientConnectionHandler {
 	
@@ -19,6 +23,8 @@ public class ClientConnectionHandler {
 	
 	private Socket socket;
 	private Client client;
+	
+	private boolean ended = false;
 
 	public ClientConnectionHandler(Client client, String ip, int port) {
 		try {
@@ -30,36 +36,35 @@ public class ClientConnectionHandler {
 		this.client = client;
 	}
 	
-	public void connect(){
+	public void connect() throws ServerNotFoundException{
 		try {
-			socket = new Socket(ip, port);
-			System.out.println("from: "+socket.getInetAddress());
 			
-			new Thread(new Runnable() {
-				
+			socket = new Socket(ip, port);
+			
+			new Thread(new Runnable() {				
 				@Override
-				public void run() {		
-					
+				public void run() {							
 					while(isConnected()){
-						acceptData();
-					}
-					
+						try {
+							acceptData();
+						} catch (UnsupportedPackageException e) {
+							DefaultExceptionHandler.getDefaultExceptionHandler().getDefaultHandler_UnsupportedPackageException().handleError(e);
+						}
+					}					
 				}
 			}).start();
 			
 		} catch (IOException e) {
-			System.out.println("No Server Found");
-			this.client.endClient();
+			throw new ServerNotFoundException(e, this.client, ip, port);
 		}
 	}
 
-	private void acceptData() {
+	private void acceptData() throws UnsupportedPackageException {
 		Queue<DataPackage> dataStream = new Queue<>();
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
 			for(int length = socket.getInputStream().read(income); length!=-1 && isConnected(); length = socket.getInputStream().read(income)){
-				System.out.println("\""+new String(income, "UTF-8")+"\"");	
-				
+				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);				
 								
 				DataPackage dataPackage = null;
 				try {
@@ -73,17 +78,20 @@ public class ClientConnectionHandler {
 				income = new byte[DataPackage.PACKAGESIZE];
 			}
 		} catch (IOException e) {
-			System.out.println("Error while reading income");
-			socket = null;
+			if(this.client.run() && !ended){
+				this.client.endClient();
+				this.client.connectionLost(new ClientLostConnectionToServerEvent(this.socket));
+			}
+			ended = true;
 		}
 	}
 
-	private void handNewDataPackage(DataPackage dataPackage, Queue<DataPackage> dataStream) throws UnsupportedEncodingException {dataStream.add(dataPackage);
+	private void handNewDataPackage(DataPackage dataPackage, Queue<DataPackage> dataStream) throws UnsupportedEncodingException, UnsupportedPackageException {
+		dataStream.add(dataPackage);
 		if(dataPackage.isEnd()){
 			ByteBuffer data = ByteBuffer.allocate(DataPackage.PACKAGESIZE);
 			int actuallLength = 0;
 			while(!dataStream.isEmpty()){
-				System.out.println("\""+new String(dataStream.get().getByteData(), "UTF-8")+"\""+DataPackage.ID_Length+"->"+(dataStream.get().getByteData().length-DataPackage.ID_Length));
 				actuallLength+=dataStream.get().getByteData().length;
 				data.put(dataStream.get().getByteData(), DataPackage.ID_Length, dataStream.get().getByteData().length-DataPackage.ID_Length);
 				dataStream.remove();
@@ -91,8 +99,7 @@ public class ClientConnectionHandler {
 			try {
 				this.client.fromServer(PackageType.readPackageData(dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength)));
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("Unsupported Package ID: "+dataPackage.getId()+" with data: "+data);
+				throw new UnsupportedPackageException(e, dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength));
 			}
 		}
 	}
@@ -100,19 +107,32 @@ public class ClientConnectionHandler {
 	public void send(Queue<DataPackage> packages) {
 		try {
 			while(!packages.isEmpty()){
-				System.out.println(new String(packages.get().getByteData(), "UTF-8"));
 				socket.getOutputStream().write(packages.get().getByteData());
 				packages.remove();
 			}
-		} catch (UnsupportedEncodingException e) {
-			System.out.println("Not Supported Char detected");
 		} catch (IOException e) {
-			System.out.println("Error while contacting the server");
+			if(this.client.run() && !ended){
+				this.client.endClient();
+				this.client.connectionLost(new ClientLostConnectionToServerEvent(this.socket));
+			}
+			ended = true;
 		}
 	}
 
 	public boolean isConnected() {
 		return socket!=null && socket.isConnected() && !socket.isClosed() && client.run();
+	}
+
+	public void endConnection() {
+		this.socket = null;
+	}
+
+	public Socket getConnection() {
+		return socket;
+	}
+
+	public boolean isEnded() {
+		return ended;
 	}
 
 }

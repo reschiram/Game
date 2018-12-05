@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import data.readableData.EmptyData;
 import data.readableData.LongData;
 import data.readableData.ShortIntData;
 
@@ -15,9 +16,11 @@ public class DataPackage {
 	
 	
 	public static final int PackageType_InitConnection = 0;
+	public static final int PackageType_Heartbeat = 2;
 	
 	public static void loadInternalPackageIds(){
 		setType(new PackageType(PackageType_InitConnection, "InitConnection", new LongData("Connection-ID")));
+		setType(new PackageType(PackageType_Heartbeat, "Heartbeat", new EmptyData("Empty")));
 	}
 	
 	private static final ArrayList<PackageType> PackageTypes = new ArrayList<>();

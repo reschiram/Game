@@ -37,5 +37,10 @@ public class DoubleData extends ReadableData<Double> {
 		if(this.data!=null)newData.data = this.data.doubleValue();
 		return newData;
 	}
-
+	
+	@Override
+	public String toString() {
+		if(this.data == null)return "0.0";
+		return this.data.doubleValue()+"";
+	}
 }

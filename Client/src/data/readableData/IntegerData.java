@@ -36,5 +36,10 @@ public class IntegerData extends ReadableData<Integer>{
 		if(this.data!=null)newData.data = this.data.intValue();
 		return newData;
 	}
-
+	
+	@Override
+	public String toString() {
+		if(this.data == null)return "0";
+		return this.data.intValue()+"";
+	}
 }

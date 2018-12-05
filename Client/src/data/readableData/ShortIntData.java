@@ -34,5 +34,11 @@ public class ShortIntData extends ReadableData<ShortInt>{
 		if(this.data!=null)newData.data = this.data.clone();
 		return newData;
 	}
+	
+	@Override
+	public String toString() {
+		if(this.data == null)return "0";
+		return this.data.toString();
+	}
 
 }

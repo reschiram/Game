@@ -28,6 +28,8 @@ public abstract class ReadableData<ContentType>{
 	
 	public abstract byte[] toData() throws Exception;
 	
+	public abstract String toString();
+	
 	public abstract ReadableData<ContentType> clone();
 
 	public String getName() {
