@@ -35,5 +35,15 @@ public class Queue<ContentType> {
 	public boolean isEmpty(){
 		return head==null;
 	}
+	
+	public Queue<ContentType> clone(){
+		Queue<ContentType> clone = new Queue<>();
+		Node node = head;
+		while(node!=null){
+			clone.add(node.Object);
+			node = node.next;
+		}
+		return clone;
+	}
 
 }

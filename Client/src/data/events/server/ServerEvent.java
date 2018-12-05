@@ -4,8 +4,15 @@ import data.events.Event;
 
 public class ServerEvent extends Event{
 	
-	public ServerEvent(){
+	private long clientID;
+	
+	public ServerEvent(long clientID){
 		super();
+		this.clientID = clientID;
+	}
+
+	public long getClientID() {
+		return clientID;
 	}
 
 }

@@ -25,5 +25,9 @@ public class ConnectionHandler {
 		lastID++;
 		return lastID-1;
 	}
+	
+	public ServerClient getServerClient(long id){
+		return this.connectedConnections.get(id);
+	}
 
 }

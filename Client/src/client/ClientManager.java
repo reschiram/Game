@@ -4,6 +4,7 @@ import data.DataPackage;
 import data.PackageType;
 import data.Queue;
 import data.events.client.ToClientMessageEvent;
+import data.exceptions.client.ServerNotFoundException;
 import data.readableData.LongData;
 
 public class ClientManager {
@@ -22,7 +23,7 @@ public class ClientManager {
 		return this.eventManager;
 	}
 	
-	public void connectToServer(){
+	public void connectToServer() throws ServerNotFoundException{
 		this.client.connect();
 	}
 

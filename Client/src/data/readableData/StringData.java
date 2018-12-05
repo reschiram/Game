@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 public class StringData extends ReadableData<String>{
 
-	public static final String Default_Format = "UTF-8";
+	public static final String Default_Format = "ISO_8859_1";
 	
 	private String format;
 	
@@ -46,6 +46,12 @@ public class StringData extends ReadableData<String>{
 		StringData newData = new StringData(this.getName()+"", this.byteLength, this.format);
 		if(this.data!=null)newData.data = this.data+"";
 		return newData;
+	}
+
+	@Override
+	public String toString() {
+		if(this.data == null)return "";
+		else return this.data;
 	}
 
 }

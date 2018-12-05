@@ -7,7 +7,7 @@ public class NewClientConnectionEvent extends ServerEvent{
 	ServerClient serverClient;
 
 	public NewClientConnectionEvent(ServerClient serverClient) {
-		super();
+		super(serverClient.getId());
 		this.serverClient = serverClient;
 	}
 
