@@ -31,7 +31,7 @@ public class ClientManager {
 		ToClientMessageEvent event = new ToClientMessageEvent(message);
 		handleInternalMessages(event);
 		if(event.isActive()){
-			this.eventManager.publishClientMessageEvent(event);
+			this.eventManager.publishClientEvent(event);
 		}
 	}
 
@@ -48,6 +48,10 @@ public class ClientManager {
 
 	public void sendToServer(Queue<DataPackage> packages) {
 		this.client.sendToServer(packages);
+	}
+
+	public boolean isConnected() {
+		return client.isConnected();
 	}
 
 }

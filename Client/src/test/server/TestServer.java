@@ -40,12 +40,20 @@ public class TestServer implements NewClientConnectionEventListener, ToServerMes
 
 	@Override
 	public void newServerClient(NewClientConnectionEvent event) {
-		System.out.println("New Client: "+event.getServerClient().getId()+"->"+event.getServerClient().getConnectionAdress());
+		System.out.println("New Client: "+event.getClientID());
 	}
 
 	@Override
 	public void connectionLost(ServerLostConnectionToClientEvent event) {
 		System.out.println("Lost Connection to Client:"+event.getClientID()+". Connection is active:"+event.isActive()+", is closed:"+event.isClosed()+" has been ended:"+event.isEnded());		
+	}
+
+	public void tick() {
+		if(serverManager!=null)this.serverManager.tick();
+	}
+
+	public boolean isConnected() {
+		return serverManager.isConnected();
 	}
 
 }

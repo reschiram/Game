@@ -56,4 +56,8 @@ public class TestClient implements ToClientMessageEventListener, ClientLostConne
 		System.out.println("Lost Connection to Server. Connection is active:"+event.isActive()+", is closed:"+event.isClosed()+" has been ended:"+event.isEnded());
 	}
 
+	public void tick() {
+		if(clientManager!=null)this.clientManager.getEventManager().tick();
+	}
+
 }

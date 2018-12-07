@@ -1,6 +1,7 @@
 package client;
 
 import data.DataPackage;
+import data.Funktions;
 import data.PackageType;
 import data.Queue;
 import data.events.client.ClientLostConnectionToServerEvent;
@@ -15,12 +16,14 @@ public class Client {
 	private long id;
 	private boolean run = true;
 	
-	public Client(ClientManager clientManager, String ip){
+	private Queue<Queue<DataPackage>> toServer = new Queue<>();
+	
+	Client(ClientManager clientManager, String ip){
 		this.clientManager = clientManager;
 		this.cch = new ClientConnectionHandler(this, ip, Port);
 	}
 
-	private void startHeartbeatSender() {
+	private void startInternalThread() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -34,51 +37,59 @@ public class Client {
 				
 				while(cch.isConnected() && !cch.isEnded()){
 					cch.send(heartbeat.clone());
-					try {
-						synchronized (Thread.currentThread()) {
-							Thread.currentThread().wait(1000);							
+					long currentTime = System.currentTimeMillis();
+					while(System.currentTimeMillis()-currentTime < 1000){
+						while(!toServer.isEmpty()){
+							cch.send(toServer.get());
+							toServer.remove();
 						}
-					} catch (InterruptedException e) {e.printStackTrace();}
+						Funktions.wait(1);
+					}
 				}
+				
 				if(!cch.isEnded()){
 					endClient();
-					clientManager.getEventManager().publishClientLostConnectionToServerEvent(new ClientLostConnectionToServerEvent(cch.getConnection()));
+					clientManager.getEventManager().publishClientEvent(new ClientLostConnectionToServerEvent(cch.getConnection()));
 				}
 			}
 		}).start();
 	}
 
-	public Client(ClientManager clientManager, String ip, int port) {
+	Client(ClientManager clientManager, String ip, int port) {
 		this.clientManager = clientManager;
 		cch = new ClientConnectionHandler(this, ip, port);
 	}
 	
-	public void connect() throws ServerNotFoundException{
+	void connect() throws ServerNotFoundException{
 		this.cch.connect();
 		
-		startHeartbeatSender();
+		startInternalThread();
 	}
 
-	public void endClient() {
+	void endClient() {
 		this.cch.endConnection();
 		this.run = false;
 	}
 	
-	public void sendToServer(Queue<DataPackage> packages){
+	void sendToServer(Queue<DataPackage> packages){
 		if(this.cch.isConnected()){
-			this.cch.send(packages);
+			this.toServer.add(packages);
 		}
 	}
 
 	public boolean run() {
 		return run;
 	}
+	
+	boolean isConnected(){
+		return cch.isConnected();
+	}
 
-	public void fromServer(PackageType message) {
+	void fromServer(PackageType message) {
 		this.clientManager.publishNewMessage(message);
 	}
 
-	public void setId(long id) {
+	void setId(long id) {
 		this.id = id;
 	}	
 
@@ -86,8 +97,8 @@ public class Client {
 		return this.id;
 	}
 
-	public void connectionLost(ClientLostConnectionToServerEvent event) {
-		this.clientManager.getEventManager().publishClientLostConnectionToServerEvent(event);
+	void connectionLost(ClientLostConnectionToServerEvent event) {
+		this.clientManager.getEventManager().publishClientEvent(event);
 	}	
 
 }

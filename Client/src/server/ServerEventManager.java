@@ -2,8 +2,10 @@ package server;
 
 import java.util.ArrayList;
 
+import data.Queue;
 import data.events.server.NewClientConnectionEvent;
 import data.events.server.NewClientConnectionEventListener;
+import data.events.server.ServerEvent;
 import data.events.server.ServerLostConnectionToClientEvent;
 import data.events.server.ServerLostConnectionToClientEventListener;
 import data.events.server.ToServerMessageEvent;
@@ -19,17 +21,11 @@ public class ServerEventManager {
 	
 	@SuppressWarnings("unchecked")
 	private ArrayList<ServerLostConnectionToClientEventListener>[] serverLostConnectionToClientEventListenerdb = new ArrayList[10];
-
-	public void publishNewToServerMessageEvent(ToServerMessageEvent event) {
-		for(int prorityLevel = 0; prorityLevel<this.serverMessageEventListenerdb.length && event.isActive(); prorityLevel++){
-			ArrayList<ToServerMessageEventListener> eventListener = this.serverMessageEventListenerdb[prorityLevel];
-			if(eventListener!=null){
-				for(int i = 0; i<eventListener.size() && event.isActive(); i++){
-					ToServerMessageEventListener listener = eventListener.get(i);
-					listener.messageFromClient(event);
-				}
-			}
-		}
+	
+	private Queue<ServerEvent> publishedEvents = new Queue<>();
+	
+	public void publishServerEvent(ServerEvent event){
+		this.publishedEvents.add(event);
 	}
 
 	public void registerServerMessageEventListener(ToServerMessageEventListener listener, int priority) {
@@ -38,40 +34,51 @@ public class ServerEventManager {
 		this.serverMessageEventListenerdb[priority].add(listener);
 	}
 
-	public void publishNewClientConnectionEvent(NewClientConnectionEvent event) {
-		for(int prorityLevel = 0; prorityLevel<this.newClientConnectionEventListenerdb.length && event.isActive(); prorityLevel++){
-			ArrayList<NewClientConnectionEventListener> eventListener = this.newClientConnectionEventListenerdb[prorityLevel];
-			if(eventListener!=null){
-				for(int i = 0; i<eventListener.size() && event.isActive(); i++){
-					NewClientConnectionEventListener listener = eventListener.get(i);
-					listener.newServerClient(event);
-				}
-			}
-		}
-	}
-
 	public void registerNewClientConnectionEventListener(NewClientConnectionEventListener listener, int priority) {
 		if(priority>newClientConnectionEventListenerdb.length-1)priority = newClientConnectionEventListenerdb.length-1;
 		if(this.newClientConnectionEventListenerdb[priority]==null)this.newClientConnectionEventListenerdb[priority] = new ArrayList<>();
 		this.newClientConnectionEventListenerdb[priority].add(listener);
 	}
 
-	public void publishNewServerLostConnectionToClientEvent(ServerLostConnectionToClientEvent event) {
-		for(int prorityLevel = 0; prorityLevel<this.serverLostConnectionToClientEventListenerdb.length && event.isActive(); prorityLevel++){
-			ArrayList<ServerLostConnectionToClientEventListener> eventListener = this.serverLostConnectionToClientEventListenerdb[prorityLevel];
-			if(eventListener!=null){
-				for(int i = 0; i<eventListener.size() && event.isActive(); i++){
-					ServerLostConnectionToClientEventListener listener = eventListener.get(i);
-					listener.connectionLost(event);
-				}
-			}
-		}
-	}
-
 	public void registerServerLostConnectionToClientEventListener(ServerLostConnectionToClientEventListener listener, int priority) {
 		if(priority>serverLostConnectionToClientEventListenerdb.length-1)priority = serverLostConnectionToClientEventListenerdb.length-1;
 		if(this.serverLostConnectionToClientEventListenerdb[priority]==null)this.serverLostConnectionToClientEventListenerdb[priority] = new ArrayList<>();
 		this.serverLostConnectionToClientEventListenerdb[priority].add(listener);
+	}
+	
+	void tick(){
+		while(!publishedEvents.isEmpty()){
+			ServerEvent  event = publishedEvents.get();
+			publishedEvents.remove();
+			if(event instanceof ToServerMessageEvent){
+				handleNewEvent(event, this.serverMessageEventListenerdb);
+			}else if(event instanceof NewClientConnectionEvent){
+				handleNewEvent(event, this.newClientConnectionEventListenerdb);
+			}else if(event instanceof ServerLostConnectionToClientEvent){
+				handleNewEvent(event, this.serverLostConnectionToClientEventListenerdb);
+			}
+		}
+	}
+
+	private void handleNewEvent(ServerEvent event, ArrayList<?>[] eventListnerdb) {
+		for(int prorityLevel = 0; prorityLevel<eventListnerdb.length && event.isActive(); prorityLevel++){
+			ArrayList<?> eventListener = eventListnerdb[prorityLevel];
+			if(eventListener!=null){
+				for(int i = 0; i<eventListener.size() && event.isActive(); i++){
+					Object listener = eventListener.get(i);
+					if(event instanceof ToServerMessageEvent){
+						ToServerMessageEventListener tsm = (ToServerMessageEventListener)listener;
+						tsm.messageFromClient((ToServerMessageEvent) event);
+					}else if(event instanceof NewClientConnectionEvent){
+						NewClientConnectionEventListener ncc= (NewClientConnectionEventListener)listener;
+						ncc.newServerClient((NewClientConnectionEvent) event);
+					}else if(event instanceof ServerLostConnectionToClientEvent){
+						ServerLostConnectionToClientEventListener slctc= (ServerLostConnectionToClientEventListener)listener;
+						slctc.connectionLost((ServerLostConnectionToClientEvent) event);
+					}
+				}
+			}
+		}
 	}
 
 }

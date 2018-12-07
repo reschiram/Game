@@ -3,7 +3,9 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
+import data.Funktions;
 import data.Queue;
 import data.exceptions.UnsupportedPackageException;
 import data.exceptions.handler.DefaultExceptionHandler;
@@ -21,13 +23,13 @@ public class Server {
 	
 	private Queue<ServerMessage> serverMessages = new Queue<>();
 	
-	public Server(ServerManager serverManager){
+	Server(ServerManager serverManager){
 		
 		this.connectionHandler = new ConnectionHandler(this);
 		this.serverManager = serverManager;
 	}
 	
-	public void openConnection() throws ServerPortException{
+	void openConnection() throws ServerPortException{
 
 		try {
 			this.serverSocket = new ServerSocket(Port);
@@ -49,11 +51,7 @@ public class Server {
 						serverMessages.remove();
 						connectionHandler.getServerClient(message.getId()).sendToClient(message.getMessage());
 					}
-					try {
-						synchronized (Thread.currentThread()) {
-							Thread.currentThread().wait(1);							
-						}
-					} catch (InterruptedException e) {e.printStackTrace();}
+					Funktions.wait(1);
 				}
 			}
 		}).start();
@@ -73,7 +71,7 @@ public class Server {
 		}).start();
 	}
 
-	protected void handleNewClient(Socket client) {
+	private void handleNewClient(Socket client) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -90,11 +88,23 @@ public class Server {
 		}).start();
 	}
 
-	public ServerManager getServerManager() {
+	ServerManager getServerManager() {
 		return serverManager;
 	}
 
-	public void sendToServerClient(ServerMessage serverMessage) {
+	void sendToServerClient(ServerMessage serverMessage) {
 		serverMessages.add(serverMessage);
+	}
+
+	boolean isConnected() {
+		return this.serverSocket!=null && this.serverSocket.isBound();
+	}
+
+	public void tick() {
+		this.connectionHandler.tick();
+	}
+
+	public ArrayList<Long> getConnectedClients() {
+		return this.connectionHandler.getConnectedClients();
 	}
 }

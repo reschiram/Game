@@ -52,6 +52,7 @@ public class ClientTestMain {
 						}
 					}
 				}
+				if(testClient!=null)testClient.tick();
 			}
 		};
 		new Timer().schedule(task, 1, 1);

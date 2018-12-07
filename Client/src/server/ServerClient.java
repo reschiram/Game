@@ -12,7 +12,9 @@ import java.util.Arrays;
 import data.DataPackage;
 import data.PackageType;
 import data.Queue;
+import data.events.server.NewClientConnectionEvent;
 import data.events.server.ServerLostConnectionToClientEvent;
+import data.events.server.ToServerMessageEvent;
 import data.exceptions.UnsupportedPackageException;
 
 public class ServerClient {
@@ -29,7 +31,7 @@ public class ServerClient {
 	private long lastHeartbeat = -1;
 	private boolean ended = false;
 	
-	public ServerClient(Server server, Socket client, Long id) {
+	ServerClient(Server server, Socket client, Long id) {
 		this.connection = client;
 		this.id = id;
 		this.server = server;
@@ -38,32 +40,24 @@ public class ServerClient {
 			this.out = client.getOutputStream();
 			this.in = client.getInputStream();
 		} catch (IOException e) {e.printStackTrace();}
-		
-		startConnectionChecker();
+	}
+	
+	public void tick(){
+		checkIsAlive();
 	}
 
-	private void startConnectionChecker() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while(isConnected() && (System.currentTimeMillis()-lastHeartbeat<=maxHeartbeatDuration || lastHeartbeat == -1)){
-					try {
-						synchronized (Thread.currentThread()) {
-							Thread.currentThread().wait(1);							
-						}
-					} catch (InterruptedException e) {e.printStackTrace();}
-				}
-				connection = null;
-				if(!ended){
-					ended = true;
-					server.getServerManager().getEventManager().publishNewServerLostConnectionToClientEvent(new ServerLostConnectionToClientEvent(id, connection));
-				}
+	private void checkIsAlive(){
+		if(!isConnected() || !(System.currentTimeMillis()-lastHeartbeat<=maxHeartbeatDuration || lastHeartbeat == -1)){
+			connection = null;
+			if(!ended){
+				ended = true;
+				server.getServerManager().getEventManager().publishServerEvent(new ServerLostConnectionToClientEvent(id, connection));
 			}
-		}).start();
+		}			
 	}
 
-	public void acceptConnection() {
-		this.server.getServerManager().publishNewClientConnectionEvent(this);
+	void acceptConnection() {
+		this.server.getServerManager().getEventManager().publishServerEvent(new NewClientConnectionEvent(this.getID()));
 		
 		try {
 			Queue<DataPackage> dbs = DataPackage.getPackage(PackageType.readPackageData(DataPackage.PackageType_InitConnection, id));
@@ -71,7 +65,7 @@ public class ServerClient {
 		} catch (Exception e) {e.printStackTrace();}
 	}
 
-	public void sendToClient(Queue<DataPackage> packages) {
+	void sendToClient(Queue<DataPackage> packages) {
 		if(isConnected()){
 			try {
 				while(!packages.isEmpty()){
@@ -82,18 +76,18 @@ public class ServerClient {
 				if(!isConnected()){
 					if(!ended){
 						ended = true;
-						server.getServerManager().getEventManager().publishNewServerLostConnectionToClientEvent(new ServerLostConnectionToClientEvent(id, connection));
+						server.getServerManager().getEventManager().publishServerEvent(new ServerLostConnectionToClientEvent(id, connection));
 					}
 				}
 			}
 		}
 	}
 
-	public boolean isConnected() {
+	boolean isConnected() {
 		return connection!=null && connection.isConnected() && !connection.isClosed();
 	}
 
-	public void scanForIncomingData() throws UnsupportedPackageException {
+	void scanForIncomingData() throws UnsupportedPackageException {
 		Queue<DataPackage> dataStream = new Queue<>();
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
@@ -116,7 +110,7 @@ public class ServerClient {
 			if(!isConnected()){
 				if(!ended){
 					ended = true;
-					server.getServerManager().getEventManager().publishNewServerLostConnectionToClientEvent(new ServerLostConnectionToClientEvent(id, connection));
+					server.getServerManager().getEventManager().publishServerEvent(new ServerLostConnectionToClientEvent(id, connection));
 				}
 			}
 		}
@@ -132,7 +126,7 @@ public class ServerClient {
 				dataStream.remove();
 			}
 			try {
-				this.server.getServerManager().publishNewMessageEvent(PackageType.readPackageData(dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength)), this.id.longValue());
+				this.server.getServerManager().getEventManager().publishServerEvent(new ToServerMessageEvent(this.getID(), PackageType.readPackageData(dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength))));
 			} catch (Exception e) {
 				throw new UnsupportedPackageException(e, dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength));
 			}
@@ -140,11 +134,11 @@ public class ServerClient {
 		}
 	}
 
-	public long getId() {
+	long getID() {
 		return this.id;
 	}
 
-	public InetAddress getConnectionAdress() {
+	InetAddress getConnectionAdress() {
 		return this.connection.getInetAddress();
 	}
 }

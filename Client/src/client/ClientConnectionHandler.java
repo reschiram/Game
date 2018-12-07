@@ -26,7 +26,7 @@ public class ClientConnectionHandler {
 	
 	private boolean ended = false;
 
-	public ClientConnectionHandler(Client client, String ip, int port) {
+	ClientConnectionHandler(Client client, String ip, int port) {
 		try {
 			InetAddress Host = InetAddress.getByName(ip);
 			ip =Host.getHostAddress();
@@ -36,7 +36,7 @@ public class ClientConnectionHandler {
 		this.client = client;
 	}
 	
-	public void connect() throws ServerNotFoundException{
+	void connect() throws ServerNotFoundException{
 		try {
 			
 			socket = new Socket(ip, port);
@@ -104,7 +104,7 @@ public class ClientConnectionHandler {
 		}
 	}
 
-	public void send(Queue<DataPackage> packages) {
+	void send(Queue<DataPackage> packages) {
 		try {
 			while(!packages.isEmpty()){
 				socket.getOutputStream().write(packages.get().getByteData());
@@ -119,19 +119,19 @@ public class ClientConnectionHandler {
 		}
 	}
 
-	public boolean isConnected() {
+	boolean isConnected() {
 		return socket!=null && socket.isConnected() && !socket.isClosed() && client.run();
 	}
 
-	public void endConnection() {
+	void endConnection() {
 		this.socket = null;
 	}
 
-	public Socket getConnection() {
+	Socket getConnection() {
 		return socket;
 	}
 
-	public boolean isEnded() {
+	boolean isEnded() {
 		return ended;
 	}
 
