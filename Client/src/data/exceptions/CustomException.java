@@ -7,9 +7,12 @@ public class CustomException extends Throwable{
 	private String message;
 	private Exception exception;
 	
+	private long created;
+	
 	public CustomException(Exception exception, String message){
 		this.message = message;
 		this.exception = exception;
+		this.created = System.currentTimeMillis();
 	}
 	
 	public String getErrorMessage(){
@@ -18,6 +21,10 @@ public class CustomException extends Throwable{
 
 	public Exception getException() {
 		return exception;
+	}
+
+	public long getCreatedTime() {
+		return created;
 	}
 
 }

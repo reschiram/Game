@@ -9,7 +9,10 @@ public class ConnectionHandler {
 	private Server server;
 	
 	private HashMap<Long, ServerClient> connectedConnections = new HashMap<>();
+	private ArrayList<Long> connections = new ArrayList<>();
 	private long lastID = 1l;
+	
+	private boolean inUse = false;
 
 	public ConnectionHandler(Server server) {
 		this.server = server;
@@ -18,8 +21,35 @@ public class ConnectionHandler {
 	ServerClient registerNewConnection(Socket client){
 		Long id = generateNewClientID();	
 		ServerClient sc = new ServerClient(this.server, client, id);
+		
+		waitForInUse();
+		
+		this.connections.add(id);
 		this.connectedConnections.put(id, sc);
+		
+		endInUse();
 		return sc;
+
+	}
+
+	private void waitForInUse() {
+		if(inUse){
+			synchronized (server) {
+				try {
+					server.wait();
+				} catch (InterruptedException e) {e.printStackTrace();}
+			}
+		}		
+		
+		inUse = true;
+	}
+	
+	private void endInUse(){
+		inUse = false;		
+		
+		synchronized (server) {
+			server.notify();
+		}		
 	}
 
 	long generateNewClientID() {
@@ -27,25 +57,38 @@ public class ConnectionHandler {
 		return lastID-1;
 	}
 	
-	ServerClient getServerClient(long id){
-		return this.connectedConnections.get(id);
+	ServerClient getServerClient(long id){		
+		waitForInUse();
+		
+		ServerClient sc = this.connectedConnections.get(id);
+		
+		endInUse();
+		return sc;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void tick() {
-		ArrayList<ServerClient> clients = (ArrayList<ServerClient>) new ArrayList<>(connectedConnections.values()).clone();
-		for(int i = 0; i<clients.size(); i++){
-			ServerClient client = clients.get(i);
+	public void tick() {		
+		waitForInUse();
+		
+		for(int i = 0; i<connections.size(); i++){
+			ServerClient client = connectedConnections.get(connections.get(i));
 			if(client.isConnected())client.tick();
 			else{
+				this.connections.remove(client.getID());
 				this.connectedConnections.remove(client.getID());
 			}
 		}
+		
+		endInUse();
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<Long> getConnectedClients() {
-		return (ArrayList<Long>) new ArrayList<>(connectedConnections.keySet()).clone();
+	public ArrayList<Long> getConnectedClients() {		
+		waitForInUse();
+		
+		ArrayList<Long> cc = (ArrayList<Long>) connections.clone();
+		
+		endInUse();
+		return cc;
 	}
 
 }
