@@ -1,6 +1,7 @@
 package data.exceptions.handler;
 
 import data.exceptions.CustomException;
+import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.UnsupportedPackageException;
 import data.exceptions.client.ServerNotFoundException;
 import data.exceptions.server.ServerPortException;
@@ -16,6 +17,7 @@ public class DefaultExceptionHandler {
 	
 	private ErrorHandler defaultHandler_ServerNotFoundException;
 	private ErrorHandler defaultHandler_UnsupportedPackageException;
+	private ErrorHandler defaultHandler_UnsupportedPackageCreationException;
 	private ErrorHandler defaultHandler_ServerPortException;
 	
 	public DefaultExceptionHandler(){
@@ -33,8 +35,18 @@ public class DefaultExceptionHandler {
 			@Override
 			public void handleError(CustomException exception) {
 				if(exception instanceof UnsupportedPackageException){
-					UnsupportedPackageException snfe = (UnsupportedPackageException)exception;
-					System.out.println(snfe.getErrorMessage());
+					UnsupportedPackageException up = (UnsupportedPackageException)exception;
+					System.out.println(up.getErrorMessage());
+				}
+			}
+		};
+		
+		this.defaultHandler_UnsupportedPackageCreationException = new ErrorHandler() {			
+			@Override
+			public void handleError(CustomException exception) {
+				if(exception instanceof UnsupportedPackageCreationException){
+					UnsupportedPackageCreationException upc = (UnsupportedPackageCreationException)exception;
+					System.out.println(upc.getErrorMessage());
 				}
 			}
 		};
@@ -43,8 +55,8 @@ public class DefaultExceptionHandler {
 			@Override
 			public void handleError(CustomException exception) {
 				if(exception instanceof ServerPortException){
-					ServerPortException snfe = (ServerPortException)exception;
-					System.out.println(snfe.getErrorMessage());
+					ServerPortException sp = (ServerPortException)exception;
+					System.out.println(sp.getErrorMessage());
 				}
 			}
 		};
@@ -72,6 +84,15 @@ public class DefaultExceptionHandler {
 
 	public void setDefaultHandler_ServerPortException(ErrorHandler defaultHandler_ServerPortException) {
 		this.defaultHandler_ServerPortException = defaultHandler_ServerPortException;
+	}
+
+	public ErrorHandler getDefaultHandler_UnsupportedPackageCreationException() {
+		return defaultHandler_UnsupportedPackageCreationException;
+	}
+
+	public void setDefaultHandler_UnsupportedPackageCreationException(
+			ErrorHandler defaultHandler_UnsupportedPackageCreationException) {
+		this.defaultHandler_UnsupportedPackageCreationException = defaultHandler_UnsupportedPackageCreationException;
 	}
 
 }
