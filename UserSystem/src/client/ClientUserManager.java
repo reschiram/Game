@@ -7,6 +7,8 @@ import data.UserPackageManager;
 import data.events.ClientLoginEvent;
 import data.events.client.ToClientMessageEvent;
 import data.events.client.ToClientMessageEventListener;
+import data.exceptions.LoginInformationCreationException;
+import data.exceptions.UnsupportedPackageCreationException;
 import data.user.User;
 
 public class ClientUserManager implements ToClientMessageEventListener{
@@ -27,14 +29,14 @@ public class ClientUserManager implements ToClientMessageEventListener{
 		this.clientManager.getEventManager().registerClientMessageEventListener(this, 1);
 	}
 
-	public void login(String username, String password) {
+	public void login(String username, String password) throws UnsupportedPackageCreationException, LoginInformationCreationException {
 		this.user = new User("", username, password);
 		
 		String encodedLoginInfo = this.userService.getEncodedLoginInfo(user);
 		try {
 			this.clientManager.sendToServer(DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLogin, encodedLoginInfo)));
 		} catch (Exception e) {
-			System.out.println("An excption occured, while packaging LoginInfo data: "+encodedLoginInfo);
+			throw new UnsupportedPackageCreationException(e, UserPackageManager.DataPackage_UserLogin, encodedLoginInfo);
 		}
 		
 		this.logginState = 1;
@@ -61,6 +63,14 @@ public class ClientUserManager implements ToClientMessageEventListener{
 	
 	public UserEventManager getUserEventManager(){
 		return this.userEventManager;
+	}
+	
+	public void logout() throws UnsupportedPackageCreationException{
+		try {
+			this.clientManager.sendToServer(DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLogout, new byte[0])));
+		} catch (Exception e) {
+			throw new UnsupportedPackageCreationException(e, UserPackageManager.DataPackage_UserLogout);
+		}
 	}
 
 }

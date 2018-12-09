@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
 import data.DeEnCode;
+import data.exceptions.LoginInformationCreationException;
 
 public class UserService {
 	
@@ -15,7 +16,7 @@ public class UserService {
 		this.deEnCode = new DeEnCode();
 	}
 	
-	protected String getUserLoginInfo(User user, BigInteger mult){		
+	protected String getUserLoginInfo(User user, BigInteger mult) throws LoginInformationCreationException{		
 		try{
 			String currentUsername = user.getUsername();
 			while(currentUsername.length()<25)currentUsername+=new String(new byte[]{0}, StringFormat);
@@ -31,10 +32,8 @@ public class UserService {
 			return currentLogin;
 	
 		}catch (UnsupportedEncodingException e) {
-			System.out.println("A fatal error has occoured while trying to confirm user: "+user.getUsername());
+			throw new LoginInformationCreationException(e, user.getUsername(), user.getPassword());
 		}
-		
-		return "";
 	}
 	
 	protected BigInteger getModForLoginInfo(){

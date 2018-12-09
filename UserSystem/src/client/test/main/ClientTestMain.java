@@ -49,6 +49,8 @@ public class ClientTestMain {
 						try {
 							if(task.type == UserPackageManager.DataPackage_UserLogin){
 								testClient.login("Test1", "1234");
+							}else if(task.type == UserPackageManager.DataPackage_UserLogout){
+								testClient.logout();
 							}else testClient.sendToServer(DataPackage.getPackage(PackageType.readPackageData(task.type, task.args)));
 						} catch (Exception e) {
 							e.printStackTrace();

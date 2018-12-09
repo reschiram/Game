@@ -1,6 +1,7 @@
 package data;
 
 import data.events.ClientLoginEvent;
+import data.readableData.EmptyData;
 import data.readableData.ShortIntData;
 import data.readableData.StringData;
 import data.user.User;
@@ -10,10 +11,12 @@ public class UserPackageManager {
 	
 	public static final int DataPackage_UserLogin = 4;
 	public static final int DataPackage_UserLoginConfirm = 6;
+	public static final int DataPackage_UserLogout = 8;
 
 	public static void loadPackageTypes(){		
 		DataPackage.setType(new PackageType(DataPackage_UserLogin, "UserLogin", new StringData("LoginInfo", 121, UserService.StringFormat)));	
-		DataPackage.setType(new PackageType(DataPackage_UserLoginConfirm, "UserLoginConfirm", new ShortIntData("UserLoginConfirmStatus(0:ok, 1:rejected)"), new StringData("UserID", User.ID_Length, UserService.StringFormat)));	
+		DataPackage.setType(new PackageType(DataPackage_UserLoginConfirm, "UserLoginConfirm", new ShortIntData("UserLoginConfirmStatus(0:ok, 1:rejected)"), new StringData("UserID", User.ID_Length, UserService.StringFormat)));
+		DataPackage.setType(new PackageType(DataPackage_UserLogout, "UserLogout", new EmptyData("empty")));		
 	}
 	
 	public static ClientLoginEvent getLoginEventFromData(PackageType data, String username){

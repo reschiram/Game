@@ -7,7 +7,9 @@ import data.PackageType;
 import data.UserEventManager;
 import data.UserPackageManager;
 import data.events.ClientConnectionValidationEvent;
+import data.exceptions.ClientLoginException;
 import data.exceptions.ClientValidationException;
+import data.exceptions.UserDatabaseReadingException;
 import data.user.User;
 
 public class ServerUserManager{
@@ -27,7 +29,7 @@ public class ServerUserManager{
 		new ServerListener(this, serverManager);
 	}
 
-	void login(long clientID, String loginInfo) {
+	void login(long clientID, String loginInfo) throws ClientLoginException {
 		User user = null;
 		try {
 			user = this.serverUserService.getUser(loginInfo);
@@ -37,7 +39,7 @@ public class ServerUserManager{
 				this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, 1, "")));
 				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(clientID, false, user));
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				throw new ClientLoginException(e, clientID, ClientLoginException.Reason_ClientInformException);
 			}
 		}else{
 			boolean valdiation = this.connectionManager.validate(clientID, user);
@@ -46,9 +48,13 @@ public class ServerUserManager{
 				else this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, "0", user.getID())));
 				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(clientID, valdiation, user));
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				throw new ClientLoginException(e, clientID, ClientLoginException.Reason_ClientInformException);
 			}
 		}
+	}
+
+	boolean isConnected() {
+		return serverManager.isConnected();
 	}
 
 	ConnectionManager getConnectionManager() {
@@ -67,11 +73,15 @@ public class ServerUserManager{
 		return this.connectionManager.getValidatetUser(clientID);
 	}
 
-	public void registerNewUser(User user) {
+	public void registerNewUser(User user) throws UserDatabaseReadingException {
 		this.serverUserService.registerNewUser(user);
 	}
 
 	public ArrayList<User> getAllRegisteredUsers() {
 		return this.serverUserService.getAllRegisteredUsers();
+	}
+	
+	public void delteUser(String userID) throws UserDatabaseReadingException{
+		this.serverUserService.deleteUser(userID);
 	}
 }

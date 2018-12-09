@@ -1,12 +1,15 @@
 package server;
 
+import data.DefaultUserExceptionHandler;
 import data.UserPackageManager;
+import data.events.ClientLogoutEvent;
 import data.events.server.NewClientConnectionEvent;
 import data.events.server.NewClientConnectionEventListener;
 import data.events.server.ServerLostConnectionToClientEvent;
 import data.events.server.ServerLostConnectionToClientEventListener;
 import data.events.server.ToServerMessageEvent;
 import data.events.server.ToServerMessageEventListener;
+import data.exceptions.ClientLoginException;
 
 public class ServerListener implements NewClientConnectionEventListener, ToServerMessageEventListener, ServerLostConnectionToClientEventListener{
 	
@@ -17,6 +20,7 @@ public class ServerListener implements NewClientConnectionEventListener, ToServe
 		
 		serverManager.getEventManager().registerNewClientConnectionEventListener(this, 1);
 		serverManager.getEventManager().registerServerMessageEventListener(this, 1);
+		serverManager.getEventManager().registerServerLostConnectionToClientEventListener(this, 1);
 	}
 	
 	@Override
@@ -27,9 +31,20 @@ public class ServerListener implements NewClientConnectionEventListener, ToServe
 			new Thread(new Runnable() {				
 				@Override
 				public void run() {
-					serverUserManager.login(event.getClientID(), loginInfo);
+					try {
+						serverUserManager.login(event.getClientID(), loginInfo);
+					} catch (ClientLoginException e) {
+						DefaultUserExceptionHandler.getDefaultUserExceptionHandler().getDefaultHandler_ClientLoginException().handleError(e);
+					}
 				}
 			}).start();
+		}else if(event.getMessage().getId() == UserPackageManager.DataPackage_UserLogout){
+			event.setActive(false);
+			ValidatedUser currentUser = serverUserManager.getValidatedUser(event.getClientID());
+			if(currentUser != null){
+				serverUserManager.getConnectionManager().logout(event.getClientID());
+				serverUserManager.getUserEventManager().publishEvent(new ClientLogoutEvent(event.getClientID(), currentUser));
+			}
 		}
 	}
 
@@ -40,7 +55,11 @@ public class ServerListener implements NewClientConnectionEventListener, ToServe
 
 	@Override
 	public void connectionLost(ServerLostConnectionToClientEvent event) {
-		this.serverUserManager.getConnectionManager().logout(event.getClientID());
+		ValidatedUser currentUser = serverUserManager.getValidatedUser(event.getClientID());
+		if(currentUser != null){
+			this.serverUserManager.getConnectionManager().disconnect(event.getClientID());
+			serverUserManager.getUserEventManager().publishEvent(new ClientLogoutEvent(event.getClientID(), currentUser));
+		}
 	}
 
 }

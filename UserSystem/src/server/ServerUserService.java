@@ -4,8 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
+import data.DefaultUserExceptionHandler;
 import data.db.Userdb;
 import data.exceptions.ClientValidationException;
+import data.exceptions.LoginInformationCreationException;
+import data.exceptions.LoginInformationReadingException;
+import data.exceptions.UserDatabaseReadingException;
 import data.user.User;
 import data.user.UserService;
 
@@ -24,30 +28,38 @@ public class ServerUserService extends UserService{
 		for(int i = 0; i<registeredUsers.size(); i++){
 			User user = registeredUsers.get(i);
 			
-			String decodedLoginInfo = this.getDecodedLoginInfo(encodedLoginInfo, user, mod);
-			String userLoginInfos = this.getUserLoginInfo(user, mod);
+			try {
+				String userLoginInfos = this.getUserLoginInfo(user, mod);
+				String decodedLoginInfo = this.getDecodedLoginInfo(encodedLoginInfo, user, mod);
+				if(decodedLoginInfo.equals(userLoginInfos))return user;
+			} catch (LoginInformationReadingException e) {
+				DefaultUserExceptionHandler.getDefaultUserExceptionHandler().getDefaultHandler_LoginInformationReadingException().handleError(e);
+			} catch (LoginInformationCreationException e) {
+				DefaultUserExceptionHandler.getDefaultUserExceptionHandler().getDefaultHandler_LoginInformationCreationException().handleError(e);
+			}
 			
-			if(decodedLoginInfo.equals(userLoginInfos))return user;
 		}
 		throw new ClientValidationException(encodedLoginInfo);
 	}
 
-	private String getDecodedLoginInfo(String encodedLoginInfo, User user, BigInteger mult) {		
+	private String getDecodedLoginInfo(String encodedLoginInfo, User user, BigInteger mult) throws LoginInformationReadingException {		
 		try {
 			return this.deEnCode.decode(encodedLoginInfo, new String(new BigInteger(user.getPassword().getBytes(StringFormat)).multiply(mult).toByteArray(), StringFormat));
 		} catch (UnsupportedEncodingException e) {
-			System.out.println("A fatal error has occoured while trying to decode loginInfos for user: "+user.getUsername());
-		}		
-		
-		return "";
+			throw new LoginInformationReadingException(e, user, encodedLoginInfo, mult);
+		}
 	}
 
-	public void registerNewUser(User user) {
+	void registerNewUser(User user) throws UserDatabaseReadingException {
 		this.userdb.saveUser(user);
 	}
 
-	public ArrayList<User> getAllRegisteredUsers() {
+	ArrayList<User> getAllRegisteredUsers() {
 		return this.userdb.getUsers();
+	}
+	
+	void deleteUser(String userID) throws UserDatabaseReadingException{
+		this.userdb.removeUser(userID);
 	}
 
 }

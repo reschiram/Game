@@ -11,6 +11,8 @@ import data.events.client.ClientLostConnectionToServerEvent;
 import data.events.client.ClientLostConnectionToServerEventListener;
 import data.events.client.ToClientMessageEvent;
 import data.events.client.ToClientMessageEventListener;
+import data.exceptions.LoginInformationCreationException;
+import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.client.ServerNotFoundException;
 import data.readableData.ReadableData;
 import client.test.main.ClientTestMain;
@@ -70,7 +72,19 @@ public class TestClient implements ToClientMessageEventListener, ClientLostConne
 	}
 
 	public void login(String username, String password) {
-		this.clientUserManager.login(username, password);
+		try {
+			this.clientUserManager.login(username, password);
+		} catch (UnsupportedPackageCreationException | LoginInformationCreationException e) {
+			System.out.println(e.getErrorMessage());
+		}
+	}
+
+	public void logout() {
+		try {
+			this.clientUserManager.logout();
+		} catch (UnsupportedPackageCreationException e) {
+			System.out.println(e.getErrorMessage());
+		}
 	}
 
 	@Override

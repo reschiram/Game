@@ -7,38 +7,104 @@ import data.user.User;
 public class ConnectionManager {
 	
 	private ArrayList<Long> unknownConnections = new ArrayList<>();
+	private ArrayList<String> validatedOnlineUsers = new ArrayList<>();
 	private HashMap<Long, ValidatedUser> validatedUsers = new HashMap<>();
+	
+	private boolean inUse = false;
 	
 	ConnectionManager(){	
 		
 	}
 
 	boolean validate(long serverClientID, User user) {
+		waitForInUse();
+
 		if(validatedUsers.containsKey(serverClientID)){
+			endInUse();
 			return false;
-		}
-		if(unknownConnections.contains(serverClientID)){
+		}else if(validatedOnlineUsers.contains(user.getID())){
+			endInUse();
+			return false;			
+		}else if(unknownConnections.contains(serverClientID)){
 			unknownConnections.remove(serverClientID);
 			validatedUsers.put(serverClientID, new ValidatedUser(serverClientID, user));
+			validatedOnlineUsers.add(user.getID());
+			endInUse();
 			return true;
 		}
+		
+		endInUse();
 		return false;
 	}
 
 	void registerNewUnknownConnection(long serverClientID) {
+		waitForInUse();
+		
 		this.unknownConnections.add(serverClientID);
+		
+		endInUse();
 	}
 
 	void logout(long clientID) {
-		this.unknownConnections.remove(clientID);
-		this.validatedUsers.remove(clientID);
+		waitForInUse();
+		
+		ValidatedUser user = this.getValidatetUserFunktion(clientID);
+		if(user!=null){
+			this.validatedUsers.remove(clientID);
+			this.validatedOnlineUsers.remove(user.getUser().getID());
+			this.unknownConnections.add(clientID);
+		}
+		
+		endInUse();
 	}
 	
-	ValidatedUser getValidatetUser(long clientID){
+	void disconnect(long clientID){
+		waitForInUse();
+		
+		this.unknownConnections.remove(clientID);
+		ValidatedUser user = this.getValidatetUserFunktion(clientID);
+		if(user!=null){
+			this.validatedUsers.remove(clientID);
+			this.validatedOnlineUsers.remove(user.getUser().getID());
+		}
+		
+		endInUse();	
+	}
+	
+	private ValidatedUser getValidatetUserFunktion(long clientID){		
 		if(this.validatedUsers.containsKey(clientID)){
-			return this.validatedUsers.get(clientID);
+			ValidatedUser vu = this.validatedUsers.get(clientID);
+			return vu;
 		}
 		return null;
 	}
 	
+	ValidatedUser getValidatetUser(long clientID){
+		waitForInUse();
+		
+		ValidatedUser vu = getValidatetUserFunktion(clientID);
+		
+		endInUse();
+		return vu;
+	}
+
+	private void waitForInUse() {
+		if(inUse){
+			synchronized (unknownConnections) {
+				try {
+					unknownConnections.wait();
+				} catch (InterruptedException e) {e.printStackTrace();}
+			}
+		}		
+		
+		inUse = true;
+	}
+	
+	private void endInUse(){
+		inUse = false;		
+		
+		synchronized (unknownConnections) {
+			unknownConnections.notify();
+		}		
+	}
 }

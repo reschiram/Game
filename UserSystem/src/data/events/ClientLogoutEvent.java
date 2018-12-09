@@ -1,18 +1,18 @@
 package data.events;
 
 import data.events.server.ServerEvent;
-import data.user.User;
+import server.ValidatedUser;
 
 public class ClientLogoutEvent extends ServerEvent{
 
-	private User user; 
+	private ValidatedUser user; 
 	
-	public ClientLogoutEvent(long clientID, User user) {
+	public ClientLogoutEvent(long clientID, ValidatedUser user) {
 		super(clientID);
 		this.user = user;
 	}
 
-	public User getUser() {
+	public ValidatedUser getValidatedUser() {
 		return user;
 	}
 

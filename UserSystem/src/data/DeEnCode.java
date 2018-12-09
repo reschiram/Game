@@ -28,13 +28,7 @@ public class DeEnCode {
 	 * @throws UnsupportedEncodingException is returned if a Char from the inputed text is not existing in the default Charset
 	 */
 	public String decode(String text, String password) throws UnsupportedEncodingException{
-		try {
-			return new String(decode(text.getBytes(CHARSET), password), CHARSET);
-		} catch (UnsupportedEncodingException e) {
-			System.out.println("Error while reading a char, that is not supported");
-			throw new UnsupportedEncodingException();
-		}
-		
+		return new String(decode(text.getBytes(CHARSET), password), CHARSET);
 	}
 	
 	/**
@@ -42,8 +36,9 @@ public class DeEnCode {
 	 * @param bytes the encoded bytes (double amount of decoded ones)
 	 * @param password the password to be used for decoding
 	 * @return decoded byte[] which is half as long as the encoded array 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public byte[] decode(byte[] bytes, String password) {
+	public byte[] decode(byte[] bytes, String password) throws UnsupportedEncodingException {
 		
 		bytes = Arrays.copyOf(bytes, bytes.length-1);
 		
@@ -69,13 +64,8 @@ public class DeEnCode {
 	 * @throws UnsupportedEncodingException is returned if a Char from the inputed text is not existing in the default Charset
 	 */
 	public String encode(String text, String password) throws UnsupportedEncodingException{
-		try {
-			byte[] encooded = encode(text.getBytes(CHARSET), password);
-			return new String(encooded, CHARSET);
-		} catch (UnsupportedEncodingException e) {
-			System.out.println("Error while reading a char, that is not supported");
-			throw new UnsupportedEncodingException();
-		}
+		byte[] encooded = encode(text.getBytes(CHARSET), password);
+		return new String(encooded, CHARSET);
 	}
 
 	/**
@@ -83,8 +73,9 @@ public class DeEnCode {
 	 * @param bytes the decoded bytes (double amount of decoded ones)
 	 * @param password the password to be used for encoding
 	 * @return encoded byte[] which is twice as long as the decoded array 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public byte[] encode(byte[] bytes, String password) {
+	public byte[] encode(byte[] bytes, String password) throws UnsupportedEncodingException {
 		
 		//generate BitArray out of ByteArray (adding randomness)
 		BitSet encode = randomize(bytes);
@@ -152,22 +143,18 @@ public class DeEnCode {
 	 * @param password the password from which the unique Code is to be generated
 	 * @param length the length the unique Code is supposed to have
 	 * @return the unique code in form of a BitArray
+	 * @throws UnsupportedEncodingException 
 	 */
-	private BitSet getCloseToUniqueCode(String password, int length){
-		try {
-			//get Integer representing the password
-			BigInteger integer = new BigInteger(password.getBytes(CHARSET));
-			//increase the integer until its binary value has the code length
-			while(integer.toByteArray().length<length/8){
-				integer = integer.pow(5);
-			}
-			//return BiteArray representing the integer
-			BitSet set = BitSet.valueOf(integer.toByteArray());
-			return set;
-		} catch (UnsupportedEncodingException e) {
-			System.out.println("Error while reading a byte, that is not supported");			
+	private BitSet getCloseToUniqueCode(String password, int length) throws UnsupportedEncodingException{
+		//get Integer representing the password
+		BigInteger integer = new BigInteger(password.getBytes(CHARSET));
+		//increase the integer until its binary value has the code length
+		while(integer.toByteArray().length<length/8){
+			integer = integer.pow(5);
 		}
-		return new BitSet();
+		//return BiteArray representing the integer
+		BitSet set = BitSet.valueOf(integer.toByteArray());
+		return set;
 	}
 	
 	/**
