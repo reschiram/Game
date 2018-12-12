@@ -16,6 +16,7 @@ public class Userdb {
 		this.filemanager = new InternalFilemanager(generalPassword);
 		try {
 			this.registeredUsers = filemanager.getAllUser();
+			this.registeredUsers.add(User.Default_User);
 		} catch (UserDatabaseReadingException e) {
 			DefaultUserExceptionHandler.getDefaultUserExceptionHandler().getDefaultHandler_UserDatabaseReadingException().handleError(e);
 		}

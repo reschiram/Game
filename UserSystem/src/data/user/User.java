@@ -1,6 +1,8 @@
 package data.user;
 
 public class User {
+	
+	public static final User Default_User = new User("000000000000000000000000", "Default_User", "--------");
 
 	public static final int ID_Length = 25;	
 	public static final int maxPasswordLength = 25;
