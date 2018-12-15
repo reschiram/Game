@@ -1,6 +1,8 @@
 package data.exceptions;
 
-public class ClientValidationException extends CustomException {
+import data.exceptions.client.ClientException;
+
+public class ClientValidationException extends ClientException {
 
 	private static final long serialVersionUID = 1L;
 	

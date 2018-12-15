@@ -55,7 +55,7 @@ public class ClientConnectionHandler {
 			}).start();
 			
 		} catch (IOException e) {
-			throw new ServerNotFoundException(e, this.client, ip, port);
+			throw new ServerNotFoundException(e, ip, port);
 		}
 	}
 

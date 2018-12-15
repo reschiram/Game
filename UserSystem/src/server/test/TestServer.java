@@ -68,7 +68,7 @@ public class TestServer implements ClientConnectionValidationEventListener, Clie
 
 	@Override
 	public void clientLogout(ClientLogoutEvent event) {
-		System.out.println("Client: "+event.getClientID()+" has logged out as user: "+event.getValidatedUser().getUser().getUsername()+" has logged out");
+		System.out.println("Client: "+event.getClientID()+" has logged out as user: "+event.getValidatedUser().getUsername()+" has logged out");
 	}
 
 	@Override

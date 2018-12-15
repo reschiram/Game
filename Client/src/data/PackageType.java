@@ -90,5 +90,9 @@ public class PackageType {
 		}
 		return buffer.array();
 	}
+	
+	public int getMaxByteLength(){
+		return this.maxByteLength;
+	}
 
 }

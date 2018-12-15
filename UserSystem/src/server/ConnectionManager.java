@@ -51,7 +51,7 @@ public class ConnectionManager {
 		ValidatedUser user = this.getValidatetUserFunktion(clientID);
 		if(user!=null){
 			this.validatedUsers.remove(clientID);
-			this.validatedOnlineUsers.remove(user.getUser().getID());
+			this.validatedOnlineUsers.remove(user.getID());
 			this.unknownConnections.add(clientID);
 		}
 		
@@ -65,7 +65,7 @@ public class ConnectionManager {
 		ValidatedUser user = this.getValidatetUserFunktion(clientID);
 		if(user!=null){
 			this.validatedUsers.remove(clientID);
-			this.validatedOnlineUsers.remove(user.getUser().getID());
+			this.validatedOnlineUsers.remove(user.getID());
 		}
 		
 		endInUse();	

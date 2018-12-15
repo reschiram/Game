@@ -1,6 +1,8 @@
 package data.exceptions;
 
-public class ClientLoginException extends CustomException{
+import data.exceptions.client.ClientException;
+
+public class ClientLoginException extends ClientException{
 	
 	private static final long serialVersionUID = 1L;
 	

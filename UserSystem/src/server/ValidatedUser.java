@@ -2,21 +2,22 @@ package server;
 
 import data.user.User;
 
-public class ValidatedUser {
+public class ValidatedUser extends User{
 	
 	private long serverClientID;
-	private User user;	
+	
+	public ValidatedUser(long serverClientID, String id, String name) {
+		super(id, name, "*****");
+		this.serverClientID = serverClientID;
+	}
 	
 	public ValidatedUser(long serverClientID, User user) {
+		super(user.getID(), user.getUsername(), "*****");
 		this.serverClientID = serverClientID;
-		this.user = user;
 	}
-	
+
 	public long getServerClientID() {
 		return serverClientID;
-	}
-	public User getUser() {
-		return user;
 	}
 
 }
