@@ -1,6 +1,8 @@
 package server.test;
 
 import data.DataPackage;
+import data.Funktions;
+import data.PackageType;
 import data.events.ClientConnectionValidationEvent;
 import data.events.ClientConnectionValidationEventListener;
 import data.events.ClientLogoutEvent;
@@ -14,6 +16,7 @@ import data.events.server.ToServerMessageEventListener;
 import data.exceptions.UserDatabaseReadingException;
 import data.exceptions.server.ServerPortException;
 import data.readableData.ReadableData;
+import data.readableData.StringData;
 import data.user.User;
 import server.ServerManager;
 import server.ServerUserManager;
@@ -30,6 +33,9 @@ public class TestServer implements ClientConnectionValidationEventListener, Clie
 		serverManager = new ServerManager();
 		ServerUserManager serverUserManager = new ServerUserManager(serverManager, "fdsa4321");
 		
+		DataPackage.setType(new PackageType(64, "Unknown_Data", new StringData ("Text", DataPackage.MAXPACKAGELENGTH-1)));
+		DataPackage.setType(new PackageType(30, "test2", new StringData("test30", 30), new StringData("test50", 50), new StringData("test20", 20)));
+		
 		serverUserManager.getUserEventManager().registerClientConnectionValidationEventListener(this, 5);
 		serverUserManager.getUserEventManager().registerClientLogoutEventListener(this, 5);
 		
@@ -44,11 +50,12 @@ public class TestServer implements ClientConnectionValidationEventListener, Clie
 				while(true){
 					serverManager.tick();
 					serverUserManager.tick();
+					Funktions.wait(1);
 				}
 			}
 		}).start();
 		
-		if(serverUserManager.getAllRegisteredUsers().size()==0){
+		if(serverUserManager.getAllRegisteredUsers().size()==1){
 			try {
 				serverUserManager.registerNewUser(new User("", "Test1", "1234"));
 				serverUserManager.registerNewUser(new User("", "Test2", "2341"));

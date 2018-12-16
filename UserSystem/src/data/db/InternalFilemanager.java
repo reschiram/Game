@@ -29,7 +29,7 @@ public class InternalFilemanager {
 	public InternalFilemanager(String generalPassword){
 		this.generalPassword = generalPassword;
 		this.deEncode = new DeEnCode();
-		this.fileManager = new FileManager(false);	
+		this.fileManager = new FileManager(true);	
 		loadData();
 	}
 

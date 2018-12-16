@@ -36,9 +36,10 @@ public class ServerUserManager{
 		} catch (ClientValidationException e) {}
 		if(user == null){
 			try {
-				this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, 1, "")));
+				this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, "1", "")));
 				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(clientID, false, user));
 			} catch (Exception e) {
+				System.out.println(e.getMessage());
 				throw new ClientLoginException(e, clientID, ClientLoginException.Reason_ClientInformException);
 			}
 		}else{
@@ -48,6 +49,7 @@ public class ServerUserManager{
 				else this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, "0", user.getID())));
 				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(clientID, valdiation, user));
 			} catch (Exception e) {
+				System.out.println(e.getMessage());
 				throw new ClientLoginException(e, clientID, ClientLoginException.Reason_ClientInformException);
 			}
 		}

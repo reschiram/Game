@@ -15,17 +15,17 @@ import data.exceptions.LoginInformationCreationException;
 import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.client.ServerNotFoundException;
 import data.readableData.ReadableData;
-import client.test.main.ClientTestMain;
+import client.test.main.ClientLoginMain;
 
 public class TestClient implements ToClientMessageEventListener, ClientLostConnectionToServerEventListener, ClientLoginEventListener{
 
-	private ClientTestMain main;
+	private ClientLoginMain main;
 	private ClientManager clientManager;
 	
 	private ClientUserManager clientUserManager;
 	
-	public TestClient(ClientTestMain main, String ip, int port) {
-		this.main = main;
+	public TestClient(ClientLoginMain clientLoginMain, String ip, int port) {
+		this.main = clientLoginMain;
 		
 		this.clientManager = new ClientManager(ip, port);
 		this.clientManager.getEventManager().registerClientMessageEventListener(this, 5);
@@ -49,7 +49,7 @@ public class TestClient implements ToClientMessageEventListener, ClientLostConne
 			text+=data.getData().toString()+ "|";
 		}
 		if(message.getDataStructures().length>0)text = text.substring(0, text.length()-1);
-		this.main.getGUI().println(text);
+		this.main.println(text);
 	}
 	
 	public void endClient() {
@@ -89,8 +89,8 @@ public class TestClient implements ToClientMessageEventListener, ClientLostConne
 
 	@Override
 	public void ClientLogin(ClientLoginEvent event) {
-		if(event.isLoggedIn())System.out.println("Login request answered. Login was successful. UserID: "+event.getUser().getID());
-		else System.out.println("Login request answered. Login has failed.");
+		if(event.isLoggedIn())main.loginSuccesfull();
+		else main.loginFailed(event);
 	}
 
 }

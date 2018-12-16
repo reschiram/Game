@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import data.DataPackage;
 import data.PackageType;
 import data.Queue;
-import data.UserPackageManager;
 import data.readableData.StringData;
 import client.test.gui.GUI;
 import client.test.TestClient;
@@ -24,18 +23,12 @@ public class ClientTestMain {
 			this.args = args;
 		}
 	}
-	
-	public static void main(String args[]){
-		if(args.length==2 && !args[1].equals(""))new ClientTestMain(args[0], Integer.parseInt(args[1]));
-		else new ClientTestMain(args[0],0);
-	}
 
 	private GUI gui;
-	private TestClient testClient;
 
 	private Queue<Task> tasks = new Queue<>();
 	
-	public ClientTestMain(String ip, int port){
+	public ClientTestMain(TestClient testClient){
 		this.gui = new GUI(this);
 		
 		TimerTask task = new TimerTask() {
@@ -47,11 +40,7 @@ public class ClientTestMain {
 					tasks.remove();
 					if(task.task.equals("send")){
 						try {
-							if(task.type == UserPackageManager.DataPackage_UserLogin){
-								testClient.login("Test1", "1234");
-							}else if(task.type == UserPackageManager.DataPackage_UserLogout){
-								testClient.logout();
-							}else testClient.sendToServer(DataPackage.getPackage(PackageType.readPackageData(task.type, task.args)));
+							testClient.sendToServer(DataPackage.getPackage(PackageType.readPackageData(task.type, task.args)));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -64,9 +53,6 @@ public class ClientTestMain {
 		
 		DataPackage.setType(new PackageType(64, "Unknown_Data", new StringData ("Text", DataPackage.MAXPACKAGELENGTH-1)));
 		DataPackage.setType(new PackageType(30, "test2", new StringData("test30", 30), new StringData("test50", 50), new StringData("test20", 20)));
-		
-		System.out.println(ip +"|"+ port);
-		this.testClient = new TestClient(this, ip, port);
 		
 		this.gui.updatePackageTypeList();
 	}
