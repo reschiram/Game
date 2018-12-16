@@ -11,12 +11,12 @@ import data.exceptions.LogoutSecurityException;
 public class SecurityServerListener implements ClientLogoutEventListener, ClientConnectionValidationEventListener{
 	
 	private ServerSecurityManager serverSecurityManager;
-	
-	public SecurityServerListener(ServerSecurityManager serverSecurityManager, ServerUserManager serverManager) {
+
+	public SecurityServerListener(ServerUserManager serverUserManager,	ServerSecurityManager serverSecurityManager) {
 		this.serverSecurityManager = serverSecurityManager;
 		
-		serverManager.getUserEventManager().registerClientConnectionValidationEventListener(this, 1);
-		serverManager.getUserEventManager().registerClientLogoutEventListener(this, 1);
+		serverUserManager.getUserEventManager().registerClientConnectionValidationEventListener(this, 1);
+		serverUserManager.getUserEventManager().registerClientLogoutEventListener(this, 1);
 	}
 
 	@Override

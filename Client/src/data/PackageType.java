@@ -22,9 +22,9 @@ public class PackageType {
 		return packageType.read(data);
 	}
 
-	private int id;
-	private String name;
-	private ReadableData<?>[] dataStructures;	
+	protected int id;
+	protected String name;
+	protected ReadableData<?>[] dataStructures;	
 	
 	private int maxByteLength = 0;
 	
@@ -74,7 +74,7 @@ public class PackageType {
 		return this;
 	}	
 	
-	private PackageType read(String[] data) throws Exception {
+	protected PackageType read(String[] data) throws Exception {
 		int i = 0;
 		for(ReadableData<?> readData: this.dataStructures){
 			readData.readString(data[i]);

@@ -3,6 +3,7 @@ package data;
 import data.exceptions.CustomException;
 import data.exceptions.LoginSecurityException;
 import data.exceptions.LogoutSecurityException;
+import data.exceptions.SecurityPackageCreationException;
 import data.exceptions.handler.ErrorHandler;
 
 public class DefaultSecurityExceptionHandler {
@@ -16,6 +17,7 @@ public class DefaultSecurityExceptionHandler {
 	
 	private ErrorHandler defaultHandler_LoginSecurityException;
 	private ErrorHandler defaultHandler_LogoutSecurityException;
+	private ErrorHandler defaultHandler_SecurityPackageCreationException;
 	
 	public DefaultSecurityExceptionHandler(){
 		
@@ -38,6 +40,16 @@ public class DefaultSecurityExceptionHandler {
 				}
 			}
 		};
+		
+		this.defaultHandler_SecurityPackageCreationException = new ErrorHandler() {			
+			@Override
+			public void handleError(CustomException exception) {
+				if(exception instanceof SecurityPackageCreationException){
+					SecurityPackageCreationException spc = (SecurityPackageCreationException)exception;
+					System.out.println(spc.getErrorMessage());
+				}
+			}
+		};
 	}
 
 	public ErrorHandler getDefaultHandler_LoginSecurityException() {
@@ -54,5 +66,14 @@ public class DefaultSecurityExceptionHandler {
 
 	public void setDefaultHandler_LogoutSecurityException(ErrorHandler defaultHandler_LogoutSecurityException) {
 		this.defaultHandler_LogoutSecurityException = defaultHandler_LogoutSecurityException;
+	}
+
+	public ErrorHandler getDefaultHandler_SecurityPackageCreationException() {
+		return defaultHandler_SecurityPackageCreationException;
+	}
+
+	public void setDefaultHandler_SecurityPackageCreationException(
+			ErrorHandler defaultHandler_SecurityPackageCreationException) {
+		this.defaultHandler_SecurityPackageCreationException = defaultHandler_SecurityPackageCreationException;
 	}
 }
