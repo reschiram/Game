@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Jonas/Java/Eclipse_Work_space/Git/Game-FJNN/sub/ServerClientSystem.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jonas/Java/Eclipse_Work_space/Git/Game-FJNN/sub/ServerClientUserSystem.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jonas/Java/Eclipse_Work_space/Git/Game-FJNN/sub/FileReader.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Client"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/File_Reader"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/UserSystem"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
