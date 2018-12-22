@@ -375,6 +375,13 @@ public class Map {
 		return true;
 	}
 
+	public boolean entityCanExist(Entity entity, int x, int y) {
+		Location loc = new Location(x, y);
+		Mapdata data = getMapData(loc)[Entity.DEFAULT_ENTITY_UP+DEFAULT_BUILDLAYER];
+		if(data !=null && !data.canHost(entity.getWidth(), entity.getHeight())) return false;
+		return true;
+	}
+
 	public PathSystem getPathSystem() {
 		return pathSystem;
 	}

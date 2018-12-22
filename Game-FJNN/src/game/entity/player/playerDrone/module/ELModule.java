@@ -1,7 +1,5 @@
 package game.entity.player.playerDrone.module;
 
-import game.map.Map;
-
 public class ELModule extends DroneModule{
 	
 	private double maxEnergyLoad;
@@ -20,13 +18,14 @@ public class ELModule extends DroneModule{
 	@Override
 	public void tick() {
 		useEnergy();
-		if(this.drone.getLocation().distance_Math(this.drone.getHost().getLocation()) < Math.sqrt(2)*Map.DEFAULT_SQUARESIZE){
+//		System.out.println("Overlaps: "+this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox()));
+		if(this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 			this.recharge();
 		}
-		if(energyLoad == 0 || isLoading ){
-			if(!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation())){
+		if((energyLoad == 0 || isLoading)){
+			if((!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getTarget().isEqual(this.drone.getHost().getCenterLocation())) && !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 				this.drone.getPathController().setBlocked(false);
-				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
+				this.drone.getPathController().setTarget(this.drone.getHost().getCenterLocation());
 				this.drone.getPathController().setBlocked(true);
 			}
 			this.isLoading = true;
@@ -43,6 +42,7 @@ public class ELModule extends DroneModule{
 	}
 
 	private void recharge() {
+//		System.out.println("Recharge: "+this.energyLoad+" + "+rechargeSpeed+" > "+maxEnergyLoad);
 		this.energyLoad+=rechargeSpeed;
 		if(this.energyLoad>maxEnergyLoad)this.energyLoad = maxEnergyLoad;
 	}

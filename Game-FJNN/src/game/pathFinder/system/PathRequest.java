@@ -34,6 +34,8 @@ public class PathRequest {
 		this.offset = offset;
 		this.target = correctTarget(target, map);
 		if(target == null)this.state = STATE_ERROR;
+		
+		System.out.println("Target: "+this.target);
 	}
 
 	public void setId(String id) {
@@ -103,5 +105,9 @@ public class PathRequest {
 
 	public Location getOffset() {
 		return offset;
+	}
+
+	public Location getOriginTarget() {
+		return new Location((this.target.getX()*Map.DEFAULT_SQUARESIZE) + offset.getX(), (this.target.getY()*Map.DEFAULT_SQUARESIZE) + offset.getY());
 	}
 }

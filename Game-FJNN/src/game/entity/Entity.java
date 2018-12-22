@@ -138,6 +138,11 @@ public abstract class Entity {
 	public Location getBlockLocation() {
 		return new Location((int)(((double)Map.getMap().getXOver(hitbox.getX()+getWidth()/2-1))/(double)Map.DEFAULT_SQUARESIZE), (int) (((double)(hitbox.getY()+getHeight()/2-1)/(double)Map.DEFAULT_SQUARESIZE)));
 	}
+
+	public Location getCenterLocation() {
+		Location centerLoc = new Location(Map.getMap().getXOver((hitbox.getX()+(getWidth()/2)-1)), hitbox.getY()+getHeight()/2-1);
+		return centerLoc;
+	}
 	
 	public Location getTopLeftBlockLocation() {
 		return new Location((int) ((double)hitbox.getX()/(double)Map.DEFAULT_SQUARESIZE), (int) ((double)hitbox.getY()/(double)Map.DEFAULT_SQUARESIZE));
