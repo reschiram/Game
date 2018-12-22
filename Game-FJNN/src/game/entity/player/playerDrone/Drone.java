@@ -46,6 +46,7 @@ public class Drone extends Entity{
 		super.tick();
 		
 		if(pathFinder.hasTarget()){
+			
 			int[] directions = this.pathFinder.nextDirection();
 			
 			this.lastMoved[0] = this.moveManager.canMoveX()!=0 ? directions[0] : 0;

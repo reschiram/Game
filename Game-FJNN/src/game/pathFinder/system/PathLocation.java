@@ -1,5 +1,7 @@
 package game.pathFinder.system;
 
+import Data.Location;
+import game.map.Map;
 
 public class PathLocation{
 
@@ -10,6 +12,8 @@ public class PathLocation{
 	
 	private int maxX;
 
+	private boolean accesable = true;
+	
 	public PathLocation(int x, int y, int maxX, int distance) {
 		this.x = x;
 		this.y = y;
@@ -31,6 +35,27 @@ public class PathLocation{
 
 	public int getValue() {
 		return x+maxX*y;
+	}
+
+	public Location toLocation() {
+		return new Location(x*Map.DEFAULT_SQUARESIZE, y*Map.DEFAULT_SQUARESIZE);
+	}
+
+	public boolean isAccesable() {
+		return accesable;
+	}
+
+	public void setAccesable(boolean accesable) {
+		this.accesable = accesable;
+	}
+
+	public PathLocation next(PathDirections d, Map map) {
+		return new PathLocation(map.getBlockXOver(x+d.getX()), y+d.getY(), maxX, distance+Math.abs(d.getX())+Math.abs(d.getY()));
+	}
+	
+	@Override
+	public String toString(){
+		return "[PathLocation: ("+x+"|"+y+") maxX:"+maxX+" => "+getValue()+" distance: "+distance+"]";
 	}
 
 }

@@ -1,7 +1,5 @@
 package game.entity.player.playerDrone.module;
 
-import game.map.Map;
-
 public class ELModule extends DroneModule{
 	
 	private double maxEnergyLoad;
@@ -20,11 +18,13 @@ public class ELModule extends DroneModule{
 	@Override
 	public void tick() {
 		useEnergy();
-		if(this.drone.getLocation().distance_Math(this.drone.getHost().getLocation()) < Math.sqrt(2)*Map.DEFAULT_SQUARESIZE){
+		if(this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 			this.recharge();
 		}
-		if(energyLoad == 0 || isLoading ){
-			if(!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation())){
+		if((energyLoad == 0 || isLoading)){
+			if((!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))
+					&& !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
+				
 				this.drone.getPathController().setBlocked(false);
 				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
 				this.drone.getPathController().setBlocked(true);

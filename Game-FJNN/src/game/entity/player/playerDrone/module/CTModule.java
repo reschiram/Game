@@ -20,6 +20,7 @@ public abstract class CTModule extends DroneModule{
 			 if(!targets.isEmpty()){
 				currentDroneTarget = getNextDroneTarget();
 				if(currentDroneTarget!=null){
+//					System.out.println("NextDroneTarget");
 					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation());
 				}
 			 }
@@ -34,6 +35,7 @@ public abstract class CTModule extends DroneModule{
 						this.drone.setIsWorking(false);
 					}
 				}else{
+//					System.out.println("CurrentDroneTarget");
 					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation());
 				}
 			} 
@@ -48,6 +50,12 @@ public abstract class CTModule extends DroneModule{
 		}else if(this instanceof CTBModule){
 			module = (CTModule) this.drone.getModule(CTDModule.class);
 		}
+		
+//		System.out.println("canSetDroneTarget: "+this.drone.getPathController().getTarget().isEqual(currentDroneTarget.getPixelLocation())+"|"+
+//				(!this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()) || this.drone.getPathController().reachedDestination())+"|"+
+//				(module == null || module.currentDroneTarget==null || (!this.drone.getPathController().getTarget().isEqual(module.currentDroneTarget.getPixelLocation()) || this.drone.getPathController().reachedDestination())));
+//		
+//		System.out.println(this.drone.getPathController().getTarget()+"<~>"+currentDroneTarget.getPixelLocation());
 		
 		if( !this.drone.getPathController().getTarget().isEqual(currentDroneTarget.getPixelLocation()) &&
 		   (!this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()) || this.drone.getPathController().reachedDestination()) &&
@@ -77,7 +85,8 @@ public abstract class CTModule extends DroneModule{
 
 	private int getDistance(DroneTarget target) {
 		int x = Math.abs(Map.getMap().getXOver(this.drone.getX()+this.drone.getWidth() /2) - Map.getMap().getXOver(target.getLocation().getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
-		if(x>(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)/2)x-=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
+		if(x> (Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)/2)x-=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
+		if(x<-(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)/2)x+=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
 		int y = Math.abs(					   this.drone.getY()+this.drone.getHeight()/2  - 					  (target.getLocation().getY()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
 
 		return (int) Math.sqrt(x*x+y*y);
