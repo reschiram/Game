@@ -16,7 +16,6 @@ import game.entity.player.Player;
 import game.entity.type.EntityType;
 import game.inventory.equipment.EquipmentInventory;
 import game.inventory.menu.EquipmentInventoryMenu;
-import game.inventory.menu.InventoryMenu;
 import game.map.Map;
 import game.map.MapLoader;
 import game.menu.Interface.GameInterface;

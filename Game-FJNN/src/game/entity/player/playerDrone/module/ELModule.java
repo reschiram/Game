@@ -18,14 +18,15 @@ public class ELModule extends DroneModule{
 	@Override
 	public void tick() {
 		useEnergy();
-//		System.out.println("Overlaps: "+this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox()));
 		if(this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 			this.recharge();
 		}
 		if((energyLoad == 0 || isLoading)){
-			if((!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getTarget().isEqual(this.drone.getHost().getCenterLocation())) && !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
+			if((!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))
+					&& !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
+				
 				this.drone.getPathController().setBlocked(false);
-				this.drone.getPathController().setTarget(this.drone.getHost().getCenterLocation());
+				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
 				this.drone.getPathController().setBlocked(true);
 			}
 			this.isLoading = true;
@@ -42,7 +43,6 @@ public class ELModule extends DroneModule{
 	}
 
 	private void recharge() {
-//		System.out.println("Recharge: "+this.energyLoad+" + "+rechargeSpeed+" > "+maxEnergyLoad);
 		this.energyLoad+=rechargeSpeed;
 		if(this.energyLoad>maxEnergyLoad)this.energyLoad = maxEnergyLoad;
 	}

@@ -51,23 +51,25 @@ public class PathSystem {
 			PathRequest request = requests.get();
 			requests.remove();
 			
-			try{
-				if(Math.abs(request.getOriginLocation().getX()-request.getTarget().getX()) <= PathFinderShortRange.maxDistance*Map.DEFAULT_SQUARESIZE 
-						&& Math.abs(request.getOriginLocation().getY()-request.getTarget().getY()) <= PathFinderShortRange.maxDistance*Map.DEFAULT_SQUARESIZE ){
-					pathFinderSR.findPath(request);
-				}else{
-					pathFinderLR.findPath(request);
-				}
-				if(request.getState() == PathRequest.STATE_PENDING){
-					System.out.println("Error while handling request: "+request.getId()+" with target: "+request.getTarget()+" from origin location: "+request.getOriginLocation());
+			if(request.getState() == PathRequest.STATE_PENDING){			
+				try{
+					if(Math.abs(request.getOriginLocation().getX()-request.getTarget().getX()) <= PathFinderShortRange.maxDistance 
+							&& Math.abs(request.getOriginLocation().getY()-request.getTarget().getY()) <= PathFinderShortRange.maxDistance){
+						pathFinderSR.findPath(request);
+					}else{
+						pathFinderLR.findPath(request);
+					}
+					if(request.getState() == PathRequest.STATE_PENDING){
+						System.out.println("Error while handling request: "+request.getId()+" with target: "+request.getTarget()+" from origin location: "+request.getOriginLocation());
+						request.setState(PathRequest.STATE_ERROR);
+					}
+				}catch (Exception e) {
+					e.printStackTrace();
 					request.setState(PathRequest.STATE_ERROR);
 				}
-			}catch (Exception e) {
-				e.printStackTrace();
-				request.setState(PathRequest.STATE_ERROR);
+				
+				paths.put(request.getId(), request);
 			}
-			
-			paths.put(request.getId(), request);
 		}
 	}
 	

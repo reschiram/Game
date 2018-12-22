@@ -23,4 +23,14 @@ public enum PathDirections {
 		return y;
 	}
 
+	public static PathDirections getMainPathDirection(int[] distance) {
+		if(Math.abs(distance[0]) >= Math.abs(distance[1])){
+			if(distance[0] > 0)return RIGHT;
+			else return LEFT;
+		}else{
+			if(distance[1] > 0)return DOWN;
+			else return UP;
+		}
+	}
+
 }

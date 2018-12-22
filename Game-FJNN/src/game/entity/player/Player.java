@@ -57,12 +57,12 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		Drone drone = DroneConstructor.constructStarterDrone(this);
 		drone.show();
 		this.drones.add(drone);
-//		drone = DroneConstructor.constructStarterBuildDrone(this);
-//		drone.show();
-//		this.drones.add(drone);
-//		drone = DroneConstructor.constructStarterDestructionDrone(this);
-//		drone.show();
-//		this.drones.add(drone);
+		drone = DroneConstructor.constructStarterBuildDrone(this);
+		drone.show();
+		this.drones.add(drone);
+		drone = DroneConstructor.constructStarterDestructionDrone(this);
+		drone.show();
+		this.drones.add(drone);
 		
 	}
 	

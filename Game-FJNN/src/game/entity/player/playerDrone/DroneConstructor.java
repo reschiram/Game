@@ -37,7 +37,7 @@ public class DroneConstructor {
 		
 		drone.addModule(new InvModule(9));
 		drone.addModule(new IRModule());
-		drone.addModule(new ELModule(100.0, 1.0, 0.1));
+		drone.addModule(new ELModule(100.0, 0.1, 0.03));
 		drone.addModule(new CTBModule());
 		
 		return drone;
@@ -48,7 +48,7 @@ public class DroneConstructor {
 		
 		drone.addModule(new InvModule(9));
 		drone.addModule(new ICModule(2));
-		drone.addModule(new ELModule(100.0, 1.0, 0.1));
+		drone.addModule(new ELModule(100.0, 0.1, 0.03));
 		drone.addModule(new CTDModule());
 		
 		return drone;

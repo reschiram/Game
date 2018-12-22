@@ -53,7 +53,7 @@ public class PathController {
 	public void setBlockTarget(Location blockLocation) {
 		if(this.blocked)return;
 		
-		if(blockLocation==null && lastRequest!=null){
+		if(blockLocation==null || lastRequest!=null){
 			this.lastRequest.setState(PathRequest.STATE_EXPIRED);
 			this.lastRequest = null;
 			return;
@@ -69,7 +69,7 @@ public class PathController {
 	public void setTarget(Location loc) {
 		if(this.blocked)return;
 		
-		if(loc==null && lastRequest!=null){
+		if(loc==null || lastRequest!=null){
 			this.lastRequest.setState(PathRequest.STATE_EXPIRED);
 			this.lastRequest = null;
 			return;
