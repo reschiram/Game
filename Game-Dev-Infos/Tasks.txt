@@ -1,5 +1,6 @@
 Game (G):
 	Refactor: G-1
+		G-3: PixelLocation-BlockLocation
 	PathSystem: G-2
 Network (N):
 	Permission Test: N-1
