@@ -2,6 +2,7 @@ package test.client;
 
 import client.ClientManager;
 import data.DataPackage;
+import data.PackageManager;
 import data.PackageType;
 import data.Queue;
 import data.events.client.ClientLostConnectionToServerEvent;
@@ -32,14 +33,19 @@ public class TestClient implements ToClientMessageEventListener, ClientLostConne
 	}
 	
 	public void messageFromServer(ToClientMessageEvent event){
-		PackageType message = event.getMessage();	
-		
-		String text = message.getId()+": "+message.getName()+"-> ";
-		for(ReadableData<?> data: message.getDataStructures()){
-			text+=data.getData().toString()+ "|";
+		String msg = "";
+		if(event.getMessage().getId() == DataPackage.PackageType_Kick) {
+			msg += "Client has been kicked. Reason: " + PackageManager.readKickMessage(event);
+		} else {
+			PackageType message = event.getMessage();	
+			
+			msg += message.getId()+": "+message.getName()+"-> ";
+			for(ReadableData<?> data: message.getDataStructures()){
+				msg+=data.getData().toString()+ "|";
+			}
+			if(message.getDataStructures().length>0)msg = msg.substring(0, msg.length()-1);
 		}
-		if(message.getDataStructures().length>0)text = text.substring(0, text.length()-1);
-		this.main.getGUI().println(text);
+		this.main.getGUI().println(msg);
 	}
 	
 	public void endClient() {
