@@ -44,4 +44,9 @@ public class ServerManager {
 		return server.getConnectedClients();
 	}
 
+	public void addServerTask(ServerTask serverTask) throws InvalidServerClientIDException {
+		if(server.getConnectedClients().contains(serverTask.getClientID())) this.server.addServerTask(serverTask);
+		else throw new InvalidServerClientIDException(serverTask.getClientID());
+	}
+
 }
