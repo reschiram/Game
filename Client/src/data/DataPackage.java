@@ -50,18 +50,12 @@ public class DataPackage {
 		return PackageTypes;
 	}
 	
-	public static Queue<DataPackage> getPackage(PackageType packageType){
+	public static Queue<DataPackage> getPackage(PackageType packageType) throws Exception{
 		Queue<DataPackage> packages = new Queue<>();
 		double maxDataLength = MAXPACKAGELENGTH-1.0;
 		int id = packageType.getId();
 		
-		byte[] data = null;
-		try {
-			data = packageType.getData();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return packages;
-		}		
+		byte[] data = packageType.getData();
 		
 		for(int i = 0; Math.ceil((double)i/maxDataLength)*maxDataLength<data.length; i+=maxDataLength){
 			int length = (int) maxDataLength+i;

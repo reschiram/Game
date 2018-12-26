@@ -7,6 +7,7 @@ import data.SecurityPackageManager;
 import data.exceptions.LoginSecurityException;
 import data.exceptions.LogoutSecurityException;
 import data.exceptions.SecurityPackageCreationException;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.permission.Permission;
 import data.permission.PermissionGroup;
 import data.permission.Permissiondb;
@@ -46,7 +47,7 @@ public class ServerSecurityManager {
 		return false;
 	}
 	
-	public void sendAccessDenied(long clientID, int securityPackageID, String noPermissionExceptionInfo) throws SecurityPackageCreationException{
+	public void sendAccessDenied(long clientID, int securityPackageID, String noPermissionExceptionInfo) throws SecurityPackageCreationException, InvalidServerClientIDException{
 		this.serverManager.sendMessage(clientID, SecurityPackageManager.getMessageFromDeniedSecurityPackageType(securityPackageID, noPermissionExceptionInfo));
 	}
 }
