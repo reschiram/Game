@@ -1,12 +1,15 @@
 package test.server;
 
 import data.DataPackage;
+import data.Queue;
 import data.events.server.NewClientConnectionEvent;
 import data.events.server.NewClientConnectionEventListener;
 import data.events.server.ServerLostConnectionToClientEvent;
 import data.events.server.ServerLostConnectionToClientEventListener;
 import data.events.server.ToServerMessageEvent;
 import data.events.server.ToServerMessageEventListener;
+import data.exceptions.handler.DefaultExceptionHandler;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.exceptions.server.ServerPortException;
 import data.readableData.ReadableData;
 import server.ServerManager;
@@ -35,7 +38,13 @@ public class TestServer implements NewClientConnectionEventListener, ToServerMes
 		}
 		System.out.println();
 		System.out.println("-------------------");
-		serverManager.sendMessage(event.getClientID(), DataPackage.getPackage(event.getMessage()));
+		try {
+			serverManager.sendMessage(event.getClientID(), DataPackage.getPackage(event.getMessage()));
+		} catch (InvalidServerClientIDException e) {
+			DefaultExceptionHandler.getDefaultExceptionHandler().getDefaultHandler_InvalidServerClientIDException().handleError(e);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@Override
@@ -54,6 +63,10 @@ public class TestServer implements NewClientConnectionEventListener, ToServerMes
 
 	public boolean isConnected() {
 		return serverManager.isConnected();
+	}
+
+	public void sendPackage(long clientID, Queue<DataPackage> message) throws InvalidServerClientIDException {
+		this.serverManager.sendMessage(clientID, message);
 	}
 
 }

@@ -10,6 +10,8 @@ import data.events.server.ServerLostConnectionToClientEventListener;
 import data.events.server.ToServerMessageEvent;
 import data.events.server.ToServerMessageEventListener;
 import data.exceptions.ClientLoginException;
+import data.exceptions.handler.DefaultExceptionHandler;
+import data.exceptions.server.InvalidServerClientIDException;
 
 public class ServerListener implements NewClientConnectionEventListener, ToServerMessageEventListener, ServerLostConnectionToClientEventListener{
 	
@@ -35,6 +37,8 @@ public class ServerListener implements NewClientConnectionEventListener, ToServe
 						serverUserManager.login(event.getClientID(), loginInfo);
 					} catch (ClientLoginException e) {
 						DefaultUserExceptionHandler.getDefaultUserExceptionHandler().getDefaultHandler_ClientLoginException().handleError(e);
+					} catch (InvalidServerClientIDException e) {
+						DefaultExceptionHandler.getDefaultExceptionHandler().getDefaultHandler_InvalidServerClientIDException().handleError(e);
 					}
 				}
 			}).start();

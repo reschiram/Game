@@ -14,6 +14,8 @@ import data.events.server.ServerLostConnectionToClientEventListener;
 import data.events.server.ToServerMessageEvent;
 import data.events.server.ToServerMessageEventListener;
 import data.exceptions.UserDatabaseReadingException;
+import data.exceptions.handler.DefaultExceptionHandler;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.exceptions.server.ServerPortException;
 import data.readableData.ReadableData;
 import data.readableData.StringData;
@@ -93,7 +95,13 @@ public class TestServer implements ClientConnectionValidationEventListener, Clie
 		}
 		System.out.println();
 		System.out.println("-------------------");
-		serverManager.sendMessage(event.getClientID(), DataPackage.getPackage(event.getMessage()));
+		try {
+			serverManager.sendMessage(event.getClientID(), DataPackage.getPackage(event.getMessage()));
+		} catch (InvalidServerClientIDException e) {
+			DefaultExceptionHandler.getDefaultExceptionHandler().getDefaultHandler_InvalidServerClientIDException().handleError(e);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@Override

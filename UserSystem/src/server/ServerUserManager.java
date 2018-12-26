@@ -10,6 +10,7 @@ import data.events.ClientConnectionValidationEvent;
 import data.exceptions.ClientLoginException;
 import data.exceptions.ClientValidationException;
 import data.exceptions.UserDatabaseReadingException;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.user.User;
 
 public class ServerUserManager{
@@ -29,7 +30,7 @@ public class ServerUserManager{
 		new ServerListener(this, serverManager);
 	}
 
-	void login(long clientID, String loginInfo) throws ClientLoginException {
+	void login(long clientID, String loginInfo) throws ClientLoginException, InvalidServerClientIDException {
 		User user = null;
 		try {
 			user = this.serverUserService.getUser(loginInfo);
