@@ -3,6 +3,7 @@ package test.client.main;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import client.ClientManager;
 import data.DataPackage;
 import data.PackageType;
 import data.Queue;
@@ -37,6 +38,29 @@ public class ClientTestMain {
 	public ClientTestMain(String ip, int port){
 		this.gui = new GUI(this);
 		
+		loadTicker();
+		
+		DataPackage.setType(new PackageType(64, "Unknown_Data", new StringData ("Text", DataPackage.MAXPACKAGELENGTH-1)));
+		
+		this.gui.updatePackageTypeList();
+		
+		System.out.println(ip +"|"+ port);
+		this.testClient = new TestClient(this, ip, port);
+	}
+	
+	public ClientTestMain(ClientManager clientManager){
+		this.gui = new GUI(this);
+		
+		loadTicker();
+		
+		DataPackage.setType(new PackageType(64, "Unknown_Data", new StringData ("Text", DataPackage.MAXPACKAGELENGTH-1)));
+		
+		this.gui.updatePackageTypeList();
+		
+		this.testClient = new TestClient(this, clientManager);
+	}
+
+	private void loadTicker() {		
 		TimerTask task = new TimerTask() {
 			
 			@Override
@@ -56,13 +80,6 @@ public class ClientTestMain {
 			}
 		};
 		new Timer().schedule(task, 1, 1);
-		
-		DataPackage.setType(new PackageType(64, "Unknown_Data", new StringData ("Text", DataPackage.MAXPACKAGELENGTH-1)));
-		
-		this.gui.updatePackageTypeList();
-		
-		System.out.println(ip +"|"+ port);
-		this.testClient = new TestClient(this, ip, port);
 	}
 
 	public void addTask(String task, int type, String... string) {

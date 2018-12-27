@@ -32,6 +32,14 @@ public class TestClient implements ToClientMessageEventListener, ClientLostConne
 		}
 	}
 	
+	public TestClient(ClientTestMain main, ClientManager clientManager) {
+		this.main = main;
+		this.clientManager = clientManager;
+		
+		this.clientManager.getEventManager().registerClientMessageEventListener(this, 5);
+		this.clientManager.getEventManager().registerClientLostConnectionToServerEventListener(this, 5);
+	}
+
 	public void messageFromServer(ToClientMessageEvent event){
 		String msg = "";
 		if(event.getMessage().getId() == DataPackage.PackageType_Kick) {
