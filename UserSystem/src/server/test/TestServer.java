@@ -1,117 +1,111 @@
 package server.test;
 
-import data.DataPackage;
-import data.Funktions;
-import data.PackageType;
+import java.util.ArrayList;
+
 import data.events.ClientConnectionValidationEvent;
 import data.events.ClientConnectionValidationEventListener;
 import data.events.ClientLogoutEvent;
 import data.events.ClientLogoutEventListener;
-import data.events.server.NewClientConnectionEvent;
-import data.events.server.NewClientConnectionEventListener;
-import data.events.server.ServerLostConnectionToClientEvent;
-import data.events.server.ServerLostConnectionToClientEventListener;
-import data.events.server.ToServerMessageEvent;
-import data.events.server.ToServerMessageEventListener;
+import data.exceptions.UnknownUserException;
+import data.exceptions.UserAlreadyKnwonException;
 import data.exceptions.UserDatabaseReadingException;
-import data.exceptions.handler.DefaultExceptionHandler;
-import data.exceptions.server.InvalidServerClientIDException;
-import data.exceptions.server.ServerPortException;
-import data.readableData.ReadableData;
-import data.readableData.StringData;
+import data.exceptions.UserInfoException;
 import data.user.User;
-import server.ServerManager;
 import server.ServerUserManager;
+import test.data.CMD;
+import test.data.CMDAction;
+import test.server.main.ServerTestMain;
 
-public class TestServer implements ClientConnectionValidationEventListener, ClientLogoutEventListener, ToServerMessageEventListener, NewClientConnectionEventListener, ServerLostConnectionToClientEventListener{
+public class TestServer implements ClientConnectionValidationEventListener, ClientLogoutEventListener{
 	
 	public static void main(String args[]){
 		new TestServer();
 	}
 	
-	private ServerManager serverManager;
+	private ServerTestMain serverMain;
+	private ServerUserManager serverUserManager;
 	
 	public TestServer(){
-		serverManager = new ServerManager();
-		ServerUserManager serverUserManager = new ServerUserManager(serverManager, "fdsa4321");
-		
-		DataPackage.setType(new PackageType(64, "Unknown_Data", new StringData ("Text", DataPackage.MAXPACKAGELENGTH-1)));
-		DataPackage.setType(new PackageType(30, "test2", new StringData("test30", 30), new StringData("test50", 50), new StringData("test20", 20)));
+		serverMain = new ServerTestMain();
+		serverUserManager = new ServerUserManager(serverMain.getServerManager(), "fdsa4321");
 		
 		serverUserManager.getUserEventManager().registerClientConnectionValidationEventListener(this, 5);
 		serverUserManager.getUserEventManager().registerClientLogoutEventListener(this, 5);
 		
-		this.serverManager.getEventManager().registerNewClientConnectionEventListener(this, 5);
-		this.serverManager.getEventManager().registerServerLostConnectionToClientEventListener(this, 5);
-		this.serverManager.getEventManager().registerServerMessageEventListener(this, 5);
+		loadCommands();
 		
-		new Thread(new Runnable() {
-			
+		serverMain.registerTick(serverUserManager);
+	}
+	
+	private void loadCommands() {
+		CMD addUser = new CMD(new CMDAction() {			
 			@Override
-			public void run() {
-				while(true){
-					serverManager.tick();
-					serverUserManager.tick();
-					Funktions.wait(1);
+			public boolean act(String[] args) {
+				if(args.length < 2) return false;
+				try {
+					serverUserManager.registerNewUser(new User("", args[0], args[1]));
+					serverMain.getGUI().println("User: \""+args[0]+"\" has been succesfully registered.");
+				} catch (UserDatabaseReadingException e) {
+					serverMain.getGUI().println("User: \""+args[0]+"\" could not be added. Reason: Error ("+e.getErrorMessage()+")");
+				} catch (UserInfoException e) {
+					serverMain.getGUI().println("User: \""+args[0]+"\" could not be added. Reason: wrong user info (username = \""+args[0]+"\", password = \""+args[1]+"\")");					
+				} catch (UserAlreadyKnwonException e) {
+					serverMain.getGUI().println("User: \""+args[0]+"\" could not be added. Reason: user already known.");	
 				}
+				return true;
 			}
-		}).start();
+		}, "Add User: adds a new user to the userdb.", "addUser");	
+		addUser.setMedatoryArgs("username, password");
 		
-		if(serverUserManager.getAllRegisteredUsers().size()==1){
-			try {
-				serverUserManager.registerNewUser(new User("", "Test1", "1234"));
-				serverUserManager.registerNewUser(new User("", "Test2", "2341"));
-				serverUserManager.registerNewUser(new User("", "Test3", "3421"));
-				serverUserManager.registerNewUser(new User("", "Test4", "4321"));
-			} catch (UserDatabaseReadingException e) {
-				System.out.println(e.getErrorMessage());
+		CMD removeUser = new CMD(new CMDAction() {			
+			@Override
+			public boolean act(String[] args) {
+				if(args.length < 1) return false;
+				try {
+					serverUserManager.delteUser(args[0]);
+					serverMain.getGUI().println("User: \""+args[0]+"\" has been succesfully delteted.");
+				} catch (UserDatabaseReadingException e) {
+					serverMain.getGUI().println("User: \""+args[0]+"\" could not be delteted. Reason: Error ("+e.getErrorMessage()+")");
+				} catch (UnknownUserException e) {
+					serverMain.getGUI().println("User: \""+args[0]+"\" could not be delteted. Reason: user is unknown.");	
+				}
+				return true;
 			}
-		}
+		}, "Delete User: delets a new user from the userdb.", "removeUser");	
+		removeUser.setMedatoryArgs("userID");
 		
-		try {
-			serverManager.openConnection();
-		} catch (ServerPortException e) {
-			System.out.println(e.getErrorMessage());
-		}
+		CMD userInfoPage = new CMD(new CMDAction() {
+			@Override
+			public boolean act(String[] args) {
+				String msg = "This is an overview over all registered user. \n";
+				ArrayList<User> registeredUsers = serverUserManager.getAllRegisteredUsers();
+				ArrayList<User> validatedOnlineUsers = serverUserManager.getAllValidatedOnlineUsers();
+				msg += "currently Online: "+validatedOnlineUsers.size()+" / "+registeredUsers.size();
+				if(args.length >= 1 && args[0].equalsIgnoreCase("-listUsers")) {
+					msg += "\nregistered Users: ";
+					for(User user: registeredUsers)msg+= user.toString()+", ";
+				}
+				serverMain.getGUI().println(msg);
+				return true;
+			}
+		}, "User Info Page: views a list of information about all registered Users.", "userInfos");
+		userInfoPage.setOptions("listUsers");
+		
+		this.serverMain.registerCMD(addUser);
+		this.serverMain.registerCMD(removeUser);
+		this.serverMain.registerCMD(userInfoPage);
 	}
 
 	@Override
 	public void clientLogout(ClientLogoutEvent event) {
-		System.out.println("Client: "+event.getClientID()+" has logged out as user: "+event.getValidatedUser().getUsername()+" has logged out");
+		this.serverMain.getGUI().println("Client: "+event.getClientID()+" has logged out as user: "+event.getValidatedUser().getUsername()+" has logged out");
 	}
 
 	@Override
 	public void handleClientLogginIn(ClientConnectionValidationEvent event) {
-		if(event.isLoggedIn())System.out.println("Client: "+event.getClientID()+" has registered as User: "+event.getUser().toString());
-		else System.out.println("Client: "+event.getClientID()+" has failed to Login");
-		
+		if(event.isLoggedIn())this.serverMain.getGUI().println("Client: "+event.getClientID()+" has registered as User: "+event.getUser().toString());
+		else this.serverMain.getGUI().println("Client: "+event.getClientID()+" has failed to Login");
 	}
 
-	@Override
-	public void messageFromClient(ToServerMessageEvent event) {
-		System.out.println("=====New Message From CLient:"+event.getMessage().getId()+"|"+event.getMessage().getName()+"=====");
-		for(ReadableData<?> data: event.getMessage().getDataStructures()){
-			System.out.print("["+data.getName()+"|"+data.toString()+"] ");
-		}
-		System.out.println();
-		System.out.println("-------------------");
-		try {
-			serverManager.sendMessage(event.getClientID(), DataPackage.getPackage(event.getMessage()));
-		} catch (InvalidServerClientIDException e) {
-			DefaultExceptionHandler.getDefaultExceptionHandler().getDefaultHandler_InvalidServerClientIDException().handleError(e);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
-	@Override
-	public void newServerClient(NewClientConnectionEvent event) {
-		System.out.println("New Client: "+event.getClientID());
-	}
-
-	@Override
-	public void connectionLost(ServerLostConnectionToClientEvent event) {
-		System.out.println("Lost Connection to Client:"+event.getClientID()+". Connection is active:"+event.isActive()+", is closed:"+event.isClosed()+" has been ended:"+event.isEnded());		
-	}
 
 }

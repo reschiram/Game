@@ -9,6 +9,8 @@ import data.db.Userdb;
 import data.exceptions.ClientValidationException;
 import data.exceptions.LoginInformationCreationException;
 import data.exceptions.LoginInformationReadingException;
+import data.exceptions.UnknownUserException;
+import data.exceptions.UserAlreadyKnwonException;
 import data.exceptions.UserDatabaseReadingException;
 import data.user.User;
 import data.user.UserService;
@@ -50,7 +52,8 @@ public class ServerUserService extends UserService{
 		}
 	}
 
-	void registerNewUser(User user) throws UserDatabaseReadingException {
+	void registerNewUser(User user) throws UserDatabaseReadingException, UserAlreadyKnwonException {
+		if(this.userdb.hasUserName(user.getUsername())) throw new UserAlreadyKnwonException(user);
 		this.userdb.saveUser(user);
 	}
 
@@ -58,8 +61,14 @@ public class ServerUserService extends UserService{
 		return this.userdb.getUsers();
 	}
 	
-	void deleteUser(String userID) throws UserDatabaseReadingException{
+	void deleteUser(String userID) throws UserDatabaseReadingException, UnknownUserException{
+		if(!this.userdb.hasUserID(userID)) throw new UnknownUserException(userID);
 		this.userdb.removeUser(userID);
+	}
+
+	User getUserFromID(String userID) throws UnknownUserException {
+		if(!this.userdb.hasUserID(userID)) throw new UnknownUserException(userID);
+		return this.userdb.findByID(userID);
 	}
 
 }
