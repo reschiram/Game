@@ -15,6 +15,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import client.test.main.ClientLoginMain;
+import test.client.gui.GUI;
+import test.client.gui.InputHint;
 
 public class LoginGUI {
 
@@ -79,7 +81,7 @@ public class LoginGUI {
 		
 		this.output = new JTextArea();
 		this.output.setBounds(10, 130, 412, 100);
-		this.output.setEnabled(false);
+		this.output.setEditable(false);
 		this.output.setFont(GUI.DEFAULT_FONT);
 		this.output.setForeground(Color.BLACK);
 		JScrollPane pane = new JScrollPane(output);
