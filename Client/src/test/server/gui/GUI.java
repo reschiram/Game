@@ -66,7 +66,7 @@ public class GUI {
 		this.output = new JTextArea();
 		this.output.setSize((int) (size.getWidth() - 25), 450);
 		this.output.setLocation(5, 10);
-		this.output.setEnabled(false);
+		this.output.setEditable(false);
 		this.output.setFont(DEFAULT_FONT);
 		this.output.setForeground(Color.BLACK);
 		JScrollPane pane = new JScrollPane(output);
@@ -114,40 +114,12 @@ public class GUI {
 							+ "  -options are optional. [args] are mandatory. (args) are optional. \n"
 							+ "The following is an overview of all commands: \n";
 		
-		helpMessage += "  Help: views this help page. Can be invoked by the following commands: \n";
-		helpMessage += "    Commands: ";
-		for(String cmd: ServerTestMain.CMD_Help) helpMessage += cmd + ", ";
-		helpMessage += "\n";
-		helpMessage += "    Args: None";
-		helpMessage += "\n";
+		for(int i = 0; i < this.main.getCommands().size(); i++) {
+			helpMessage += this.main.getCommands().get(i).getHelpPageEntry();
+			helpMessage += "\n";
+		}
 		
-		helpMessage += "  Connected Clients: views a page where infos about all connected clients are listet. Can be invoked by the following commands: \n";
-		helpMessage += "    Commands: ";
-		for(String cmd: ServerTestMain.CMD_OnlineClients) helpMessage += cmd + ", ";
-		helpMessage += "\n";
-		helpMessage += "    Args: -info";
-		helpMessage += "\n ";
-		
-		helpMessage += "  sendTextToClient: sends a text message to the client. Can be invoked by the following commands: \n";
-		helpMessage += "    Commands: ";
-		for(String cmd: ServerTestMain.CMD_SendTextToClient) helpMessage += cmd + ", ";
-		helpMessage += "\n";
-		helpMessage += "    Args: [arg1 = clientID] [arg2 = Text (max: 63 chars)]";
-		helpMessage += "\n";
-		
-		helpMessage += "  sendTextToAllClients: sends a text message to all connected clients. Can be invoked by the following commands: \n";
-		helpMessage += "    Commands: ";
-		for(String cmd: ServerTestMain.CMD_SendTextToAllClients) helpMessage += cmd + ", ";
-		helpMessage += "\n";
-		helpMessage += "    Args: [arg1 = Text (max: 63 chars)]";
-		helpMessage += "\n ";
-		
-		helpMessage += "  Kick: Closes the connection from a client. Can be invoked by the following commands: \n";
-		helpMessage += "    Commands: ";
-		for(String cmd: ServerTestMain.CMD_KickClient) helpMessage += cmd + ", ";
-		helpMessage += "\n";
-		helpMessage += "    Args: [arg1 = ID] (arg2 = reason)";
-		helpMessage += "\n ====";
+		helpMessage += "====";
 		
 		this.println(helpMessage);
 	}

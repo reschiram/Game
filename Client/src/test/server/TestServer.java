@@ -41,7 +41,7 @@ public class TestServer implements NewClientConnectionEventListener, ToServerMes
 	@Override
 	public void messageFromClient(ToServerMessageEvent event) {
 		String msg = "";
-		msg += "===== New Message From CLient: "+event.getMessage().getId()+" | "+event.getMessage().getName()+" =====" +"\n";
+		msg += "===== New Message From CLient("+event.getClientID()+"): "+event.getMessage().getId()+" | "+event.getMessage().getName()+" =====" +"\n";
 		for(ReadableData<?> data: event.getMessage().getDataStructures()){
 			msg += "["+data.getName()+"|"+data.toString()+"] ";
 		}
@@ -95,6 +95,10 @@ public class TestServer implements NewClientConnectionEventListener, ToServerMes
 
 	public void kickClient(long clientID, String reason) throws Exception, InvalidServerClientIDException {
 		this.serverManager.addServerTask(new KickTask(clientID, reason));
+	}
+
+	public ServerManager getServerManager() {
+		return this.serverManager;
 	}
 
 }
