@@ -4,6 +4,7 @@ import client.test.TestClient;
 import client.test.gui.LoginGUI;
 import data.Funktions;
 import data.events.ClientLoginEvent;
+import test.client.main.ClientTestMain;
 
 public class ClientLoginMain {
 
@@ -25,7 +26,7 @@ public class ClientLoginMain {
 			
 			@Override
 			public void run() {
-				while (testMain==null) {
+				while (testMain == null) {
 					testClient.tick();
 					Funktions.wait(1);
 				}
@@ -43,7 +44,7 @@ public class ClientLoginMain {
 
 	public void loginSuccesfull() {
 		this.gui.destroy();
-		this.testMain = new ClientTestMain(this.testClient);
+		this.testMain = new ClientTestMain(this.testClient.getClientManager());
 	}
 
 	public void loginFailed(ClientLoginEvent event) {

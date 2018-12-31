@@ -9,9 +9,9 @@ import data.user.UserService;
 
 public class UserPackageManager {
 	
-	public static final int DataPackage_UserLogin = 4;
-	public static final int DataPackage_UserLoginConfirm = 6;
-	public static final int DataPackage_UserLogout = 8;
+	public static final int DataPackage_UserLogin = 6;
+	public static final int DataPackage_UserLoginConfirm = 8;
+	public static final int DataPackage_UserLogout = 10;
 
 	public static void loadPackageTypes(){		
 		DataPackage.setType(new PackageType(DataPackage_UserLogin, "UserLogin", new StringData("LoginInfo", 121, UserService.StringFormat)));	

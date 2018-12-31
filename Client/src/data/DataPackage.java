@@ -7,6 +7,7 @@ import java.util.Arrays;
 import data.readableData.EmptyData;
 import data.readableData.LongData;
 import data.readableData.ShortIntData;
+import data.readableData.StringData;
 
 public class DataPackage {
 
@@ -17,10 +18,12 @@ public class DataPackage {
 	
 	public static final int PackageType_InitConnection = 0;
 	public static final int PackageType_Heartbeat = 2;
+	public static final int PackageType_Kick = 4;
 	
 	public static void loadInternalPackageIds(){
 		setType(new PackageType(PackageType_InitConnection, "InitConnection", new LongData("Connection-ID")));
 		setType(new PackageType(PackageType_Heartbeat, "Heartbeat", new EmptyData("Empty")));
+		setType(new PackageType(PackageType_Kick, "Kick", new StringData("Reason", MAXPACKAGELENGTH-1)));
 	}
 	
 	private static final ArrayList<PackageType> PackageTypes = new ArrayList<>();
@@ -50,18 +53,12 @@ public class DataPackage {
 		return PackageTypes;
 	}
 	
-	public static Queue<DataPackage> getPackage(PackageType packageType){
+	public static Queue<DataPackage> getPackage(PackageType packageType) throws Exception{
 		Queue<DataPackage> packages = new Queue<>();
 		double maxDataLength = MAXPACKAGELENGTH-1.0;
 		int id = packageType.getId();
 		
-		byte[] data = null;
-		try {
-			data = packageType.getData();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return packages;
-		}		
+		byte[] data = packageType.getData();
 		
 		for(int i = 0; Math.ceil((double)i/maxDataLength)*maxDataLength<data.length; i+=maxDataLength){
 			int length = (int) maxDataLength+i;

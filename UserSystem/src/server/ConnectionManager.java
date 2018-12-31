@@ -107,4 +107,15 @@ public class ConnectionManager {
 			unknownConnections.notify();
 		}		
 	}
+
+	@SuppressWarnings("unchecked")
+	public ArrayList<String> getAllValidatedOnlineUsers() {
+		waitForInUse();
+		
+		ArrayList<String> validatedOnlineUsers = (ArrayList<String>) this.validatedOnlineUsers.clone();
+		
+		endInUse();		
+		
+		return validatedOnlineUsers;
+	}
 }

@@ -4,6 +4,7 @@ import data.exceptions.CustomException;
 import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.UnsupportedPackageException;
 import data.exceptions.client.ServerNotFoundException;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.exceptions.server.ServerPortException;
 
 public class DefaultExceptionHandler {
@@ -19,6 +20,7 @@ public class DefaultExceptionHandler {
 	private ErrorHandler defaultHandler_UnsupportedPackageException;
 	private ErrorHandler defaultHandler_UnsupportedPackageCreationException;
 	private ErrorHandler defaultHandler_ServerPortException;
+	private ErrorHandler defaultHandler_InvalidServerClientIDException;
 	
 	public DefaultExceptionHandler(){
 		this.defaultHandler_ServerNotFoundException = new ErrorHandler() {			
@@ -60,6 +62,16 @@ public class DefaultExceptionHandler {
 				}
 			}
 		};
+		
+		this.defaultHandler_InvalidServerClientIDException = new ErrorHandler() {			
+			@Override
+			public void handleError(CustomException exception) {
+				if(exception instanceof InvalidServerClientIDException){
+					InvalidServerClientIDException iscie = (InvalidServerClientIDException)exception;
+					System.out.println(iscie.getErrorMessage());
+				}
+			}
+		};
 	}
 
 	public ErrorHandler getDefaultHandler_ServerNotFoundException() {
@@ -93,6 +105,15 @@ public class DefaultExceptionHandler {
 	public void setDefaultHandler_UnsupportedPackageCreationException(
 			ErrorHandler defaultHandler_UnsupportedPackageCreationException) {
 		this.defaultHandler_UnsupportedPackageCreationException = defaultHandler_UnsupportedPackageCreationException;
+	}
+
+	public ErrorHandler getDefaultHandler_InvalidServerClientIDException() {
+		return defaultHandler_InvalidServerClientIDException;
+	}
+
+	public void setDefaultHandler_InvalidServerClientIDException(
+			ErrorHandler defaultHandler_InvalidServerClientIDException) {
+		this.defaultHandler_InvalidServerClientIDException = defaultHandler_InvalidServerClientIDException;
 	}
 
 }

@@ -7,8 +7,8 @@ import data.readableData.StringData;
 
 public class SecurityPackageManager {
 	
-	public static final int NoPermissionExceptionInfo_MaxLength = 62;
-	public final static int DataPackage_NoPermission = 10;
+	public static final int NoPermissionExceptionInfo_MaxLength = 64-1-4;
+	public final static int DataPackage_NoPermission = 12;
 	
 	public static void loadSecurityPackages(){
 		DataPackage.setType(new PackageType(DataPackage_NoPermission, "No Permission", new IntegerData("Denied Package ID"), new StringData("No Permission Exception Info", 62)));	

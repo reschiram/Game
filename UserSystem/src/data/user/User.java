@@ -6,6 +6,7 @@ public class User {
 
 	public static final int ID_Length = 25;	
 	public static final int maxPasswordLength = 25;
+	public static final int maxUsernameLength = 25;
 		
 	private String id;
 	private String name;
@@ -35,11 +36,11 @@ public class User {
 	
 	@Override
 	public String toString(){
-		return "{[UserID:"+id+"],[Username:"+name+"]}";
+		return "{[UserID = "+id+"], [Username = "+name+"]}";
 	}
 	
 	public String toStringWithPassword(){
-		return "{[UserID:"+id+"],[Username:"+name+"],[Password:"+password+"]}";
+		return "{[UserID  = "+id+"], [Username = "+name+"], [Password = "+password+"]}";
 	}
 
 }

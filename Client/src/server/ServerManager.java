@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import data.DataPackage;
 import data.Queue;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.exceptions.server.ServerPortException;
 
 public class ServerManager {
@@ -25,8 +26,9 @@ public class ServerManager {
 		return this.eventManager;
 	}
 	
-	public void sendMessage(long id, Queue<DataPackage> message){
-		this.server.sendToServerClient(new ServerMessage(id, message));
+	public void sendMessage(long id, Queue<DataPackage> message) throws InvalidServerClientIDException{
+		if(server.getConnectedClients().contains(id)) this.server.sendToServerClient(new ServerMessage(id, message));
+		else throw new InvalidServerClientIDException(id);
 	}
 
 	public boolean isConnected() {
@@ -40,6 +42,11 @@ public class ServerManager {
 	
 	public ArrayList<Long> getConnectedClients(){
 		return server.getConnectedClients();
+	}
+
+	public void addServerTask(ServerTask serverTask) throws InvalidServerClientIDException {
+		if(server.getConnectedClients().contains(serverTask.getClientID())) this.server.addServerTask(serverTask);
+		else throw new InvalidServerClientIDException(serverTask.getClientID());
 	}
 
 }

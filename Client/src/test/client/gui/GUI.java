@@ -165,7 +165,7 @@ public class GUI {
 		this.output = new JTextArea();
 		this.output.setSize((int) (size.getWidth() - 25), 190);
 		this.output.setLocation(5, (int) (size.getHeight() - (output.getHeight() + 45)));
-		this.output.setEnabled(false);
+		this.output.setEditable(false);
 		this.output.setFont(DEFAULT_FONT);
 		this.output.setForeground(Color.BLACK);
 		JScrollPane pane = new JScrollPane(output);

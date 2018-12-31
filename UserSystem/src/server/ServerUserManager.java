@@ -9,10 +9,15 @@ import data.UserPackageManager;
 import data.events.ClientConnectionValidationEvent;
 import data.exceptions.ClientLoginException;
 import data.exceptions.ClientValidationException;
+import data.exceptions.UnknownUserException;
+import data.exceptions.UserAlreadyKnwonException;
 import data.exceptions.UserDatabaseReadingException;
+import data.exceptions.UserInfoException;
+import data.exceptions.server.InvalidServerClientIDException;
 import data.user.User;
+import test.data.Tickable;
 
-public class ServerUserManager{
+public class ServerUserManager implements Tickable{
 	
 	private ConnectionManager connectionManager;
 	private ServerUserService serverUserService;
@@ -29,7 +34,7 @@ public class ServerUserManager{
 		new ServerListener(this, serverManager);
 	}
 
-	void login(long clientID, String loginInfo) throws ClientLoginException {
+	void login(long clientID, String loginInfo) throws ClientLoginException, InvalidServerClientIDException {
 		User user = null;
 		try {
 			user = this.serverUserService.getUser(loginInfo);
@@ -75,7 +80,8 @@ public class ServerUserManager{
 		return this.connectionManager.getValidatetUser(clientID);
 	}
 
-	public void registerNewUser(User user) throws UserDatabaseReadingException {
+	public void registerNewUser(User user) throws UserDatabaseReadingException, UserInfoException, UserAlreadyKnwonException {
+		if(user.getUsername().length() >= User.maxUsernameLength || user.getPassword().length() >= User.maxPasswordLength || !user.getID().equals("")) throw new UserInfoException(user);
 		this.serverUserService.registerNewUser(user);
 	}
 
@@ -83,7 +89,20 @@ public class ServerUserManager{
 		return this.serverUserService.getAllRegisteredUsers();
 	}
 	
-	public void delteUser(String userID) throws UserDatabaseReadingException{
+	public void delteUser(String userID) throws UserDatabaseReadingException, UnknownUserException{
 		this.serverUserService.deleteUser(userID);
+	}
+
+	public ArrayList<User> getAllValidatedOnlineUsers() {
+		ArrayList<User> users = new ArrayList<>();
+		ArrayList<String> validetdUsers = this.connectionManager.getAllValidatedOnlineUsers();
+		for(String userID : validetdUsers) {
+			try {
+				users.add(this.serverUserService.getUserFromID(userID));
+			} catch (UnknownUserException e) {
+				e.printStackTrace();
+			}
+		}
+		return users;
 	}
 }

@@ -84,7 +84,7 @@ public class ServerClient {
 	}
 
 	boolean isConnected() {
-		return connection!=null && connection.isConnected() && !connection.isClosed();
+		return connection!=null && connection.isConnected() && !connection.isClosed() && !ended;
 	}
 
 	void scanForIncomingData() throws UnsupportedPackageException {
@@ -140,5 +140,9 @@ public class ServerClient {
 
 	InetAddress getConnectionAdress() {
 		return this.connection.getInetAddress();
+	}
+
+	void closeConnection() {
+		this.ended = true;
 	}
 }

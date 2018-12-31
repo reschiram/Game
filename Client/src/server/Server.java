@@ -22,6 +22,7 @@ public class Server {
 	private ServerManager serverManager;
 	
 	private Queue<ServerMessage> serverMessages = new Queue<>();
+	private Queue<ServerTask> serverTasks = new Queue<>();
 	
 	Server(ServerManager serverManager){
 		
@@ -50,6 +51,13 @@ public class Server {
 						ServerMessage message = serverMessages.get();
 						serverMessages.remove();
 						connectionHandler.getServerClient(message.getId()).sendToClient(message.getMessage());
+					}
+
+					while(!serverTasks.isEmpty()){
+						ServerTask task = serverTasks.get();
+						serverTasks.remove();
+						ServerClient sc = connectionHandler.getServerClient(task.getClientID());
+						task.act(sc, serverManager);
 					}
 					Funktions.wait(1);
 				}
@@ -106,5 +114,9 @@ public class Server {
 
 	public ArrayList<Long> getConnectedClients() {
 		return this.connectionHandler.getConnectedClients();
+	}
+
+	public void addServerTask(ServerTask serverTask) {
+		this.serverTasks.add(serverTask);
 	}
 }
