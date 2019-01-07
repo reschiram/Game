@@ -8,4 +8,6 @@ Game (G):
 Network (N):
 	Permission Test: N-1
 	Server Console: N-2
+	Refactor User System:
+		N-3: UserSystemServer
 Graphics (S):
