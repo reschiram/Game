@@ -23,8 +23,8 @@ public class ClientManager {
 		return this.eventManager;
 	}
 	
-	public void connectToServer() throws ServerNotFoundException{
-		this.client.connect();
+	public void connectToServer(boolean ssl) throws ServerNotFoundException{
+		this.client.connect(ssl);
 	}
 
 	public void publishNewMessage(PackageType message) {

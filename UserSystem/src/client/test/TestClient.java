@@ -32,7 +32,7 @@ public class TestClient implements ToClientMessageEventListener, ClientLoginEven
 		this.clientUserManager.getUserEventManager().registerClientLoginEventListener(this, 5);
 		
 		try {
-			this.clientManager.connectToServer();
+			this.clientManager.connectToServer(false);
 		} catch (ServerNotFoundException e) {
 			System.out.println(e.getErrorMessage());
 		}

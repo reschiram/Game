@@ -28,7 +28,7 @@ public class TestServer implements NewClientConnectionEventListener, ToServerMes
 		this.serverManager = new ServerManager();
 		
 		try {
-			this.serverManager.openConnection();
+			this.serverManager.openConnection(false);
 		} catch (ServerPortException e) {
 			System.out.println(e.getErrorMessage());
 		

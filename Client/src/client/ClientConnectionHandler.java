@@ -8,6 +8,9 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import data.DataPackage;
 import data.PackageType;
 import data.Queue;
@@ -36,10 +39,14 @@ public class ClientConnectionHandler {
 		this.client = client;
 	}
 	
-	void connect() throws ServerNotFoundException{
+	void connect(boolean ssl) throws ServerNotFoundException{
 		try {
 			
-			socket = new Socket(ip, port);
+			if(!ssl) socket = new Socket(ip, port);
+			else {
+			    SocketFactory socketFactory = SSLSocketFactory.getDefault();
+			    this.socket = socketFactory.createSocket(ip, port);
+			}
 			
 			new Thread(new Runnable() {				
 				@Override

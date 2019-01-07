@@ -60,8 +60,8 @@ public class Client {
 		cch = new ClientConnectionHandler(this, ip, port);
 	}
 	
-	void connect() throws ServerNotFoundException{
-		this.cch.connect();
+	void connect(boolean ssl) throws ServerNotFoundException{
+		this.cch.connect(ssl);
 		
 		startInternalThread();
 	}

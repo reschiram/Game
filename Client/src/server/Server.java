@@ -5,6 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+
 import data.Funktions;
 import data.Queue;
 import data.exceptions.UnsupportedPackageException;
@@ -13,7 +16,7 @@ import data.exceptions.server.ServerPortException;
 
 public class Server {
 
-	private final static int Port = 12345;
+	public static int Port = 12345;
 	
 	private ServerSocket serverSocket;	
 	private boolean run = true;
@@ -30,10 +33,14 @@ public class Server {
 		this.serverManager = serverManager;
 	}
 	
-	void openConnection() throws ServerPortException{
+	void openConnection(boolean ssl) throws ServerPortException{
 
 		try {
-			this.serverSocket = new ServerSocket(Port);
+			if(!ssl)this.serverSocket = new ServerSocket(Port);
+			else {
+				ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
+				this.serverSocket = ssocketFactory.createServerSocket(Port);
+			}
 		} catch (IOException e) {
 			throw new ServerPortException(e, Port);
 		}

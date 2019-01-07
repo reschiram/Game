@@ -18,8 +18,8 @@ public class ServerManager {
 		this.eventManager = new ServerEventManager();
 	}
 	
-	public void openConnection() throws ServerPortException{
-		this.server.openConnection();		
+	public void openConnection(boolean ssl) throws ServerPortException{
+		this.server.openConnection(ssl);		
 	}
 
 	public ServerEventManager getEventManager() {
