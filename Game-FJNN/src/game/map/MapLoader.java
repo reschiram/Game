@@ -9,7 +9,7 @@ import game.gridData.map.MapBlock;
 
 public class MapLoader {
 	
-	private static String seperator = "|";
+	public static String seperator = "|";
 	
 	private Map map;
 	private CSV_File mapFile;
@@ -88,12 +88,12 @@ public class MapLoader {
 		long max = this.map.getWidth()*this.map.getHeight();
 		long current = 0;
 		
+		int idLength = Resource.noResourceID.length();		
+		
 		for(int y = 0; y < map.getHeight(); y++){
 			for(int x = 0; x < map.getWidth(); x++){
 				
-				String squareData = mapFile.get(new Point(x+2, y));
-				
-				int idLength = Resource.noResourceID.length();				
+				String squareData = mapFile.get(new Point(x+2, y));		
 				for(int i = 0; i < 4; i++) {
 					int from = i*(idLength+1);
 					Integer id = Integer.parseInt(squareData.substring(from, from+idLength)); 					
