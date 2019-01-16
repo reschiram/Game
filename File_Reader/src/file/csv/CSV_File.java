@@ -63,6 +63,28 @@ public class CSV_File extends File{
 			maxPos.y--;
 		}
 	}
+
+	public void removeColumn(int x, boolean moveOthers) {
+		if(x<0 || x>maxPos.getX())return;
+		waitForSave();
+		for(int y = 0; y<=maxPos.getY(); y++){
+			content.remove(new Point(x, y));
+		}
+		if(x==maxPos.getX())maxPos.x--;
+		else if(moveOthers){
+			for(int dx = x+1; dx<=maxPos.getX(); dx++){
+				if(dx>0){
+					for(int y = 0; y<=maxPos.getY(); y++){
+						Point p = new Point(dx, y);
+						String data = content.get(p);
+						content.remove(p);
+						content.put(new Point(dx-1, y), data);
+					}
+				}
+			}
+			maxPos.y--;
+		}
+	}
 	
 	@Override
 	public HashMap<Point, String> getContent(){
