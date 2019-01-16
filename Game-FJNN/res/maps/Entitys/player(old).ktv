@@ -1,8 +1,8 @@
 Location:
   X:
-    "194"
+    "5"
   Y:
-    "26"
+    "29"
 inventory:
   Slot_0:
     type:
@@ -164,11 +164,6 @@ inventory:
       "Dirt"
     amount:
       "64"
-  Slot_32:
-    type:
-      "Dirt"
-    amount:
-      "56"
   Slot_33:
     type:
       "Coal"
@@ -213,7 +208,7 @@ inventory:
     type:
       "Dirt"
     amount:
-      "64"
+      "30"
   Slot_42:
     type:
       "Stone"
