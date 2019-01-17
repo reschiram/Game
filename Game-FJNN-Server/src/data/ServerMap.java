@@ -105,4 +105,12 @@ public class ServerMap {
 		fileManager.saveFile(mapFile);
 	}
 
+	public String getName() {
+		return this.mapFile.getFileName();
+	}
+
+	public int getSeed() {
+		return seed;
+	}
+
 }

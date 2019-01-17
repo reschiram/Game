@@ -7,7 +7,8 @@ public class ServerMain {
 	
 	private ConsoleManager consoleManager;
 	private GameSM gameSM;
-	private ServerDataManager sdm;
+	private ServerStructureManager sdm;
+	private ServerFileManager fileManager = new ServerFileManager();
 	
 	public ServerMain(String generalPassword) {
 		this.consoleManager = new ConsoleManager();
@@ -20,4 +21,11 @@ public class ServerMain {
 		this.gameSM.tick();
 	}
 
+	public ServerFileManager getFileManager() {
+		return fileManager;
+	}
+
+	public ConsoleManager getConsoleManager() {
+		return consoleManager;		
+	}
 }

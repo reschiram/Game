@@ -120,4 +120,14 @@ public class CSV_File extends File{
 		return maxPos;
 	}
 
+	public String getFileName() {
+		String name = this.path + "";
+		
+		while(name.contains("/") || name.contains("\\")) {
+			name = name.substring(1, name.length());			
+		}
+		
+		return name;
+	}
+
 }
