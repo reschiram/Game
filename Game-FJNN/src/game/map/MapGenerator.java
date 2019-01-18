@@ -51,6 +51,11 @@ public class MapGenerator {
 	}
 	
 	public Map generateMap(int seed){
+		MapGenerationData data = generateMapData(seed);
+		return new Map(data.getGroundData(), data.getBuildData(), seed);
+	}
+	
+	public MapGenerationData generateMapData(int seed){
 		int[] seedArray = new int[(seed+"").length()];
 		for(int i = 0; i<seedArray.length; i++)seedArray[i] = Integer.parseInt((seed+"").charAt(i)+"");
 		
@@ -164,7 +169,7 @@ public class MapGenerator {
 			}
 		}
 			
-		return new Map(ground, build, seed);
+		return new MapGenerationData(ground, build, seed);
 	}
 
 	private void generate(int x, int y, int[][][] build, int[][][] ground, int id, double d, Random rnd, int size) {
