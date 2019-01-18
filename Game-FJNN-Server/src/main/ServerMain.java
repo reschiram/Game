@@ -22,6 +22,8 @@ public class ServerMain {
 		} catch (ServerPortException e) {
 			e.printStackTrace();
 		}
+		
+		new TickManager(this);
 	}
 
 	public void tick() {
