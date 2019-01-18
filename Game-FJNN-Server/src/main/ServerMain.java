@@ -1,6 +1,7 @@
 package main;
 
 import console.ConsoleManager;
+import data.exceptions.server.ServerPortException;
 import server.GameSM;
 
 public class ServerMain {
@@ -13,8 +14,14 @@ public class ServerMain {
 	public ServerMain(String generalPassword) {
 		this.consoleManager = new ConsoleManager();
 		this.gameSM = new GameSM(generalPassword);
+		this.sdm = new ServerStructureManager(this);
 		
 		sdm.initServer();
+		try {
+			gameSM.openConnection();
+		} catch (ServerPortException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void tick() {
