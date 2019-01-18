@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import data.ServerMap;
 import data.server.Lobby;
+import server.ValidatedUser;
 
 public class ServerStructureManager {
 	
@@ -42,6 +43,14 @@ public class ServerStructureManager {
 			message += "[\"" + map.getName() + "\" with seed : " + map.getSeed() +"] ";
 		}
 		return message;
+	}
+
+	public void logOut(ValidatedUser validatedUser) {
+		this.lobby.removePlayer(validatedUser);
+	}
+
+	public void logIn(ValidatedUser validatedUser) {
+		this.lobby.addPlayer(validatedUser);		
 	}
 
 }

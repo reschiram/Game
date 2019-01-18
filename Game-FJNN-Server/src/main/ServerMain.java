@@ -22,6 +22,8 @@ public class ServerMain {
 		} catch (ServerPortException e) {
 			e.printStackTrace();
 		}
+		
+		new TickManager(this);
 	}
 
 	public void tick() {
@@ -34,5 +36,13 @@ public class ServerMain {
 
 	public ConsoleManager getConsoleManager() {
 		return consoleManager;		
+	}
+
+	public GameSM getGameSM() {
+		return gameSM;
+	}
+	
+	public ServerStructureManager getServerStructureManager() {
+		return this.sdm;
 	}
 }

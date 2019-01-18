@@ -32,4 +32,8 @@ public class Lobby {
 		return this.maps;
 	}
 
+	public void removePlayer(ValidatedUser player) {
+		this.players.remove(player);
+	}
+
 }
