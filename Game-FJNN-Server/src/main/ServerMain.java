@@ -35,4 +35,12 @@ public class ServerMain {
 	public ConsoleManager getConsoleManager() {
 		return consoleManager;		
 	}
+
+	public GameSM getGameSM() {
+		return gameSM;
+	}
+	
+	public ServerStructureManager getServerStructureManager() {
+		return this.sdm;
+	}
 }
