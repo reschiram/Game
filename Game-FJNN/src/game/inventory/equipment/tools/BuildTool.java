@@ -20,7 +20,7 @@ import game.inventory.equipment.EquipmentVisual;
 import game.inventory.equipment.tools.menu.BuildToolMenu;
 import game.inventory.items.ItemType;
 import game.map.Map;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public class BuildTool extends Tool{
 

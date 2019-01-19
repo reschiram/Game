@@ -7,7 +7,7 @@ import Data.Location;
 import game.entity.Entity;
 import game.entity.type.EntityType;
 import game.map.Map;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public class EntityManager {
 	

@@ -1,7 +1,7 @@
 package data;
 
 import Engine.Engine;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public class ButtonTrigger {
 	

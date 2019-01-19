@@ -37,11 +37,15 @@ public class GameSEM implements ServerLostConnectionToClientEventListener, NewCl
 
 	@Override
 	public void handleClientLogginIn(ClientConnectionValidationEvent event) {
-		if(!event.isLoggedIn()) return;
+		if(!event.isLoggedIn()) {
+			this.serverMain.getConsoleManager().getGUI().println("Client: " + event.getClientID()
+					+ " has tried to validate as "+event.getValidatedUser().toString()+".");
+			return;
+		}
 		this.serverMain.getServerStructureManager().logIn(event.getValidatedUser());
 		
 		this.serverMain.getConsoleManager().getGUI().println("Client: " + event.getClientID()
-				+ " has been vlidated. Client has been validated as User: " + event.getValidatedUser().toString());
+				+ " has been validated. Client has been validated as User: " + event.getValidatedUser().toString());
 	}
 
 	@Override

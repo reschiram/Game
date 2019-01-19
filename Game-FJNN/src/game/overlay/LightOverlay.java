@@ -12,7 +12,7 @@ import game.entity.Entity;
 import game.gridData.map.Mapdata;
 import game.map.Map;
 import game.pathFinder.PathNode;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public class LightOverlay {
 	

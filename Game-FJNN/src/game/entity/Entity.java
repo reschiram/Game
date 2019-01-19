@@ -15,7 +15,7 @@ import game.entity.type.EntityType;
 import game.entity.type.data.EntityData;
 import game.gridData.map.Mapdata;
 import game.map.Map;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public abstract class Entity {
 	

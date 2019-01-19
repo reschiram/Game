@@ -6,8 +6,8 @@ import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
 import data.RotationSprites;
-import game.tick.TickManager;
 import sprites.Sprites;
+import tick.TickManager;
 
 public class ScrollBar {	
 	

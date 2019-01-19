@@ -1,5 +1,7 @@
 package server;
 
+import java.util.ArrayList;
+
 import data.exceptions.server.ServerPortException;
 
 public class GameSM {
@@ -33,5 +35,9 @@ public class GameSM {
 	
 	public void openConnection() throws ServerPortException {
 		this.serverManager.openConnection();
+	}
+
+	public ArrayList<Long> getAllConnectedClients() {
+		return this.serverManager.getConnectedClients();
 	}
 }

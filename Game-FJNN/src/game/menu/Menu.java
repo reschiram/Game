@@ -8,7 +8,7 @@ import java.util.HashMap;
 import Data.Events.Action;
 import Data.Image.Image;
 import Engine.Engine;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public class Menu {
 	

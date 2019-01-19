@@ -6,7 +6,7 @@ import Data.Location;
 import Data.Queue;
 import game.entity.Entity;
 import game.map.Map;
-import game.tick.TickManager;
+import tick.TickManager;
 
 public class PathSystem {
 	

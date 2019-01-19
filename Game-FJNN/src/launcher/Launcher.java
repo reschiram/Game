@@ -1,9 +1,12 @@
 package launcher;
 
 import client.GameCM;
+import data.Tickable;
+import data.exceptions.LoginInformationCreationException;
+import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.client.ServerNotFoundException;
 
-public class Launcher {
+public class Launcher implements Tickable{
 	
 	public static void main(String args[]) {
 		new Launcher(args[0], 12345);
@@ -24,8 +27,16 @@ public class Launcher {
 	}
 
 	public void login(String username, String password) {
-		
-		
+		try {
+			this.gameCM.getClientUserManager().login(username, password);
+		} catch (UnsupportedPackageCreationException | LoginInformationCreationException e) {
+			this.gui.println("Login failed");
+		}		
+	}
+
+	@Override
+	public void tick() {
+		this.gameCM.tick();
 	}
 	
 

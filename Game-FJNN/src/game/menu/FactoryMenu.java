@@ -13,9 +13,9 @@ import Data.Image.Image;
 import Engine.Engine;
 import data.map.Factory;
 import game.map.Map;
-import game.tick.TickManager;
 import game.vehicle.BluePrint;
 import sprites.Sprites;
+import tick.TickManager;
 
 public class FactoryMenu {
 	

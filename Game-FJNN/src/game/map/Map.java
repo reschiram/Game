@@ -11,12 +11,12 @@ import data.Mouse;
 import data.ResourcePart;
 import data.map.Lamp;
 import data.map.UpdatableBlockData;
-import game.tick.TickManager;
 import game.Game;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.gridData.map.*;
 import game.pathFinder.system.PathSystem;
+import tick.TickManager;
 
 public class Map {
 	

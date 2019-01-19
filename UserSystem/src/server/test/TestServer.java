@@ -103,7 +103,7 @@ public class TestServer implements ClientConnectionValidationEventListener, Clie
 
 	@Override
 	public void handleClientLogginIn(ClientConnectionValidationEvent event) {
-		if(event.isLoggedIn())this.serverMain.getGUI().println("Client: "+event.getClientID()+" has registered as User: "+event.getUser().toString());
+		if(event.isLoggedIn())this.serverMain.getGUI().println("Client: "+event.getClientID()+" has registered as User: "+event.getValidatedUser().toString());
 		else this.serverMain.getGUI().println("Client: "+event.getClientID()+" has failed to Login");
 	}
 

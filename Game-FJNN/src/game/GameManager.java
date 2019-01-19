@@ -13,15 +13,16 @@ import Engine.Engine;
 import anim.AnimationType;
 import data.MapResource;
 import data.Mouse;
+import data.Tickable;
 import files.FileManager;
 import game.dev.mapEditor.MapEditor;
 import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
-import game.tick.TickManager;
 import menu.LoadScreen;
 import sprites.Sprites;
+import tick.TickManager;
 
-public class GameManager {
+public class GameManager implements Tickable{
 		
 	private Game game;
 	private MapEditor mapEditor;

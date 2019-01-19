@@ -1,8 +1,11 @@
-package main;
+package tick;
+
+import data.Tickable;
 
 public class TickManager {
 	
 	private static int TICK_DURATION = 1000/100;
+//	private static double time = System.currentTimeMillis();
 	private static long TICKS = 0;
 	private static long StartTime = 0;
 	
@@ -12,15 +15,17 @@ public class TickManager {
 		StartTime = System.currentTimeMillis();
 	}
 	
-	public TickManager(ServerMain sm){
+	public TickManager(Tickable tickable){
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
 				StartTime = System.currentTimeMillis();
 				while(true){
-					sm.tick();
+//					time = System.currentTimeMillis();
+					tickable.tick();
 					int wait = (int) (TICK_DURATION - getLatency()*TICK_DURATION);
 					if(!released)wait = 10;
+//					System.out.println(wait);
 					if(wait>0){
 						synchronized (Thread.currentThread()) {
 							try {
@@ -30,10 +35,17 @@ public class TickManager {
 							}							
 						}
 					}
+//					System.out.println(TICKS+" -> "+(System.currentTimeMillis()-StartTime-TICK_DURATION*TICKS)+" -> "+wait);
 					if(released)TICKS++;
 				}
 			}
 		}).start();
+	}
+
+	public static double getDeltaTime() {
+		return 1.0;
+		//return 1.0+((double)(System.currentTimeMillis()-time)/TICK_DURATION);
+		//return Math.sqrt((TICK_DURATION-(System.currentTimeMillis()-time))*(TICK_DURATION-(System.currentTimeMillis()-time)))/TICK_DURATION;
 	}
 
 	public static double getTickDuration() {
