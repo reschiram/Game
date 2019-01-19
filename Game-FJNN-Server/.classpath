@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SecurityManager"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/UserSystem"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Game-FJNN"/>
+	<classpathentry kind="lib" path="res"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

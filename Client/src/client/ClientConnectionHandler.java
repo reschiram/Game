@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import data.DataPackage;
 import data.PackageType;
@@ -58,24 +59,28 @@ public class ClientConnectionHandler {
 			throw new ServerNotFoundException(e, ip, port);
 		}
 	}
+	
+	private HashMap<Integer, Queue<DataPackage>> dataStreams = new HashMap<>();
 
 	private void acceptData() throws UnsupportedPackageException {
-		Queue<DataPackage> dataStream = new Queue<>();
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
-			for(int length = socket.getInputStream().read(income); length!=-1 && isConnected(); length = socket.getInputStream().read(income)){
-				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);				
-								
+			for(int length = socket.getInputStream().read(income); length!=-1 && isConnected(); length = socket.getInputStream().read(income)){		
 				DataPackage dataPackage = null;
 				try {
 					dataPackage = new DataPackage(income, length);
 				} catch (Exception ea) {ea.printStackTrace();}
 				
 				if(dataPackage!=null){
+					
+					if(!this.dataStreams.containsKey(dataPackage.getId())) this.dataStreams.put(dataPackage.getId(), new Queue<DataPackage>());
+					Queue<DataPackage> dataStream = dataStreams.get(dataPackage.getId());
+					if(dataPackage.isEnd()) this.dataStreams.remove(dataPackage.getId());				
+					
 					handNewDataPackage(dataPackage, dataStream);
 				}
 				
-				income = new byte[DataPackage.PACKAGESIZE];
+				income = new byte[DataPackage.MAXPACKAGELENGTH];
 			}
 		} catch (IOException e) {
 			if(this.client.run() && !ended){
@@ -91,7 +96,7 @@ public class ClientConnectionHandler {
 		if(dataPackage.isEnd()){
 			ByteBuffer data = ByteBuffer.allocate(DataPackage.PACKAGESIZE);
 			int actuallLength = 0;
-			while(!dataStream.isEmpty()){
+			while(!dataStream.isEmpty()){				
 				actuallLength+=dataStream.get().getByteData().length;
 				data.put(dataStream.get().getByteData(), DataPackage.ID_Length, dataStream.get().getByteData().length-DataPackage.ID_Length);
 				dataStream.remove();
