@@ -42,7 +42,7 @@ public class BuildTool extends Tool{
 		if(user instanceof Player){
 			Player player = (Player)user;
 			
-			int mouseWheelMoved = Engine.getInputManager().getMouseWheelsMove((long) (TickManager.getTickDuration()*2));
+			int mouseWheelMoved = Engine.getInputManager().getMouseWheelsMove((long) (TickManager.TICK_DURATION*2));
 			if(mouseWheelMoved!=0)((BuildToolMenu) this.menu).moveSelected(mouseWheelMoved);
 			Location loc = new Location(Map.getMap().getXOver(	(int) Engine.getInputManager().MousePosition().getX()+Map.getMap().getMoved().getX())/Map.DEFAULT_SQUARESIZE,
 						(int)(Engine.getInputManager().MousePosition().getY()+Map.getMap().getMoved().getY())/Map.DEFAULT_SQUARESIZE);
@@ -101,7 +101,7 @@ public class BuildTool extends Tool{
 	@Override
 	public boolean isTriggered(){
 		if(super.isTriggered())return true;
-		else if(Engine.getInputManager().getMouseWheelsMove((long) TickManager.getTickDuration())!=0)return true;
+		else if(Engine.getInputManager().getMouseWheelsMove((long) TickManager.TICK_DURATION)!=0)return true;
 		return false;
 	}
 

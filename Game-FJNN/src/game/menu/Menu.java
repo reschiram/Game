@@ -8,7 +8,7 @@ import java.util.HashMap;
 import Data.Events.Action;
 import Data.Image.Image;
 import Engine.Engine;
-import tick.TickManager;
+import game.GameManager;
 
 public class Menu {
 	
@@ -62,7 +62,7 @@ public class Menu {
 	public void tick(){
 		if(changeSize == 0){
 			if(background.getWidth()!=size.width){
-				grow += Menu.OPENSPEED*TickManager.getDeltaTime();
+				grow += Menu.OPENSPEED*GameManager.TickManager.getDeltaTime();
 				if(grow>=size.width){
 //					System.out.println("==="+grow+"===");
 					grow = size.width;
@@ -82,7 +82,7 @@ public class Menu {
 		}else if(changeSize == 1){
 //			System.out.println("REMOVE");
 			if(background.getWidth()!=0){
-				grow -= Menu.OPENSPEED*TickManager.getDeltaTime();
+				grow -= Menu.OPENSPEED*GameManager.TickManager.getDeltaTime();
 				if((int)grow<=0){
 					grow = 1;
 					background.disabled = true;

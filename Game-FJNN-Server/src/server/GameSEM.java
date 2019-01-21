@@ -50,7 +50,6 @@ public class GameSEM implements ServerLostConnectionToClientEventListener, NewCl
 
 	@Override
 	public void messageFromClient(ToServerMessageEvent event) {
-		
 	}
 
 	@Override

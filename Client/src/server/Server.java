@@ -20,14 +20,15 @@ public class Server {
 
 	private ConnectionHandler connectionHandler;
 	private ServerManager serverManager;
+	private ServerMessageManager serverMessageManager;
 	
-	private Queue<ServerMessage> serverMessages = new Queue<>();
 	private Queue<ServerTask> serverTasks = new Queue<>();
 	
 	Server(ServerManager serverManager){
 		
 		this.connectionHandler = new ConnectionHandler(this);
 		this.serverManager = serverManager;
+		this.serverMessageManager = new ServerMessageManager(this);
 	}
 	
 	void openConnection() throws ServerPortException{
@@ -47,11 +48,7 @@ public class Server {
 			@Override
 			public void run() {
 				while(run){
-					while(!serverMessages.isEmpty()){
-						ServerMessage message = serverMessages.get();
-						serverMessages.remove();
-						connectionHandler.getServerClient(message.getId()).sendToClient(message.getMessage());
-					}
+					serverMessageManager.tick();
 
 					while(!serverTasks.isEmpty()){
 						ServerTask task = serverTasks.get();
@@ -59,6 +56,8 @@ public class Server {
 						ServerClient sc = connectionHandler.getServerClient(task.getClientID());
 						task.act(sc, serverManager);
 					}
+					
+					connectionHandler.flushAll();
 					Funktions.wait(1);
 				}
 			}
@@ -101,7 +100,7 @@ public class Server {
 	}
 
 	void sendToServerClient(ServerMessage serverMessage) {
-		serverMessages.add(serverMessage);
+		this.serverMessageManager.addMessage(serverMessage);
 	}
 
 	boolean isConnected() {
@@ -118,5 +117,9 @@ public class Server {
 
 	public void addServerTask(ServerTask serverTask) {
 		this.serverTasks.add(serverTask);
+	}
+
+	ConnectionHandler getConnectionHandler() {
+		return connectionHandler;
 	}
 }

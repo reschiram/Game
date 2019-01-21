@@ -20,26 +20,7 @@ public class GameSPM extends GameCPM{
 		data[0] = PackageType.readPackageData(DataPackage_MapDownloadInfos, width, height, mapData.getSeed(), messageCount);
 
 		for (int i = 0; i < messageCount; i++) {
-			Integer[] content = new Integer[1 + (MapDownloadData_DataCount * 4)];
-			content[0] = i;
-			for (int a = 0; a < MapDownloadData_DataCount; a++) {
-				int index = (i * MapDownloadData_DataCount) + a;
-				int y = index / width;
-				int x = index - (y * width);
-				
-				if(x < width && y < height) {
-					content[1 + (a * 4) + 0] = mapData.getGroundData()[x][y][0];
-					content[1 + (a * 4) + 1] = mapData.getGroundData()[x][y][1];
-					content[1 + (a * 4) + 2] = mapData.getBuildData ()[x][y][0];
-					content[1 + (a * 4) + 3] = mapData.getBuildData ()[x][y][1];
-				}else {
-					content[1 + (a * 4) + 0] = 0;
-					content[1 + (a * 4) + 1] = 0;
-					content[1 + (a * 4) + 2] = 0;
-					content[1 + (a * 4) + 3] = 0;
-				}
-			}
-			data[i + 1] = PackageType.readPackageData(DataPackage_MapDownloadData, content); 
+			data[i + 1] = getMapDataPackage(i, mapData);
 		}
 		
 		System.out.println("Test null PackageTypes: ");
@@ -56,6 +37,33 @@ public class GameSPM extends GameCPM{
 		System.out.println("=======");
 		
 		return data;
+	}
+
+	public PackageType getMapDataPackage(int id, MapGenerationData mapData) throws Exception {
+		int width = mapData.getWidth();
+		int height = mapData.getHeight();
+		
+		Integer[] content = new Integer[1 + (MapDownloadData_DataCount * 4)];
+		content[0] = id;
+		
+		for (int a = 0; a < MapDownloadData_DataCount; a++) {
+			int index = (id * MapDownloadData_DataCount) + a;
+			int y = index / width;
+			int x = index - (y * width);
+			
+			if(x < width && y < height) {
+				content[1 + (a * 4) + 0] = mapData.getGroundData()[x][y][0];
+				content[1 + (a * 4) + 1] = mapData.getGroundData()[x][y][1];
+				content[1 + (a * 4) + 2] = mapData.getBuildData ()[x][y][0];
+				content[1 + (a * 4) + 3] = mapData.getBuildData ()[x][y][1];
+			}else {
+				content[1 + (a * 4) + 0] = 0;
+				content[1 + (a * 4) + 1] = 0;
+				content[1 + (a * 4) + 2] = 0;
+				content[1 + (a * 4) + 3] = 0;
+			}
+		}
+		return PackageType.readPackageData(DataPackage_MapDownloadData, content); 
 	}
 
 }

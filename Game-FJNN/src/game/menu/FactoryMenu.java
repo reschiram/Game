@@ -12,6 +12,7 @@ import Data.GraphicOperation.StringRenderOperation;
 import Data.Image.Image;
 import Engine.Engine;
 import data.map.Factory;
+import game.GameManager;
 import game.map.Map;
 import game.vehicle.BluePrint;
 import sprites.Sprites;
@@ -160,8 +161,8 @@ public class FactoryMenu {
 				}
 			}
 		}
-		if(Engine.getInputManager().getMouseWheelsMove((long)(2*TickManager.getTickDuration()*TickManager.getDeltaTime()))!=0){
-			int rotation = Engine.getInputManager().getMouseWheelsMove((long)(2*TickManager.getTickDuration()*TickManager.getDeltaTime()));
+		if(Engine.getInputManager().getMouseWheelsMove((long)(2*TickManager.TICK_DURATION*GameManager.TickManager.getDeltaTime()))!=0){
+			int rotation = Engine.getInputManager().getMouseWheelsMove((long)(2*TickManager.TICK_DURATION*GameManager.TickManager.getDeltaTime()));
 			moveItems(rotation*5);
 		}
 		return null;

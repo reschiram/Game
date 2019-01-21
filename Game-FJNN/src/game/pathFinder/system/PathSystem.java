@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 import Data.Location;
 import Data.Queue;
+import game.GameManager;
 import game.entity.Entity;
 import game.map.Map;
-import tick.TickManager;
 
 public class PathSystem {
 	
@@ -46,8 +46,8 @@ public class PathSystem {
 	}
 
 	private void pathTick() {
-		long startTick = TickManager.getCurrentTick();
-		while (!requests.isEmpty() && startTick == TickManager.getCurrentTick()) {
+		long startTick = GameManager.TickManager.getCurrentTick();
+		while (!requests.isEmpty() && startTick == GameManager.TickManager.getCurrentTick()) {
 			PathRequest request = requests.get();
 			requests.remove();
 			

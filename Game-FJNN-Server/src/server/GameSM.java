@@ -52,21 +52,11 @@ public class GameSM {
 
 	public void sendMapToClient(long clientID, ServerMap serverMap) {
 		try {
-			PackageType[] messages = this.gameSPM.getMapMessages(serverMap.getGenerationData());
-			
+			System.out.println("Start sending Map");			
 			long time = System.currentTimeMillis();
-			System.out.println("Start sending");
+			PackageType[] messages = this.gameSPM.getMapMessages(serverMap.getGenerationData());
 			for(int i = 0; i < messages.length; i++) {
 				this.serverManager.sendMessage(clientID, DataPackage.getPackage(messages[i]));
-				int d = i / 100;
-				if (d * 100 == i) synchronized (Thread.currentThread()) {
-					try {
-						Thread.currentThread().wait(1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}							
-				}
-				System.out.println(i+" / "+messages.length);
 			}
 			System.out.println("Sending completed. Time: "+(System.currentTimeMillis() - time)+"ms");
 		} catch (Exception | InvalidServerClientIDException e) {

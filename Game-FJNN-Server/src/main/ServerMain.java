@@ -1,6 +1,7 @@
 package main;
 
 import console.ConsoleManager;
+import data.ServerMap;
 import data.Tickable;
 import data.exceptions.server.ServerPortException;
 import server.GameSEM;

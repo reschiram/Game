@@ -4,28 +4,26 @@ import data.Tickable;
 
 public class TickManager {
 	
-	private static int TICK_DURATION = 1000/100;
-//	private static double time = System.currentTimeMillis();
-	private static long TICKS = 0;
-	private static long StartTime = 0;
+	public static final int TICK_DURATION = 1000/100;
 	
-	private static boolean released = false;
-	public static void Release(){
+	private long ticks = 0;
+	private long startTime = 0;
+	
+	private boolean released = false;
+	public void release(){
 		released = true;
-		StartTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 	}
 	
 	public TickManager(Tickable tickable){
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
-				StartTime = System.currentTimeMillis();
+				startTime = System.currentTimeMillis();
 				while(true){
-//					time = System.currentTimeMillis();
 					tickable.tick();
 					int wait = (int) (TICK_DURATION - getLatency()*TICK_DURATION);
 					if(!released)wait = 10;
-//					System.out.println(wait);
 					if(wait>0){
 						synchronized (Thread.currentThread()) {
 							try {
@@ -35,29 +33,22 @@ public class TickManager {
 							}							
 						}
 					}
-//					System.out.println(TICKS+" -> "+(System.currentTimeMillis()-StartTime-TICK_DURATION*TICKS)+" -> "+wait);
-					if(released)TICKS++;
+					if(released)ticks++;
 				}
 			}
 		}).start();
 	}
 
-	public static double getDeltaTime() {
+	public double getDeltaTime() {
 		return 1.0;
-		//return 1.0+((double)(System.currentTimeMillis()-time)/TICK_DURATION);
-		//return Math.sqrt((TICK_DURATION-(System.currentTimeMillis()-time))*(TICK_DURATION-(System.currentTimeMillis()-time)))/TICK_DURATION;
 	}
 
-	public static double getTickDuration() {
-		return TICK_DURATION;
+	public long getLatency() {
+		return (System.currentTimeMillis()-startTime-(TICK_DURATION*ticks))/TICK_DURATION;
 	}
 
-	public static long getLatency() {
-		return (System.currentTimeMillis()-StartTime-TICK_DURATION*TICKS)/TICK_DURATION;
-	}
-
-	public static long getCurrentTick() {
-		return TICKS;
+	public long getCurrentTick() {
+		return ticks;
 	}
 
 }

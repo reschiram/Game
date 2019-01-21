@@ -12,6 +12,7 @@ import data.ResourcePart;
 import data.map.Lamp;
 import data.map.UpdatableBlockData;
 import game.Game;
+import game.GameManager;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.gridData.map.*;
@@ -49,13 +50,13 @@ public class Map {
 	
 	private boolean finalized = false;
 	
-	public Map(int width, int height, int seed){
+	public Map(int width, int height, int seed) {
 		Map = this;
-		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0,1);
-		Engine.getEngine(this, this.getClass()).addLayer(true , false, false, 2,3);
-		this.Width   = width;
-		this.Height  = height;
-		this.chunks  = new MapChunk[this.Width/DEFAULT_CHUNKSIZE +1][this.Height/DEFAULT_CHUNKSIZE +1];
+		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0, 1);
+		Engine.getEngine(this, this.getClass()).addLayer(true, false, false, 2, 3);
+		this.Width = width;
+		this.Height = height;
+		this.chunks = new MapChunk[this.Width / DEFAULT_CHUNKSIZE + 1][this.Height / DEFAULT_CHUNKSIZE + 1];
 		
 		this.seed = seed;
 
@@ -65,13 +66,13 @@ public class Map {
 		pathSystem = new PathSystem(this);
 	}
 	
-	public Map(int[][][] ground, int[][][] build, int seed){
+	public Map(int[][][] ground, int[][][] build, int seed) {
 		Map = this;
-		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0,1);
-		Engine.getEngine(this, this.getClass()).addLayer(true , false, false, 2,3);
-		this.Width   = ground.length;
-		this.Height  = ground[0].length;
-		this.chunks  = new MapChunk[this.Width/DEFAULT_CHUNKSIZE +1][this.Height/DEFAULT_CHUNKSIZE +1]   ;
+		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0, 1);
+		Engine.getEngine(this, this.getClass()).addLayer(true, false, false, 2, 3);
+		this.Width = ground.length;
+		this.Height = ground[0].length;
+		this.chunks = new MapChunk[this.Width / DEFAULT_CHUNKSIZE + 1][this.Height / DEFAULT_CHUNKSIZE + 1];
 		
 		for(int x = 0; x<this.Width; x++){
 			for(int y = 0; y<this.Height; y++){
@@ -226,8 +227,8 @@ public class Map {
 	
 	public void move(){
 		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_UP)){
-			ym+=speed*TickManager.getDeltaTime();
-			if(this.getMoved().getY()-ym<0)ym-=speed*TickManager.getDeltaTime();
+			ym+=speed*GameManager.TickManager.getDeltaTime();
+			if(this.getMoved().getY()-ym<0)ym-=speed*GameManager.TickManager.getDeltaTime();
 			else while(ym>1){
 				Engine.getEngine(this, this.getClass()).moveLayer(0, -1, 0,1,2,3,4);
 				ym--;
@@ -235,7 +236,7 @@ public class Map {
 				this.Moved.setLocation(this.Moved.getX(), this.Moved.getY()-1);
 			}
 		}else if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_DOWN)){
-			ym-=speed*TickManager.getDeltaTime();
+			ym-=speed*GameManager.TickManager.getDeltaTime();
 			while(ym<-1){
 				Engine.getEngine(this, this.getClass()).moveLayer(0, 1, 0,1,2,3,4);
 				ym++;
@@ -244,7 +245,7 @@ public class Map {
 			}
 		}
 		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_RIGHT)){
-			xm+=speed*TickManager.getDeltaTime();
+			xm+=speed*GameManager.TickManager.getDeltaTime();
 			while(xm>1){
 				Engine.getEngine(this, this.getClass()).moveLayer(1, 0, 0,1,2,3,4);
 				xm--;
@@ -252,8 +253,8 @@ public class Map {
 				this.Moved.setLocation(this.Moved.getX()+1, this.Moved.getY());
 			}
 		}else if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_LEFT)){
-			xm-=speed*TickManager.getDeltaTime();
-			if(this.getMoved().getX()+xm<0)xm+=speed*TickManager.getDeltaTime();
+			xm-=speed*GameManager.TickManager.getDeltaTime();
+			if(this.getMoved().getX()+xm<0)xm+=speed*GameManager.TickManager.getDeltaTime();
 			else while(xm<-1){
 				Engine.getEngine(this, this.getClass()).moveLayer(-1, 0, 0,1,2,3,4);
 				xm++;

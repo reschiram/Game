@@ -11,7 +11,7 @@ import data.readableData.StringData;
 
 public class DataPackage {
 
-	public static final int PACKAGESIZE = 512;
+	public static final int PACKAGESIZE = 4096;
 	public static final int MAXPACKAGELENGTH = PACKAGESIZE/8;
 	public static final int ID_Length = 1;
 	

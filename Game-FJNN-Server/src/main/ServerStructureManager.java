@@ -70,4 +70,8 @@ public class ServerStructureManager {
 		sm.getGameSM().sendMapToClient(validatedUser.getServerClientID(), this.lobby.getMaps().get(0));
 	}
 
+	public Lobby getLobby() {
+		return lobby;
+	}
+
 }

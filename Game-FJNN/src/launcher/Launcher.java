@@ -5,6 +5,7 @@ import data.Tickable;
 import data.exceptions.LoginInformationCreationException;
 import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.client.ServerNotFoundException;
+import game.GameManager;
 import tick.TickManager;
 
 public class Launcher implements Tickable{
@@ -44,6 +45,10 @@ public class Launcher implements Tickable{
 	@Override
 	public void tick() {
 		this.gameCM.tick();
+		
+		if(this.mapDownloader.isFinished() && !this.mapDownloader.isLoaded()) {
+			new GameManager(mapDownloader);
+		}
 	}
 
 	public MapDownloader getMapDownloader() {
@@ -52,6 +57,10 @@ public class Launcher implements Tickable{
 
 	public LauncherGUI getGUI() {
 		return gui;
+	}
+
+	public GameCM getGameCM() {
+		return gameCM;
 	}
 
 }

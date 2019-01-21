@@ -18,11 +18,14 @@ import files.FileManager;
 import game.dev.mapEditor.MapEditor;
 import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
+import launcher.MapDownloader;
 import menu.LoadScreen;
 import sprites.Sprites;
 import tick.TickManager;
 
 public class GameManager implements Tickable{
+	
+	public static TickManager TickManager;
 		
 	private Game game;
 	private MapEditor mapEditor;
@@ -36,7 +39,7 @@ public class GameManager implements Tickable{
 		return HasStarted;
 	}
 	
-	public GameManager(){
+	public GameManager(MapDownloader mapDownloader){
 		new Engine(1920, 1080, new Dimension(800,800));
 		Engine.getEngine(this, this.getClass()).getWindow().setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
@@ -55,7 +58,7 @@ public class GameManager implements Tickable{
 		LoadScreen.setProgress(0.3);
 		
 		this.setKillAble();			
-		new TickManager(this);	
+		TickManager = new TickManager(this);	
 		LoadScreen.setProgress(0.4);
 		
 		new Mouse(10);	
@@ -66,15 +69,15 @@ public class GameManager implements Tickable{
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(FPSCounter, 10);
 		LatencyCounter = new StringRenderOperation(new Location(1800,80), new Dimension(120, 50), "Latency:"+TickManager.getLatency()+" tick(s)", null, Color.WHITE);
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(LatencyCounter, 10);
-		start();			
+		start(mapDownloader);			
 		HasStarted = true;
-		TickManager.Release();
+		TickManager.release();
 		LoadScreen.destroyVisuals();
 	}
 	
-	private void start() {
+	private void start(MapDownloader mapDownloader) {
 		game = new Game(this);
-		game.start();
+		game.start(mapDownloader);
 //		this.mapEditor = new MapEditor(new MapLoader(FileManager.MAP_TEST));
 	}
 

@@ -10,6 +10,7 @@ import Data.Location;
 import Data.Animation.Animation;
 import Engine.Engine;
 import data.ImageData;
+import game.GameManager;
 import game.entity.manager.EntityManager;
 import game.entity.type.EntityType;
 import game.entity.type.data.EntityData;
@@ -195,7 +196,7 @@ public abstract class Entity {
 			if(newLightLevel>lightLevel)lightLevel = newLightLevel;
 		}
 		this.lightLevel = new DataObject<Integer>(lightLevel);
-		this.lastLightUpdate = TickManager.getCurrentTick();
+		this.lastLightUpdate = GameManager.TickManager.getCurrentTick();
 		for(ImageData image:images)image.getImage().setSpriteID(this.lightLevel);
 	}
 

@@ -1,6 +1,7 @@
 package launcher;
 
 import client.GameCPM;
+import game.map.Map;
 import game.map.MapGenerationData;
 
 public class MapDownloader {
@@ -10,7 +11,8 @@ public class MapDownloader {
 	private MapGenerationData mapData;
 	private int packageAmount;
 
-	private int currentPackage;
+	private int currentPackage = -1;
+	private boolean loaded = false;
 
 	public MapDownloader(Launcher launcher) {
 		this.launcher = launcher;
@@ -30,9 +32,13 @@ public class MapDownloader {
 	}
 
 	public void addData(int[] data, int dataID) {
-		if (isFinished() || currentPackage >= dataID) {
+		if (isFinished() || inavlidID(dataID)) {
 			launcher.getGUI().println("MapData " + dataID + " was already downloaded");
 			return;
+		}
+		
+		if(dataID > currentPackage+1) {
+			System.out.println("Messages lost: " + currentPackage + " -> " + dataID);
 		}
 
 		int index = dataID * GameCPM.MapDownloadData_DataCount;
@@ -48,18 +54,35 @@ public class MapDownloader {
 			}
 		}
 
-		this.currentPackage = dataID;
+		if(currentPackage < dataID) this.currentPackage = dataID;
 
-		System.out.println("Download: (" + (dataID + 1) + " / " + packageAmount + ") ~ "
-				+ (((double) (dataID + 1)) / ((double) packageAmount)) + " => isFinished: " + isFinished());
+//		System.out.println("Download: (" + (dataID + 1) + " / " + packageAmount + ") ~ "
+//				+ (((double) (dataID + 1)) / ((double) packageAmount)) + " => isFinished: " + isFinished());
 
-		if (isFinished())
+		if (isFinished()) {
 			launcher.getGUI().println("Map: (" + mapData.getSeed() + "|" + mapData.getWidth() + "|"
 					+ mapData.getHeight() + "|" + packageAmount + ") was already downloaded");
+		}
+	}
+
+	private boolean inavlidID(int dataID) {
+		if (currentPackage <= dataID) return false;
+		return true;
 	}
 
 	public boolean isFinished() {
-		return currentPackage == packageAmount - 1;
+		return currentPackage == packageAmount - 1 && currentPackage != -1;
+	}
+
+	public Map getMap() {
+		this.loaded = true;
+		Map map = new Map(mapData.getGroundData(), mapData.getBuildData(), mapData.getSeed());
+		map.finalize();
+		return map;
+	}
+
+	public boolean isLoaded() {
+		return loaded;
 	}
 
 }

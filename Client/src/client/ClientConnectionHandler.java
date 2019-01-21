@@ -1,5 +1,7 @@
 package client;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -25,6 +27,9 @@ public class ClientConnectionHandler {
 	private Socket socket;
 	private Client client;
 	
+	private BufferedInputStream in;
+	private BufferedOutputStream out;
+	
 	private boolean ended = false;
 
 	ClientConnectionHandler(Client client, String ip, int port) {
@@ -41,6 +46,12 @@ public class ClientConnectionHandler {
 		try {
 			
 			socket = new Socket(ip, port);
+			socket.setTcpNoDelay(false);
+			socket.setReceiveBufferSize(DataPackage.MAXPACKAGELENGTH);
+			socket.setSendBufferSize(DataPackage.MAXPACKAGELENGTH);
+
+			this.out = new BufferedOutputStream(socket.getOutputStream(), DataPackage.MAXPACKAGELENGTH);
+			this.in = new BufferedInputStream(socket.getInputStream(), DataPackage.MAXPACKAGELENGTH);
 			
 			new Thread(new Runnable() {				
 				@Override
@@ -65,17 +76,23 @@ public class ClientConnectionHandler {
 	private void acceptData() throws UnsupportedPackageException {
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
-			for(int length = socket.getInputStream().read(income); length!=-1 && isConnected(); length = socket.getInputStream().read(income)){		
+			for(int length = in.read(income); length!=-1 && isConnected(); length = in.read(income)){
+//				System.out.println("length: "+length);
+				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);	
+				
 				DataPackage dataPackage = null;
 				try {
 					dataPackage = new DataPackage(income, length);
 				} catch (Exception ea) {ea.printStackTrace();}
 				
+				if(dataPackage.getId() != 16)printData(income);
+				
 				if(dataPackage!=null){
 					
 					if(!this.dataStreams.containsKey(dataPackage.getId())) this.dataStreams.put(dataPackage.getId(), new Queue<DataPackage>());
 					Queue<DataPackage> dataStream = dataStreams.get(dataPackage.getId());
-					if(dataPackage.isEnd()) this.dataStreams.remove(dataPackage.getId());				
+					if(dataPackage.isEnd()) this.dataStreams.remove(dataPackage.getId());	
+					else System.out.println("Part one of Package: "+dataPackage.getId());
 					
 					handNewDataPackage(dataPackage, dataStream);
 				}
@@ -91,6 +108,12 @@ public class ClientConnectionHandler {
 		}
 	}
 
+	private void printData(byte[] income) {
+		String msg = "In: "+income.length+" [";
+		for(int i = 0; i < 20; i++)msg += income[i] + ",";
+		System.out.println(msg+"]");
+	}
+
 	private void handNewDataPackage(DataPackage dataPackage, Queue<DataPackage> dataStream) throws UnsupportedEncodingException, UnsupportedPackageException {
 		dataStream.add(dataPackage);
 		if(dataPackage.isEnd()){
@@ -98,6 +121,7 @@ public class ClientConnectionHandler {
 			int actuallLength = 0;
 			while(!dataStream.isEmpty()){				
 				actuallLength+=dataStream.get().getByteData().length;
+				if(actuallLength > DataPackage.PACKAGESIZE) throw new UnsupportedPackageException(null, dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength));
 				data.put(dataStream.get().getByteData(), DataPackage.ID_Length, dataStream.get().getByteData().length-DataPackage.ID_Length);
 				dataStream.remove();
 			}
@@ -112,9 +136,10 @@ public class ClientConnectionHandler {
 	void send(Queue<DataPackage> packages) {
 		try {
 			while(!packages.isEmpty()){
-				socket.getOutputStream().write(packages.get().getByteData());
+				out.write(packages.get().getByteData());
 				packages.remove();
 			}
+			out.flush();
 		} catch (IOException e) {
 			if(this.client.run() && !ended){
 				this.client.endClient();

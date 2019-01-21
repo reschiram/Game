@@ -1,8 +1,8 @@
 package server;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -22,8 +22,8 @@ public class ServerClient {
 	private final static int maxHeartbeatDuration = 10000;
 	
 	private Socket connection;
-	private OutputStream out;
-	private InputStream in;
+	private BufferedOutputStream out;
+	private BufferedInputStream in;
 	private Long id;
 	
 	private Server server;
@@ -37,8 +37,12 @@ public class ServerClient {
 		this.server = server;
 		
 		try {
-			this.out = client.getOutputStream();
-			this.in = client.getInputStream();
+			connection.setTcpNoDelay(false);
+			connection.setReceiveBufferSize(DataPackage.MAXPACKAGELENGTH);
+			connection.setSendBufferSize(DataPackage.MAXPACKAGELENGTH);
+			
+			this.out = new BufferedOutputStream(connection.getOutputStream(), DataPackage.MAXPACKAGELENGTH);
+			this.in = new BufferedInputStream(connection.getInputStream(), DataPackage.MAXPACKAGELENGTH);
 		} catch (IOException e) {e.printStackTrace();}
 	}
 	
@@ -70,6 +74,7 @@ public class ServerClient {
 			try {
 				while(!packages.isEmpty()){
 					this.out.write(packages.get().getByteData());
+					printData(packages.get().getByteData());
 					packages.remove();
 				}
 			} catch (IOException e) {
@@ -78,6 +83,25 @@ public class ServerClient {
 						ended = true;
 						server.getServerManager().getEventManager().publishServerEvent(new ServerLostConnectionToClientEvent(id, connection));
 					}
+				}
+			}
+		}
+	}
+
+	private void printData(byte[] income) {
+		String msg = "In: "+income.length+" [";
+		for(int i = 0; i < 20 && income.length > i; i++)msg += income[i] + ",";
+		System.out.println(msg+"]");
+	}
+	
+	void flush() {
+		try {
+			this.out.flush();
+		} catch (IOException e) {
+			if(!isConnected()){
+				if(!ended){
+					ended = true;
+					server.getServerManager().getEventManager().publishServerEvent(new ServerLostConnectionToClientEvent(id, connection));
 				}
 			}
 		}
@@ -104,7 +128,7 @@ public class ServerClient {
 					else handNewDataPackage(dataPackage, dataStream);
 				}
 				
-				income = new byte[DataPackage.PACKAGESIZE];
+				income = new byte[DataPackage.MAXPACKAGELENGTH];
 			}
 		} catch (IOException e) {
 			if(!isConnected()){
