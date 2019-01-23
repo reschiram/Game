@@ -74,10 +74,11 @@ public class ServerClient {
 			try {
 				while(!packages.isEmpty()){
 					this.out.write(packages.get().getByteData());
-					printData(packages.get().getByteData());
 					packages.remove();
+					this.out.flush();
 				}
 			} catch (IOException e) {
+				e.printStackTrace();
 				if(!isConnected()){
 					if(!ended){
 						ended = true;
@@ -98,6 +99,7 @@ public class ServerClient {
 		try {
 			this.out.flush();
 		} catch (IOException e) {
+			e.printStackTrace();
 			if(!isConnected()){
 				if(!ended){
 					ended = true;
@@ -131,6 +133,7 @@ public class ServerClient {
 				income = new byte[DataPackage.MAXPACKAGELENGTH];
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			if(!isConnected()){
 				if(!ended){
 					ended = true;

@@ -77,7 +77,6 @@ public class ClientConnectionHandler {
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
 			for(int length = in.read(income); length!=-1 && isConnected(); length = in.read(income)){
-//				System.out.println("length: "+length);
 				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);	
 				
 				DataPackage dataPackage = null;
@@ -85,21 +84,20 @@ public class ClientConnectionHandler {
 					dataPackage = new DataPackage(income, length);
 				} catch (Exception ea) {ea.printStackTrace();}
 				
-				if(dataPackage.getId() != 16)printData(income);
-				
 				if(dataPackage!=null){
 					
 					if(!this.dataStreams.containsKey(dataPackage.getId())) this.dataStreams.put(dataPackage.getId(), new Queue<DataPackage>());
 					Queue<DataPackage> dataStream = dataStreams.get(dataPackage.getId());
-					if(dataPackage.isEnd()) this.dataStreams.remove(dataPackage.getId());	
-					else System.out.println("Part one of Package: "+dataPackage.getId());
-					
-					handNewDataPackage(dataPackage, dataStream);
+					if(dataPackage.isEnd()) {
+						this.dataStreams.remove(dataPackage.getId());	
+						handNewDataPackage(dataPackage, dataStream);
+					}					
 				}
 				
 				income = new byte[DataPackage.MAXPACKAGELENGTH];
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			if(this.client.run() && !ended){
 				this.client.endClient();
 				this.client.connectionLost(new ClientLostConnectionToServerEvent(this.socket));
@@ -141,6 +139,7 @@ public class ClientConnectionHandler {
 			}
 			out.flush();
 		} catch (IOException e) {
+			e.printStackTrace();
 			if(this.client.run() && !ended){
 				this.client.endClient();
 				this.client.connectionLost(new ClientLostConnectionToServerEvent(this.socket));
