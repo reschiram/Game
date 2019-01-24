@@ -1,7 +1,8 @@
 package data;
 
 import Engine.Engine;
-import game.tick.TickManager;
+import game.GameManager;
+import tick.TickManager;
 
 public class ButtonTrigger {
 	
@@ -29,7 +30,7 @@ public class ButtonTrigger {
 			if(Engine.getInputManager().getKeyDown().contains(keyCode) || Engine.getInputManager().getMouseButton().contains(keyCode))return true;
 		}else{
 			if(keyCode == -1){
-				if(Engine.getInputManager().getMouseWheelsMove((long) (TickManager.getTickDuration()*(1.5+TickManager.getLatency())))!=0)return true;
+				if(Engine.getInputManager().getMouseWheelsMove((long) (TickManager.TICK_DURATION*(1.5+GameManager.TickManager.getLatency())))!=0)return true;
 			}
 		}
 		return false;

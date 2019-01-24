@@ -90,5 +90,15 @@ public class ConnectionHandler {
 		endInUse();
 		return cc;
 	}
+	
+	void flushAll() {
+		waitForInUse();
+		
+		for(long id : this.connectedConnections.keySet()) {
+			this.connectedConnections.get(id).flush();
+		}
+
+		endInUse();
+	}
 
 }

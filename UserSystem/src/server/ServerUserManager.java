@@ -42,7 +42,7 @@ public class ServerUserManager implements Tickable{
 		if(user == null){
 			try {
 				this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, "1", "")));
-				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(clientID, false, user));
+				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(false, new ValidatedUser(clientID, user)));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				throw new ClientLoginException(e, clientID, ClientLoginException.Reason_ClientInformException);
@@ -52,7 +52,9 @@ public class ServerUserManager implements Tickable{
 			try {
 				if(!valdiation)this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, "1", "")));
 				else this.serverManager.sendMessage(clientID, DataPackage.getPackage(PackageType.readPackageData(UserPackageManager.DataPackage_UserLoginConfirm, "0", user.getID())));
-				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(clientID, valdiation, user));
+				ValidatedUser validatedUser = new ValidatedUser(clientID, user);
+				if(valdiation) validatedUser = this.connectionManager.getValidatetUser(clientID);
+				this.userEventManager.publishEvent(new ClientConnectionValidationEvent(valdiation, validatedUser));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				throw new ClientLoginException(e, clientID, ClientLoginException.Reason_ClientInformException);

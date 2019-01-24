@@ -36,7 +36,7 @@ public class Client {
 				}
 				
 				while(cch.isConnected() && !cch.isEnded()){
-					cch.send(heartbeat.clone());
+					sendToServer(heartbeat.clone());
 					long currentTime = System.currentTimeMillis();
 					while(System.currentTimeMillis()-currentTime < 1000){
 						while(!toServer.isEmpty()){

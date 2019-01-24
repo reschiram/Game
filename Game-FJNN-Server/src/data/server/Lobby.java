@@ -36,4 +36,11 @@ public class Lobby {
 		this.players.remove(player);
 	}
 
+	public ServerMap getMap(int seed) {
+		for(int i = 0; i < maps.size(); i++) {
+			if(maps.get(i).getSeed() == seed) return maps.get(i);
+		}
+		return null;
+	}
+
 }

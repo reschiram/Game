@@ -1,12 +1,13 @@
 package data;
 
 import java.awt.Point;
+import java.util.ArrayList;
 
 import file.csv.CSV_File;
-import filemanager.FileManager;
 import game.map.MapGenerationData;
 import game.map.MapGenerator;
 import game.map.MapLoader;
+import main.ServerFileManager;
 
 public class ServerMap {
 	
@@ -30,7 +31,9 @@ public class ServerMap {
 		this.seed = Integer.parseInt(mapFile.get(new Point(1, 1)));
 		this.width = Integer.parseInt(mapFile.get(new Point(1, 2)));
 		this.height = Integer.parseInt(mapFile.get(new Point(1, 3)));
-
+		
+		this.mapGround = new int[width][height][2];
+		this.mapBuild = new int[width][height][2];
 		int idLength = Resource.noResourceID.length();
 
 		for (int x = 0; x < width; x++) {
@@ -41,7 +44,7 @@ public class ServerMap {
 					int from = i * (idLength + 1);
 					Integer id = Integer.parseInt(squareData.substring(from, from + idLength));
 					if (id != 0) {
-						if (i >= 2) mapBuild[x][y][i] = id;
+						if (i >= 2) mapBuild[x][y][i-2] = id;
 						else mapGround[x][y][i] = id;
 					}
 				}
@@ -59,11 +62,10 @@ public class ServerMap {
 		this.seed = seed;
 		
 		this.mapBuild = data.getBuildData();
-		this.mapGround = data.getGroundData();
-		
+		this.mapGround = data.getGroundData();		
 	}
 	
-	public void save(FileManager fileManager) {
+	public void save(ServerFileManager serverFileManager) {
 
 		mapFile.set(new Point(0, 0), "Datatype");
 		mapFile.set(new Point(1, 0), "Data");
@@ -84,17 +86,17 @@ public class ServerMap {
 
 				String ground = "";
 				for (int i = 0; i < mapGround[x][y].length; i++) {
-					if (mapGround[x][y][1] == 0)
+					if (mapGround[x][y][i] == 0)
 						ground += Resource.noResourceID + MapLoader.seperator;
 					else
-						ground += mapGround[x][y][1] + MapLoader.seperator;
+						ground += mapGround[x][y][i] + MapLoader.seperator;
 				}
 				ground = ground.substring(0, ground.length() - 1);
 
 				String build = "";
 				for (int i = 0; i < mapBuild[x][y].length; i++) {
-					if (mapBuild[x][y][1] == 0) build += Resource.noResourceID + MapLoader.seperator;
-					else build += mapBuild[x][y][1] + MapLoader.seperator;
+					if (mapBuild[x][y][i] == 0) build += Resource.noResourceID + MapLoader.seperator;
+					else build += mapBuild[x][y][i] + MapLoader.seperator;
 				}
 				build = build.substring(0, build.length() - 1);
 
@@ -102,7 +104,13 @@ public class ServerMap {
 			}
 		}
 
-		fileManager.saveFile(mapFile);
+		serverFileManager.saveFile(mapFile);
+		
+		ArrayList<String> mapNames = serverFileManager.getServerDataFile().get("maps");
+		if (mapNames == null || !mapNames.contains(this.getName())) {
+			serverFileManager.getServerDataFile().add("maps", this.getName());
+			serverFileManager.saveFile(serverFileManager.getServerDataFile());
+		}
 	}
 
 	public String getName() {
@@ -111,6 +119,10 @@ public class ServerMap {
 
 	public int getSeed() {
 		return seed;
+	}
+
+	public MapGenerationData getGenerationData() {
+		return new MapGenerationData(mapGround, mapBuild, seed);
 	}
 
 }

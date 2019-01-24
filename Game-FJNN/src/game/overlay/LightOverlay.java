@@ -12,7 +12,6 @@ import game.entity.Entity;
 import game.gridData.map.Mapdata;
 import game.map.Map;
 import game.pathFinder.PathNode;
-import game.tick.TickManager;
 
 public class LightOverlay {
 	
@@ -34,14 +33,14 @@ public class LightOverlay {
 				if(surfaceLightLevel.getData()>this.lightLevel.getData())this.lightLevel = surfaceLightLevel;
 				if(this.lightLevel.getData()>=lightLevel){
 					updateMapData();
-					if(lastLightUpdate != TickManager.getCurrentTick()){
-						lastLightUpdate = TickManager.getCurrentTick();
+					if(lastLightUpdate != GameManager.TickManager.getCurrentTick()){
+						lastLightUpdate = GameManager.TickManager.getCurrentTick();
 						return true;
 					}else return false;
 				}
 			}
-			if(lastLightUpdate != TickManager.getCurrentTick() || lightLevel>this.lightLevel.getData()){
-				this.lastLightUpdate = TickManager.getCurrentTick();
+			if(lastLightUpdate != GameManager.TickManager.getCurrentTick() || lightLevel>this.lightLevel.getData()){
+				this.lastLightUpdate = GameManager.TickManager.getCurrentTick();
 				this.lightLevel = new DataObject<Integer>(lightLevel);
 				updateMapData();
 				return true;
