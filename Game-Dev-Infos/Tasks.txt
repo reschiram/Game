@@ -7,7 +7,8 @@ Game (G):
 		G-5: Create Game-Server
 		G-6: Integrate Client
 		G-8: Create Launcher
-		G-9: SerClient Fixes -> MapDownload  
+		G-9: ServerClient Fixes -> MapDownload
+		G-10: Create game server events/interactions  
 Network (N):
 	Permission Test: N-1
 	Server Console: N-2
