@@ -10,13 +10,14 @@ import Data.Location;
 import Data.Animation.Animation;
 import Engine.Engine;
 import data.ImageData;
+import events.GameEventManager;
+import events.entity.EntityStatusEvent;
 import game.GameManager;
 import game.entity.manager.EntityManager;
 import game.entity.type.EntityType;
 import game.entity.type.data.EntityData;
 import game.gridData.map.Mapdata;
 import game.map.Map;
-import tick.TickManager;
 
 public abstract class Entity {
 	
@@ -91,6 +92,8 @@ public abstract class Entity {
 		active = false;
 		this.anim.stop();
 		EntityManager.getEntityManager().remove(this);
+		
+		GameEventManager.getEventManager().publishEvent(new EntityStatusEvent(this, false));
 	}
 	
 	public void tick(){
