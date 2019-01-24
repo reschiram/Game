@@ -1,5 +1,9 @@
 package game.inventory;
 
+import events.GameEventManager;
+import events.inventory.ItemAddEvent;
+import events.inventory.ItemRemoveEvent;
+import events.inventory.ItemSetEvent;
 import game.inventory.items.Item;
 import game.inventory.items.ItemType;
 
@@ -12,6 +16,7 @@ public class Inventory {
 	}
 	
 	public int addItem(Item item){
+		GameEventManager.getEventManager().publishEvent(new ItemAddEvent(this, item));
 		int freeSpace = -1;
 		for(int i = 0; i<items.length; i++){
 			if(items[i]!=null){
@@ -33,6 +38,7 @@ public class Inventory {
 	}
 	
 	public int removeItem(Item item){
+		GameEventManager.getEventManager().publishEvent(new ItemRemoveEvent(this, item));
 		for(int i = 0; i < this.items.length; i++){
 			if(items[i]!=null && items[i].isSimilar(item)){
 				int amount = items[i].getAmount()-item.getAmount();
@@ -64,6 +70,7 @@ public class Inventory {
 	}
 
 	public boolean addItem(ItemType itemType) {
+		GameEventManager.getEventManager().publishEvent(new ItemAddEvent(this, new Item(itemType)));
 		int freeSpace = -1;
 		for(int i = 0; i<items.length; i++){
 			if(items[i]!=null){
@@ -85,6 +92,7 @@ public class Inventory {
 	}
 
 	public void setItem(int slot, Item item) {
+		GameEventManager.getEventManager().publishEvent(new ItemSetEvent(this, item, slot));
 		this.items[slot] = item;
 	}
 
