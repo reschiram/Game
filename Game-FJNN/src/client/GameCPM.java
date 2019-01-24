@@ -10,7 +10,7 @@ public class GameCPM {
 	public static final int DataPackage_MapDownloadInfos = 14;
 	public static final int DataPackage_MapDownloadData = 16;
 	
-	public static final int MapDownloadData_DataCount = 14;
+	public static final int MapDownloadData_DataCount = 63;
 	
 	public GameCPM() {
 
