@@ -6,8 +6,9 @@ import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
 import data.RotationSprites;
-import game.tick.TickManager;
+import game.GameManager;
 import sprites.Sprites;
+import tick.TickManager;
 
 public class ScrollBar {	
 	
@@ -81,7 +82,7 @@ public class ScrollBar {
 	}
 	
 	public boolean tick(){
-		int mouseWheelMove = Engine.getInputManager().getMouseWheelsMove((long) (TickManager.getTickDuration()*(TickManager.getLatency()+2)));
+		int mouseWheelMove = Engine.getInputManager().getMouseWheelsMove((long) (TickManager.TICK_DURATION*(GameManager.TickManager.getLatency()+2)));
 		if(mouseWheelMove!=0){
 			this.scrolled = Math.max(Math.min(this.scrolled+mouseWheelMove*scrollSpeed, MaxScroll),0);
 			this.ScrollButton.setLocation((int)	(this.startLocation.getX()-2+this.move_x*((double)this.scrolled/(double)MaxScroll)*(this.Bar.getWidth() -ButtonLength*1.5)),

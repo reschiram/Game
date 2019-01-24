@@ -23,6 +23,7 @@ import game.overlay.DayManager;
 import game.overlay.LightOverlay;
 import game.vehicle.BluePrint;
 import game.vehicle.data.VehicleData;
+import launcher.MapDownloader;
 
 public class Game {
 
@@ -62,10 +63,14 @@ public class Game {
 		dayManager = new DayManager();
 	}
 
-	public void start() {		
-		mapLoader = new MapLoader(FileManager.MAP_TEST,39485636);
-		if(mapLoader.getMap()==null)mapLoader.loadMap();
-		map = mapLoader.getMap();	
+	public void start(MapDownloader mapDownloader) {
+		if(mapDownloader != null) {
+			map = mapDownloader.getMap();
+		}else {
+			mapLoader = new MapLoader(FileManager.MAP_TEST,39485636);
+			if(mapLoader.getMap()==null)mapLoader.loadMap();
+			map = mapLoader.getMap();	
+		}
 		
 		LIGHTOVERLAY.load(map);
 		

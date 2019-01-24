@@ -11,7 +11,7 @@ import data.readableData.StringData;
 
 public class DataPackage {
 
-	public static final int PACKAGESIZE = 512;
+	public static final int PACKAGESIZE = 8192;
 	public static final int MAXPACKAGELENGTH = PACKAGESIZE/8;
 	public static final int ID_Length = 1;
 	
@@ -77,7 +77,7 @@ public class DataPackage {
 	
 	public DataPackage(ShortInt id, byte[] data) {
 		this.id = id;
-		this.data = ByteBuffer.allocate(data.length+1).put(id.getByte()).put(data).array();
+		this.data = ByteBuffer.allocate(DataPackage.MAXPACKAGELENGTH).put(id.getByte()).put(data).array();
 	}
 
 	public DataPackage(byte[] data, int length) throws Exception {

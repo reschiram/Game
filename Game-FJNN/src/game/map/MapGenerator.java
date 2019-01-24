@@ -150,7 +150,6 @@ public class MapGenerator {
 									cx=-cx;
 									cy=-cy;
 								}
-								System.out.println(x+"|"+cx+" -> "+cy+"|"+y);
 								caves.add(new CaveGenerator(new Location(x+cx, y+cy), 3+rnd.nextInt(1+(int)(2*((double)y/(double)HEIGHT))), rnd.nextInt(1+(int)(3*((double)y/(double)HEIGHT)))));
 							}
 						}

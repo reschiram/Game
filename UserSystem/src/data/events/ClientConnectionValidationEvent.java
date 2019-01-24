@@ -1,15 +1,15 @@
 package data.events;
 
 import data.events.server.ServerEvent;
-import data.user.User;
+import server.ValidatedUser;
 
 public class ClientConnectionValidationEvent extends ServerEvent{
 	
 	private boolean loggedIn;
-	private User user;
+	private ValidatedUser user;
 	
-	public ClientConnectionValidationEvent(long clientID, boolean loggedIn, User user) {
-		super(clientID);
+	public ClientConnectionValidationEvent(boolean loggedIn, ValidatedUser user) {
+		super(user.getServerClientID());
 		this.loggedIn = loggedIn;
 		this.user = user;
 	}
@@ -18,7 +18,7 @@ public class ClientConnectionValidationEvent extends ServerEvent{
 		return loggedIn;
 	}
 
-	public User getUser() {
+	public ValidatedUser getValidatedUser() {
 		return user;
 	}
 }

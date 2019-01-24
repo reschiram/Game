@@ -4,10 +4,10 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 
 import Data.Location;
+import game.GameManager;
 import game.entity.Entity;
 import game.entity.type.EntityType;
 import game.map.Map;
-import game.tick.TickManager;
 
 public class EntityManager {
 	
@@ -41,9 +41,9 @@ public class EntityManager {
 				if(entitys[x][y]!=null){
 					for(int i = 0; i<entitys[x][y].entitys.size(); i++){
 						Entity entity = entitys[x][y].entitys.get(i);
-						if(entity.getLastTick()!=TickManager.getCurrentTick()){
+						if(entity.getLastTick()!=GameManager.TickManager.getCurrentTick()){
 							entity.tick();
-							entity.setLastTick(TickManager.getCurrentTick());
+							entity.setLastTick(GameManager.TickManager.getCurrentTick());
 							int ex = entity.getLocation().getX()/(Map.DEFAULT_SQUARESIZE*Map.DEFAULT_CHUNKSIZE);
 							int ey = entity.getLocation().getY()/(Map.DEFAULT_SQUARESIZE*Map.DEFAULT_CHUNKSIZE);
 							if(ex!=x || ey!=y){

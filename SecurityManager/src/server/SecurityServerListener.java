@@ -32,7 +32,7 @@ public class SecurityServerListener implements ClientLogoutEventListener, Client
 	public void handleClientLogginIn(ClientConnectionValidationEvent event) {		
 		if(event.isLoggedIn()){
 			try {
-				serverSecurityManager.login((ValidatedUser) event.getUser());
+				serverSecurityManager.login(event.getValidatedUser());
 			} catch (LoginSecurityException e) {
 				DefaultSecurityExceptionHandler.getDefaultSecurityExceptionHandler().getDefaultHandler_LoginSecurityException().handleError(e);
 			}

@@ -1,5 +1,8 @@
 package client;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -7,6 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import data.DataPackage;
 import data.PackageType;
@@ -24,6 +28,9 @@ public class ClientConnectionHandler {
 	private Socket socket;
 	private Client client;
 	
+	private DataInputStream in;
+	private BufferedOutputStream out;
+	
 	private boolean ended = false;
 
 	ClientConnectionHandler(Client client, String ip, int port) {
@@ -40,6 +47,12 @@ public class ClientConnectionHandler {
 		try {
 			
 			socket = new Socket(ip, port);
+			socket.setTcpNoDelay(false);
+			socket.setReceiveBufferSize(DataPackage.MAXPACKAGELENGTH);
+			socket.setSendBufferSize(DataPackage.MAXPACKAGELENGTH);
+
+			this.out = new BufferedOutputStream(socket.getOutputStream(), DataPackage.MAXPACKAGELENGTH);
+			this.in = new DataInputStream(socket.getInputStream());
 			
 			new Thread(new Runnable() {				
 				@Override
@@ -58,26 +71,34 @@ public class ClientConnectionHandler {
 			throw new ServerNotFoundException(e, ip, port);
 		}
 	}
+	
+	private HashMap<Integer, Queue<DataPackage>> dataStreams = new HashMap<>();
 
 	private void acceptData() throws UnsupportedPackageException {
-		Queue<DataPackage> dataStream = new Queue<>();
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
-			for(int length = socket.getInputStream().read(income); length!=-1 && isConnected(); length = socket.getInputStream().read(income)){
-				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);				
-								
+			for(in.readFully(income); isConnected(); in.readFully(income)){
+				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);	
+				
 				DataPackage dataPackage = null;
 				try {
-					dataPackage = new DataPackage(income, length);
+					dataPackage = new DataPackage(income, DataPackage.MAXPACKAGELENGTH);
 				} catch (Exception ea) {ea.printStackTrace();}
 				
 				if(dataPackage!=null){
-					handNewDataPackage(dataPackage, dataStream);
+					
+					if(!this.dataStreams.containsKey(dataPackage.getId())) this.dataStreams.put(dataPackage.getId(), new Queue<DataPackage>());
+					Queue<DataPackage> dataStream = dataStreams.get(dataPackage.getId());
+					if(dataPackage.isEnd()) {
+						this.dataStreams.remove(dataPackage.getId());	
+						handNewDataPackage(dataPackage, dataStream);
+					}					
 				}
 				
-				income = new byte[DataPackage.PACKAGESIZE];
+				income = new byte[DataPackage.MAXPACKAGELENGTH];
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			if(this.client.run() && !ended){
 				this.client.endClient();
 				this.client.connectionLost(new ClientLostConnectionToServerEvent(this.socket));
@@ -86,13 +107,20 @@ public class ClientConnectionHandler {
 		}
 	}
 
+	private void printData(byte[] income) {
+		String msg = "In: "+income.length+" [";
+		for(int i = 0; i < 20; i++)msg += income[i] + ",";
+		System.out.println(msg+"]");
+	}
+
 	private void handNewDataPackage(DataPackage dataPackage, Queue<DataPackage> dataStream) throws UnsupportedEncodingException, UnsupportedPackageException {
 		dataStream.add(dataPackage);
 		if(dataPackage.isEnd()){
 			ByteBuffer data = ByteBuffer.allocate(DataPackage.PACKAGESIZE);
 			int actuallLength = 0;
-			while(!dataStream.isEmpty()){
+			while(!dataStream.isEmpty()){				
 				actuallLength+=dataStream.get().getByteData().length;
+				if(actuallLength > DataPackage.PACKAGESIZE) throw new UnsupportedPackageException(null, dataPackage.getId(), Arrays.copyOfRange(data.array(), 0, actuallLength));
 				data.put(dataStream.get().getByteData(), DataPackage.ID_Length, dataStream.get().getByteData().length-DataPackage.ID_Length);
 				dataStream.remove();
 			}
@@ -107,10 +135,12 @@ public class ClientConnectionHandler {
 	void send(Queue<DataPackage> packages) {
 		try {
 			while(!packages.isEmpty()){
-				socket.getOutputStream().write(packages.get().getByteData());
+				out.write(packages.get().getByteData());
 				packages.remove();
 			}
+			out.flush();
 		} catch (IOException e) {
+			e.printStackTrace();
 			if(this.client.run() && !ended){
 				this.client.endClient();
 				this.client.connectionLost(new ClientLostConnectionToServerEvent(this.socket));
