@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import Data.Location;
 import Data.Queue;
+import events.GameEventManager;
+import events.entity.EntityPathEvent;
 import game.GameManager;
 import game.entity.Entity;
 import game.map.Map;
@@ -74,6 +76,7 @@ public class PathSystem {
 	}
 	
 	public PathRequest addPathRequest(Entity entity, Location pixelTarget){
+		GameEventManager.getEventManager().publishEvent(new EntityPathEvent(entity, pixelTarget));
 		Location blockTarget = new Location(pixelTarget.getX()/Map.DEFAULT_SQUARESIZE, pixelTarget.getY()/Map.DEFAULT_SQUARESIZE);
 		Location offset = new Location(pixelTarget.getX()-blockTarget.getX()*Map.DEFAULT_SQUARESIZE, pixelTarget.getY()-blockTarget.getY()*Map.DEFAULT_SQUARESIZE);
 		PathRequest request = new PathRequest(entity, entity.getBlockLocation(), blockTarget , map, offset);

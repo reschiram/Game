@@ -1,5 +1,7 @@
 package game.inventory.equipment;
 
+import events.GameEventManager;
+import events.inventory.ItemSetEvent;
 import game.inventory.Inventory;
 import game.inventory.items.Item;
 import game.inventory.items.ItemType;
@@ -101,6 +103,9 @@ public class EquipmentInventory extends Inventory{
 	@Override
 	public void setItem(int slot, Item item) {
 		if(slot<getItemSize())super.setItem(slot, item);
-		else if(item instanceof Equipment) equipmentSlot[slot-getItemSize()] = (Equipment) item;
+		else if(item instanceof Equipment) {
+			equipmentSlot[slot-getItemSize()] = (Equipment) item;
+			GameEventManager.getEventManager().publishEvent(new ItemSetEvent(this, item, slot));
+		}
 	}
 }

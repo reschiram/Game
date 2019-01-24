@@ -11,6 +11,9 @@ import data.Mouse;
 import data.ResourcePart;
 import data.map.Lamp;
 import data.map.UpdatableBlockData;
+import events.GameEventManager;
+import events.map.MapBlockAddEvent;
+import events.map.MapBlockDeleteEvent;
 import game.Game;
 import game.GameManager;
 import game.entity.Entity;
@@ -122,6 +125,8 @@ public class Map {
 		getChunk(location).set(b);
 		update(location.getX(), location.getY());
 		Game.getLightOverlay().update(b, false);
+		
+		GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(b));
 	}
 	
 	private void update(int x, int y){
@@ -186,6 +191,8 @@ public class Map {
 				getChunk(b.getLocation()).remove(b);
 				update(b.getLocation().getX(), b.getLocation().getY());
 				Game.getLightOverlay().update(mapdata, true);
+				
+				GameEventManager.getEventManager().publishEvent(new MapBlockDeleteEvent(b));
 			}else if(mapdata instanceof MapDummieBlock){
 				MapDummieBlock part = (MapDummieBlock)mapdata;
 				MapBlock block = part.getBlock();

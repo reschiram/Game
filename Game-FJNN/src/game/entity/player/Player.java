@@ -8,6 +8,8 @@ import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
 import data.ImageData;
+import events.GameEventManager;
+import events.entity.PlayerMoveEvent;
 import game.entity.Entity;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneConstructor;
@@ -71,12 +73,18 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 		
 		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_W) || Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_SPACE)){
 			this.moveManager.move(Direction.UP);
+			GameEventManager.getEventManager().publishEvent(new PlayerMoveEvent(this, Direction.UP, false));
 		}
 		if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_A)){
 			this.moveManager.move(Direction.LEFT);
+			GameEventManager.getEventManager().publishEvent(new PlayerMoveEvent(this, Direction.LEFT, false));
 		}else if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_D)){
 			this.moveManager.move(Direction.RIGHT);
-		}else this.moveManager.slowDownXVelocity();
+			GameEventManager.getEventManager().publishEvent(new PlayerMoveEvent(this, Direction.RIGHT, false));
+		}else {
+			this.moveManager.slowDownXVelocity();
+			GameEventManager.getEventManager().publishEvent(new PlayerMoveEvent(this, 1, 0, true));
+		}
 
 		super.tick();
 		
