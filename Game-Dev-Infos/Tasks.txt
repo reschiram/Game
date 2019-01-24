@@ -3,6 +3,7 @@ Game (G):
 		G-3: PixelLocation-BlockLocation
 	PathSystem: G-2
 	MapSaveUpdate: G-7
+	add Game-Events: G-11
 	Integrate Network In Game: G-4
 		G-5: Create Game-Server
 		G-6: Integrate Client
