@@ -17,7 +17,6 @@ import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.gridData.map.*;
 import game.pathFinder.system.PathSystem;
-import tick.TickManager;
 
 public class Map {
 	

@@ -10,6 +10,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -24,6 +25,7 @@ public class LauncherGUI {
 	private JPasswordField password;
 	private JButton login;
 	private JTextArea output;
+	private JProgressBar progressBar;
 	
 	private Dimension size = new Dimension(450, 270);
 	
@@ -88,6 +90,11 @@ public class LauncherGUI {
 		pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.window.add(pane);
+		
+		this.progressBar = new JProgressBar();
+		this.progressBar.setBounds(10, 10, (int) (size.getWidth() - 35), 50);
+		this.progressBar.setFont(GUI.DEFAULT_FONT);
+		this.progressBar.setStringPainted(true);
 	}
 
 	/**
@@ -115,5 +122,20 @@ public class LauncherGUI {
 	public void println(String text) {
 		if(this.output.getText().equals(""))this.output.setText(text);
 		else this.output.setText(this.output.getText()+"\n"+text);
+	}
+
+	public void prepareDownloadBar() {
+		username.setVisible(false);
+		username.setEnabled(false);
+		password.setVisible(false);
+		password.setEnabled(false);
+		login.setVisible(false);
+		login.setEnabled(false);
+		
+		this.window.add(progressBar);
+	}
+
+	public void updateProgressBar(double d) {
+		this.progressBar.setValue((int) Math.round(d * 100));
 	}
 }
