@@ -29,6 +29,12 @@ public class LauncherCEM implements ClientLostConnectionToServerEventListener, T
 
 	@Override
 	public void ClientLogin(ClientLoginEvent event) {
+		if(event.isLoggedIn()) {
+			launcher.getGUI().prepareDownloadBar();
+			launcher.getGUI().println("You were succesfully logged in as: " + event.getUser().getUsername());
+		} else {
+			launcher.getGUI().println("Login falied for username: " + event.getUser().getUsername() +". Password and or username are wrong!");			
+		}
 	}
 
 	@Override
