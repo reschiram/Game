@@ -2,6 +2,7 @@ package server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -23,7 +24,7 @@ public class ServerClient {
 	
 	private Socket connection;
 	private BufferedOutputStream out;
-	private BufferedInputStream in;
+	private DataInputStream in;
 	private Long id;
 	
 	private Server server;
@@ -42,7 +43,7 @@ public class ServerClient {
 			connection.setSendBufferSize(DataPackage.MAXPACKAGELENGTH);
 			
 			this.out = new BufferedOutputStream(connection.getOutputStream(), DataPackage.MAXPACKAGELENGTH);
-			this.in = new BufferedInputStream(connection.getInputStream(), DataPackage.MAXPACKAGELENGTH);
+			this.in = new DataInputStream(connection.getInputStream());
 		} catch (IOException e) {e.printStackTrace();}
 	}
 	
@@ -117,12 +118,12 @@ public class ServerClient {
 		Queue<DataPackage> dataStream = new Queue<>();
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
-			for(int length = this.in.read(income); length!=-1 && isConnected(); length = this.in.read(income)){
+			for(in.readFully(income); isConnected(); in.readFully(income)){
 				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);				
 								
 				DataPackage dataPackage = null;
 				try {
-					dataPackage = new DataPackage(income, length);
+					dataPackage = new DataPackage(income, DataPackage.MAXPACKAGELENGTH);
 				} catch (Exception ea) {ea.printStackTrace();}
 				
 				if(dataPackage!=null){

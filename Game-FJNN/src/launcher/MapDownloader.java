@@ -56,8 +56,8 @@ public class MapDownloader {
 
 		if(currentPackage < dataID) this.currentPackage = dataID;
 
-//		System.out.println("Download: (" + (dataID + 1) + " / " + packageAmount + ") ~ "
-//				+ (((double) (dataID + 1)) / ((double) packageAmount)) + " => isFinished: " + isFinished());
+		System.out.println("Download: (" + (dataID + 1) + " / " + packageAmount + ") ~ "
+				+ (((double) (dataID + 1)) / ((double) packageAmount)) + " => isFinished: " + isFinished());
 
 		if (isFinished()) {
 			launcher.getGUI().println("Map: (" + mapData.getSeed() + "|" + mapData.getWidth() + "|"

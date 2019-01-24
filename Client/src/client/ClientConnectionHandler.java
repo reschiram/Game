@@ -2,6 +2,7 @@ package client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -27,7 +28,7 @@ public class ClientConnectionHandler {
 	private Socket socket;
 	private Client client;
 	
-	private BufferedInputStream in;
+	private DataInputStream in;
 	private BufferedOutputStream out;
 	
 	private boolean ended = false;
@@ -51,7 +52,7 @@ public class ClientConnectionHandler {
 			socket.setSendBufferSize(DataPackage.MAXPACKAGELENGTH);
 
 			this.out = new BufferedOutputStream(socket.getOutputStream(), DataPackage.MAXPACKAGELENGTH);
-			this.in = new BufferedInputStream(socket.getInputStream(), DataPackage.MAXPACKAGELENGTH);
+			this.in = new DataInputStream(socket.getInputStream());
 			
 			new Thread(new Runnable() {				
 				@Override
@@ -76,12 +77,12 @@ public class ClientConnectionHandler {
 	private void acceptData() throws UnsupportedPackageException {
 		byte[] income = new byte[DataPackage.MAXPACKAGELENGTH];
 		try {
-			for(int length = in.read(income); length!=-1 && isConnected(); length = in.read(income)){
+			for(in.readFully(income); isConnected(); in.readFully(income)){
 				income = Arrays.copyOf(income, DataPackage.MAXPACKAGELENGTH);	
 				
 				DataPackage dataPackage = null;
 				try {
-					dataPackage = new DataPackage(income, length);
+					dataPackage = new DataPackage(income, DataPackage.MAXPACKAGELENGTH);
 				} catch (Exception ea) {ea.printStackTrace();}
 				
 				if(dataPackage!=null){
