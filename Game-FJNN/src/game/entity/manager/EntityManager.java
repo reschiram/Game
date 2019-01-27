@@ -16,7 +16,6 @@ public class EntityManager {
 		return ENTITYMANAGER;
 	}
 	
-	private int lastID = 0;	
 	private EntityChunk[][] entitys;
 
 	public EntityManager(int width, int height){
@@ -25,10 +24,8 @@ public class EntityManager {
 		entitys = new EntityChunk[width][height];
 	}
 
-	public int register(Entity entity) {
+	public void register(Entity entity) {
 		getPixelChunk(entity.getLocation()).entitys.add(entity);
-		lastID++;
-		return lastID;
 	}
 
 	public void remove(Entity entity) {
@@ -128,6 +125,20 @@ public class EntityManager {
 			entitys[x][y] = chunk;
 		}
 		return chunk;
+	}
+
+	public Entity getEntity(int entityID) {
+		for(int x = 0; x < entitys.length; x++) {
+			for(int y = 0; y < entitys[x].length; y++) {
+				for(int i = 0; i < entitys[x][y].entitys.size(); i++) {
+					Entity entity = entitys[x][y].entitys.get(i);
+					if(entity.getID() == entityID) {
+						return entity;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 }

@@ -1,8 +1,7 @@
 package game.inventory.drops;
 
 import Data.Location;
-import game.entity.ItemEntity;
-import game.map.Map;
+import game.entity.requester.EntityRequester;
 
 public class Drops {
 	
@@ -17,7 +16,7 @@ public class Drops {
 			Drop drop = this.drops[i];
 			int amount = (int) Math.round(Math.random()*((double)(drop.getMaxAmount()-drop.getMinAmount()))) + drop.getMinAmount();
 			for(int a = 0; a<amount; a++){
-				new ItemEntity(drop.getType(), new Location(loc.getX()*Map.DEFAULT_SQUARESIZE, loc.getY()*Map.DEFAULT_SQUARESIZE)).show();
+				EntityRequester.getEntityRequester().requestItemEntity(drop.getType(), loc);
 			}
 		}
 	}

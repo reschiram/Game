@@ -13,9 +13,9 @@ import events.entity.PlayerMoveEvent;
 import game.entity.Entity;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneConstructor;
+import game.entity.requester.EntityRequester;
 import game.entity.type.EntityType;
 import game.entity.type.data.EntityData;
-import game.entity.type.data.EntityInventoryData;
 import game.entity.type.data.LightEntityData;
 import game.entity.type.interfaces.EntityInventory;
 import game.entity.type.interfaces.EntityLight;
@@ -24,9 +24,15 @@ import game.inventory.ItemCollector;
 import game.inventory.equipment.EquipmentInventory;
 import game.inventory.equipment.tools.BuildTool;
 import game.inventory.equipment.tools.DigTool;
+import game.inventory.requester.InventoryAcceptor;
 import game.map.Map;
 
-public class Player extends Entity implements EntityInventory, EntityLight{
+public class Player extends Entity implements EntityInventory, EntityLight, InventoryAcceptor{
+	
+	private static Player player;
+	public static Player getPlayer() {
+		return player;
+	}
 	
 	private static Location ScreenCenter = new Location(1920/2-Map.DEFAULT_SQUARESIZE/2, 1080/2-Map.DEFAULT_SQUARESIZE);
 	
@@ -36,36 +42,24 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 	private ArrayList<Drone> drones = new ArrayList<>();
 	private EquipmentInventory inventory;
 	
-	public Player(Location location){
+	public Player(Location location, int entityID){
 		super(new ArrayList<>());
 		entityTypes.add(EntityType.Player);	
 		entityTypes.add(EntityType.LightEntity);
 		
 		Image image = new Image(ScreenCenter, EntityType.Player.getSize(), "", EntityType.Player.getSpriteSheet(), null);
-		super.create(EntityType.Player.createAnimation(false, DEFAULT_ENTITY_LAYER, image), ScreenCenter, EntityType.Player.getSize(), EntityType.Player.getSpeed(),
+		super.create(entityID, EntityType.Player.createAnimation(false, DEFAULT_ENTITY_LAYER, image), ScreenCenter, EntityType.Player.getSize(), EntityType.Player.getSpeed(),
 				Entity.DEFAULT_DIRECTION, DEFAULT_ENTITY_LAYER, new ImageData(new Location(0, 0), image));
 
 		this.setLocation(location.getX(), location.getY());
 		
 		this.playerInterface = new PlayerInterface(this);
 		
-		EntityInventoryData invData = (EntityInventoryData)EntityType.Player.getData(EntityData.ENTITYINVENTOTYDATA);
-		this.itemCollector = new ItemCollector(this, invData.createInventory(), 3.0);
-		this.inventory = (EquipmentInventory) itemCollector.getInventory();
+		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_StarterDrone);
+		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_BuildDrone);
+		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_DestructionDrone);
 		
-		this.inventory.addItem(new DigTool());
-		this.inventory.addItem(new BuildTool());
-		
-		Drone drone = DroneConstructor.constructStarterDrone(this);
-		drone.show();
-		this.drones.add(drone);
-		drone = DroneConstructor.constructStarterBuildDrone(this);
-		drone.show();
-		this.drones.add(drone);
-		drone = DroneConstructor.constructStarterDestructionDrone(this);
-		drone.show();
-		this.drones.add(drone);
-		
+		if(player == null) player = this;
 	}
 	
 	@Override
@@ -119,6 +113,19 @@ public class Player extends Entity implements EntityInventory, EntityLight{
 	public double getLightStrength() {
 		LightEntityData lightdata = (LightEntityData)EntityType.Player.getData(EntityData.LIGHTENTITYDATA);
 		return lightdata.getLightStrength();
+	}
+
+	public void addDrone(Drone drone) {
+		this.drones.add(drone);
+	}
+
+	@Override
+	public void acceptInventory(Inventory inv) {		
+		this.itemCollector = new ItemCollector(this, inv, 3.0);
+		this.inventory = (EquipmentInventory) itemCollector.getInventory();
+		
+		this.inventory.addItem(new DigTool());
+		this.inventory.addItem(new BuildTool());
 	}
 
 }

@@ -10,8 +10,8 @@ public class EquipmentInventory extends Inventory{
 
 	private Equipment[] equipmentSlot;
 	
-	public EquipmentInventory(int size, int equipmentSlots) {
-		super(size);
+	public EquipmentInventory(int size, int equipmentSlots, int invID) {
+		super(size, invID);
 		this.equipmentSlot = new Equipment[equipmentSlots];
 	}
 	

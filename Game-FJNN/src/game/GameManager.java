@@ -11,13 +11,17 @@ import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
 import Engine.Engine;
 import anim.AnimationType;
+import client.GameCM;
 import data.MapResource;
 import data.Mouse;
 import data.Tickable;
+import events.GameEventManager;
 import files.FileManager;
 import game.dev.mapEditor.MapEditor;
+import game.entity.requester.EntityRequester;
 import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
+import game.inventory.requester.InventoryRequester;
 import launcher.MapDownloader;
 import menu.LoadScreen;
 import sprites.Sprites;
@@ -26,6 +30,11 @@ import tick.TickManager;
 public class GameManager implements Tickable{
 	
 	public static TickManager TickManager;
+
+	private static boolean HasStarted = false;
+	public static boolean hasStarted() {
+		return HasStarted;
+	}
 		
 	private Game game;
 	private MapEditor mapEditor;
@@ -33,13 +42,12 @@ public class GameManager implements Tickable{
 	private StringRenderOperation LatencyCounter;
 	
 	LoadScreen LoadScreen;
-
-	private static boolean HasStarted = false;
-	public static boolean hasStarted() {
-		return HasStarted;
-	}
 	
-	public GameManager(MapDownloader mapDownloader){
+	public GameManager(MapDownloader mapDownloader, GameCM gameCM){
+		new GameEventManager(gameCM);	
+		new EntityRequester(gameCM);
+		new InventoryRequester(gameCM);
+		
 		new Engine(1920, 1080, new Dimension(800,800));
 		Engine.getEngine(this, this.getClass()).getWindow().setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
@@ -90,6 +98,8 @@ public class GameManager implements Tickable{
 			FPSCounter.setText("FPS:"+Engine.getEngine(this, this.getClass()).getFPS());
 			LatencyCounter.setText("Latency:"+TickManager.getLatency()+" tick(s)");
 		}
+		
+		if(hasStarted()) GameEventManager.getEventManager().tick();
 	}
 	
 	private void setKillAble(){

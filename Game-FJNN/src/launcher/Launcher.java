@@ -48,7 +48,7 @@ public class Launcher implements Tickable{
 		
 		if(this.mapDownloader.isFinished() && !this.mapDownloader.isLoaded()) {
 			this.gui.destroy();
-			new GameManager(mapDownloader);
+			new GameManager(mapDownloader, gameCM);
 		}
 	}
 

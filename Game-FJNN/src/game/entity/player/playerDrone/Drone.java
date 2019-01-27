@@ -24,14 +24,14 @@ public class Drone extends Entity{
 	
 	private HashMap<Class<?>, DroneModule> modules = new HashMap<>();
 	
-	public Drone(Player player){
+	public Drone(Player player, int entityID){
 		super(new ArrayList<>());
 		this.entityTypes.add(EntityType.Drone);
 		
 		EntityType type = EntityType.Drone;
 		Image image = new Image(player.getLocation().clone(), type.getSize(), "", type.getSpriteSheet(), null);
 		image.setSpriteState(type.getSpriteIds()[0]);
-		super.create(type.createAnimation(false, Map.DEFAULT_BUILDLAYER+DEFAULT_ENTITY_UP+1, image), image.getLocation().clone(), type.getSize(), type.getSpeed(),
+		super.create(entityID, type.createAnimation(false, Map.DEFAULT_BUILDLAYER+DEFAULT_ENTITY_UP+1, image), image.getLocation().clone(), type.getSize(), type.getSpeed(),
 				DEFAULT_DIRECTION, Map.DEFAULT_BUILDLAYER+DEFAULT_ENTITY_UP+1, new ImageData(new Location(0,0), image));
 		
 		this.player = player;		

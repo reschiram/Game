@@ -3,15 +3,17 @@ package game.entity.player.playerDrone.module;
 import Data.Lists.ArrayList;
 import game.inventory.Inventory;
 import game.inventory.items.Item;
+import game.inventory.requester.InventoryAcceptor;
+import game.inventory.requester.InventoryRequester;
 
-public class InvModule extends DroneModule{
+public class InvModule extends DroneModule implements InventoryAcceptor{
 	
 	protected Inventory inv;
 //	protected InventoryMenu invMenu;
 //	protected ButtonTrigger trigger;
 	
 	public InvModule(int invSize) {
-		this.inv = new Inventory(invSize);
+		InventoryRequester.getInventoryRequester().requestInventory(invSize, 0, this);
 //		this.invMenu = new InventoryMenu(inv, new Location(0,0), 5);
 //		this.invMenu.createVisual();
 //		this.invMenu.hide();
@@ -20,6 +22,7 @@ public class InvModule extends DroneModule{
 
 	@Override
 	public void tick() {
+		if(inv == null) return;
 		if(this.drone.getBlockLocation().distance_Math(this.drone.getHost().getBlockLocation()) == 0){
 			transferInventory();
 		}
@@ -71,6 +74,11 @@ public class InvModule extends DroneModule{
 
 	public Inventory getInventory() {
 		return this.inv;
+	}
+
+	@Override
+	public void acceptInventory(Inventory inv) {
+		this.inv = inv;
 	}
 
 }

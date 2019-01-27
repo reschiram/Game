@@ -10,9 +10,11 @@ import game.inventory.items.ItemType;
 public class Inventory {
 	
 	private Item[] items;	
+	private int invID;
 	
-	public Inventory(int size){
+	public Inventory(int size, int invID){
 		this.items = new Item[size];
+		this.invID = invID;
 	}
 	
 	public int addItem(Item item){
@@ -105,6 +107,10 @@ public class Inventory {
 			}
 		}
 		return false;
+	}
+
+	public int getInvID() {
+		return invID;
 	}
 
 }

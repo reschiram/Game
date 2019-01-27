@@ -38,6 +38,10 @@ public class GameCM {
 		return csm;
 	}
 
+	public GameCPM getClientPackageManager() {
+		return gameCPM;
+	}
+
 	public void tick() {
 		this.cm.getEventManager().tick();
 		this.cum.getUserEventManager().tick();
