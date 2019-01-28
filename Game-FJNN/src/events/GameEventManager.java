@@ -10,6 +10,10 @@ import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
 import events.inventory.InventoryEvent;
 import events.inventory.ItemAddEvent;
+import events.inventory.ItemRemoveEvent;
+import events.inventory.ItemSetEvent;
+import events.map.MapBlockAddEvent;
+import events.map.MapBlockDeleteEvent;
 import events.map.MapEvent;
 
 public class GameEventManager {
@@ -47,6 +51,9 @@ public class GameEventManager {
 	
 	public void tick() {
 		handleEntityEvents();
+		handleInventoryEvent();
+		handleMapEvent();
+		handleGameEvent();
 	}
 
 	private void handleEntityEvents() {
@@ -54,16 +61,15 @@ public class GameEventManager {
 			EntityEvent event = entityEvents.get();
 			entityEvents.remove();
 			try{
+				PackageType message = null;
 				if (event instanceof PlayerMoveEvent) {
-					PackageType message = this.gameCM.getClientPackageManager().createPlayerMovedMessage((PlayerMoveEvent) event);
-					this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
+					message = this.gameCM.getClientPackageManager().createPlayerMovedMessage((PlayerMoveEvent) event);
 				} else if (event instanceof EntityPathEvent) {
-					PackageType message = this.gameCM.getClientPackageManager().createEntityPathMessage((EntityPathEvent) event);
-					this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));					
+					message = this.gameCM.getClientPackageManager().createEntityPathMessage((EntityPathEvent) event);		
 				} else if (event instanceof EntityStatusEvent) {
-					PackageType message = this.gameCM.getClientPackageManager().createEntityStatusMessage((EntityStatusEvent) event);
-					this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));			
+					message = this.gameCM.getClientPackageManager().createEntityStatusMessage((EntityStatusEvent) event);
 				}
+				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -75,10 +81,45 @@ public class GameEventManager {
 			InventoryEvent event = inventoryEvents.get();
 			inventoryEvents.remove();
 			try{
+				PackageType message = null;
 				if (event instanceof ItemAddEvent) {
-//					PackageType message = this.gameCM.getClientPackageManager().createItemAddMessage((ItemAddEvent) event);
-//					this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
+					message = this.gameCM.getClientPackageManager().createItemAddMessage((ItemAddEvent) event);
+				}else if (event instanceof ItemRemoveEvent) {
+					message = this.gameCM.getClientPackageManager().createItemRemoveMessage((ItemRemoveEvent) event);
+				}else if (event instanceof ItemSetEvent) {
+					message = this.gameCM.getClientPackageManager().createItemSetMessage((ItemSetEvent) event);
 				}
+				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void handleMapEvent() {
+		while(!mapEvents.isEmpty()) {
+			MapEvent event = mapEvents.get();
+			mapEvents.remove();
+			try{
+				PackageType message = null;
+				if (event instanceof MapBlockAddEvent) {
+					message = this.gameCM.getClientPackageManager().createMapBlockAddMessage((MapBlockAddEvent) event);
+				}else if (event instanceof MapBlockDeleteEvent) {
+					message = this.gameCM.getClientPackageManager().createMapBlockDeleteMessage((MapBlockDeleteEvent) event);
+				}
+				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void handleGameEvent() {
+		while(!events.isEmpty()) {
+			GameEvent event = events.get();
+			events.remove();
+			try {
+				System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

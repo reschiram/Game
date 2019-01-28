@@ -32,6 +32,6 @@ public abstract class EntityRequest {
 		return blockSpawn.getX() * Map.DEFAULT_SQUARESIZE;
 	}
 
-	public abstract void spawnEntity(int entityID);
+	public abstract void spawnEntity(int entityID, String extraInfos) throws Exception;
 
 }

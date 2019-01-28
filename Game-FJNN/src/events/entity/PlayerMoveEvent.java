@@ -1,6 +1,7 @@
 package events.entity;
 
 import Data.Direction;
+import Data.Location;
 import game.entity.player.Player;
 
 public class PlayerMoveEvent extends EntityEvent{
@@ -9,16 +10,23 @@ public class PlayerMoveEvent extends EntityEvent{
 	private boolean slowDown;
 
 	public PlayerMoveEvent(Player player, Direction direction, boolean slowDown) {
-		super(player);
+		super(player, player.getLocation());
 		this.direction[0] = direction.getX();
 		this.direction[1] = direction.getY();
 		this.slowDown = slowDown;
 	}
 	
 	public PlayerMoveEvent(Player player, int x, int y, boolean slowDown) {
-		super(player);
+		super(player, player.getLocation());
 		this.direction[0] = x;
 		this.direction[1] = y;
+		this.slowDown = slowDown;
+	}
+
+	public PlayerMoveEvent(Player player, Direction direction, boolean slowDown, Location currentPixellocation) {
+		super(player, currentPixellocation);
+		this.direction[0] = direction.getX();
+		this.direction[1] = direction.getY();
 		this.slowDown = slowDown;
 	}
 

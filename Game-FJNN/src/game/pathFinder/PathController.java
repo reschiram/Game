@@ -50,7 +50,7 @@ public class PathController {
 		return new int[]{Math.abs(dx)>=Math.abs(dy) ? (dx>0 ? -1:1):0, Math.abs(dx)>=Math.abs(dy) ? 0:(dy>0 ? -1:1)};
 	}
 
-	public void setBlockTarget(Location blockLocation) {
+	public void setBlockTarget(Location blockLocation, boolean publishToServer) {
 		if(this.blocked)return;
 		
 		if(blockLocation==null || lastRequest!=null){
@@ -59,14 +59,14 @@ public class PathController {
 			return;
 		}
 		
-		this.lastRequest = pathSystem.addPathRequest(this.entity, new Location(blockLocation.getX()*Map.DEFAULT_SQUARESIZE, blockLocation.getY()*Map.DEFAULT_SQUARESIZE));
+		this.lastRequest = pathSystem.addPathRequest(this.entity, new Location(blockLocation.getX()*Map.DEFAULT_SQUARESIZE, blockLocation.getY()*Map.DEFAULT_SQUARESIZE), publishToServer);
 	}
 
 	public boolean reachedDestination() {
 		return !hasTarget() || (isDone() && this.lastRequest.getPath().isEmpty());
 	}
 
-	public void setTarget(Location loc) {
+	public void setTarget(Location loc, boolean publishToServer) {
 		if(this.blocked)return;
 		
 		if(loc==null || lastRequest!=null){
@@ -75,7 +75,7 @@ public class PathController {
 			return;
 		}
 		
-		this.lastRequest = pathSystem.addPathRequest(this.entity, loc);
+		this.lastRequest = pathSystem.addPathRequest(this.entity, loc, publishToServer);
 	}
 
 	public Location getBlockTarget() {
@@ -94,6 +94,10 @@ public class PathController {
 	public Location getTarget() {
 		if(!this.hasTarget())return null;
 		return lastRequest.getOriginTarget();
+	}
+
+	public boolean isBlocked() {
+		return blocked;
 	}
 	
 

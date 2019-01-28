@@ -25,7 +25,7 @@ public class BDroneTarget extends DroneTarget{
 			for(Drone drone: this.drones){
 				InvModule invModule = (InvModule) drone.getModule(InvModule.class);
 				if(recipe!=null && recipe.craft(invModule.getInventory())){
-					Map.getMap().add(res.getID(), location, res.isGround());
+					Map.getMap().add(res.getID(), location, res.isGround(), true);
 					this.done = true;
 					break;
 				}

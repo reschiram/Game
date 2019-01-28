@@ -11,10 +11,11 @@ import game.entity.Entity;
 import game.entity.player.Player;
 import game.entity.player.playerDrone.module.DroneModule;
 import game.entity.type.EntityType;
+import game.entity.type.interfaces.PathUser;
 import game.map.Map;
 import game.pathFinder.PathController;
 
-public class Drone extends Entity{
+public class Drone extends Entity implements PathUser{
 
 	protected PathController pathFinder;
 	protected Player player;

@@ -85,7 +85,7 @@ public abstract class Entity {
 		active = false;
 	}
 	
-	public void destroy(){
+	public void destroy(boolean publishToServer){
 		for(ImageData image: images){
 			image.getImage().disabled = true;
 			Engine.getEngine(this, this.getClass()).removeImage(layer, image.getImage());
@@ -94,7 +94,7 @@ public abstract class Entity {
 		this.anim.stop();
 		EntityManager.getEntityManager().remove(this);
 		
-		GameEventManager.getEventManager().publishEvent(new EntityStatusEvent(this, false));
+		if(publishToServer) GameEventManager.getEventManager().publishEvent(new EntityStatusEvent(this, false));
 	}
 	
 	public void tick(){

@@ -21,7 +21,6 @@ import game.dev.mapEditor.MapEditor;
 import game.entity.requester.EntityRequester;
 import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
-import game.inventory.requester.InventoryRequester;
 import launcher.MapDownloader;
 import menu.LoadScreen;
 import sprites.Sprites;
@@ -46,7 +45,6 @@ public class GameManager implements Tickable{
 	public GameManager(MapDownloader mapDownloader, GameCM gameCM){
 		new GameEventManager(gameCM);	
 		new EntityRequester(gameCM);
-		new InventoryRequester(gameCM);
 		
 		new Engine(1920, 1080, new Dimension(800,800));
 		Engine.getEngine(this, this.getClass()).getWindow().setExtendedState(JFrame.MAXIMIZED_BOTH);

@@ -21,7 +21,7 @@ public abstract class CTModule extends DroneModule{
 				currentDroneTarget = getNextDroneTarget();
 				if(currentDroneTarget!=null){
 //					System.out.println("NextDroneTarget");
-					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation());
+					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
 				}
 			 }
 		}else{
@@ -36,7 +36,7 @@ public abstract class CTModule extends DroneModule{
 					}
 				}else{
 //					System.out.println("CurrentDroneTarget");
-					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation());
+					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
 				}
 			} 
 		}
@@ -101,7 +101,7 @@ public abstract class CTModule extends DroneModule{
 		}
 		if(currentDroneTarget!=null && this.currentDroneTarget.getLocation().equals(loc)){
 			this.currentDroneTarget=null;
-			this.drone.getPathController().setTarget(null);
+			this.drone.getPathController().setTarget(null, DroneModule.publishPathToServer);
 		}
 	}
 	

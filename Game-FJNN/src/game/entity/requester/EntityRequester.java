@@ -59,6 +59,8 @@ public class EntityRequester implements ToClientMessageEventListener{
 			int requestID = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();
 			int entityID = ((IntegerData) event.getMessage().getDataStructures()[1]).getData().intValue();
 			
+			String extraInfos = ((StringData) event.getMessage().getDataStructures()[2]).getData();
+			
 			if(requests.containsKey(requestID)) {
 				System.out.println("Error: unidentified Entity-Creation");
 				return;
@@ -66,7 +68,11 @@ public class EntityRequester implements ToClientMessageEventListener{
 			
 			EntityRequest request = this.requests.get(requestID);
 			this.requests.remove(requestID);
-			request.spawnEntity(entityID);
+			try {
+				request.spawnEntity(entityID, extraInfos);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 			event.setActive(false);
 		}else if (event.getMessage().getId() == GameCPM.DataPackage_EntityCreationRequest_Drone) {

@@ -12,7 +12,7 @@ public abstract class MapEvent extends GameEvent{
 		this.block = block;
 	}
 	
-	public MapBlock MapBlock() {
+	public MapBlock getMapBlock() {
 		return block;
 	}
 

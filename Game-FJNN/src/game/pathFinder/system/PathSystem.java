@@ -75,8 +75,9 @@ public class PathSystem {
 		}
 	}
 	
-	public PathRequest addPathRequest(Entity entity, Location pixelTarget){
-		GameEventManager.getEventManager().publishEvent(new EntityPathEvent(entity, pixelTarget));
+	public PathRequest addPathRequest(Entity entity, Location pixelTarget, boolean publishToServer){
+		if(publishToServer)GameEventManager.getEventManager().publishEvent(new EntityPathEvent(entity, pixelTarget));
+		
 		Location blockTarget = new Location(pixelTarget.getX()/Map.DEFAULT_SQUARESIZE, pixelTarget.getY()/Map.DEFAULT_SQUARESIZE);
 		Location offset = new Location(pixelTarget.getX()-blockTarget.getX()*Map.DEFAULT_SQUARESIZE, pixelTarget.getY()-blockTarget.getY()*Map.DEFAULT_SQUARESIZE);
 		PathRequest request = new PathRequest(entity, entity.getBlockLocation(), blockTarget , map, offset);

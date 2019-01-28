@@ -26,7 +26,7 @@ public class ELModule extends DroneModule{
 					&& !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 				
 				this.drone.getPathController().setBlocked(false);
-				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
+				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation(), DroneModule.publishPathToServer);
 				this.drone.getPathController().setBlocked(true);
 			}
 			this.isLoading = true;

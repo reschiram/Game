@@ -79,8 +79,8 @@ public class Map {
 		for(int x = 0; x<this.Width; x++){
 			for(int y = 0; y<this.Height; y++){
 				for(int i = 0; i<2; i++){
-					if(ground[x][y][i]!=0)addToGround(ground[x][y][i], x, y);
-					if(build [x][y][i]!=0)addToBuild (build [x][y][i], x, y);
+					if(ground[x][y][i]!=0)addToGround(ground[x][y][i], x, y, false);
+					if(build [x][y][i]!=0)addToBuild (build [x][y][i], x, y, false);
 				}
 			}
 		}
@@ -106,14 +106,14 @@ public class Map {
 		return Height;
 	}
 	
-	private void setBlock(Location location, MapResource resource){
+	private void setBlock(Location location, MapResource resource, boolean publishToServer){
 		MapBlock b = null;
 		if(resource.isGround())b = new MapBlock(resource, DEFAULT_GROUNDLAYER+resource.getLayerUp(), location);
 		else b = new MapBlock(resource, DEFAULT_BUILDLAYER+resource.getLayerUp(), location);
-		deleteBlock(location, resource.getLayerUp(), resource.isGround());
+		deleteBlock(location, resource.getLayerUp(), resource.isGround(), publishToServer);
 		for(ResourcePart resPart : resource.getResourceParts()){
 			Location loc = new Location(location.x+resPart.getLocation().x, location.y+resPart.getLocation().y);
-			deleteBlock(loc, resource.getLayerUp(), resource.isGround());
+			deleteBlock(loc, resource.getLayerUp(), resource.isGround(), publishToServer);
 		}
 		Mapdata[] parts = b.create();
 		for(int i = 1; i<parts.length; i++){
@@ -126,7 +126,7 @@ public class Map {
 		update(location.getX(), location.getY());
 		Game.getLightOverlay().update(b, false);
 		
-		GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(b));
+		if(publishToServer) GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(b));
 	}
 	
 	private void update(int x, int y){
@@ -177,7 +177,7 @@ public class Map {
 		}
 	}
 	
-	public void deleteBlock(Location location, int layerUp, boolean isGround) {
+	public void deleteBlock(Location location, int layerUp, boolean isGround, boolean publishToServer) {
 		Mapdata mapdata = getChunk(location).getMapData(location, isGround)[layerUp];
 		if(mapdata!=null){
 			if(mapdata instanceof MapBlock){
@@ -192,22 +192,22 @@ public class Map {
 				update(b.getLocation().getX(), b.getLocation().getY());
 				Game.getLightOverlay().update(mapdata, true);
 				
-				GameEventManager.getEventManager().publishEvent(new MapBlockDeleteEvent(b));
+				if(publishToServer) GameEventManager.getEventManager().publishEvent(new MapBlockDeleteEvent(b, false));
 			}else if(mapdata instanceof MapDummieBlock){
 				MapDummieBlock part = (MapDummieBlock)mapdata;
 				MapBlock block = part.getBlock();
-				deleteBlock(block.getLocation(), layerUp, isGround);
+				deleteBlock(block.getLocation(), layerUp, isGround, publishToServer);
 			}
 		}
 	}
 	
-	public void add(int res,Location location, boolean isGround){
+	public void add(int res,Location location, boolean isGround, boolean publishToServer){
 		if(res==0 || MapResource.getMapResource(res)==null){
 			for(int i = 0; i<2; i++){
-				deleteBlock(location, i, isGround);
+				deleteBlock(location, i, isGround, publishToServer);
 			}
 		}else{			
-			setBlock(location, MapResource.getMapResource(res));
+			setBlock(location, MapResource.getMapResource(res), publishToServer);
 		}
 	}
 	
@@ -223,12 +223,12 @@ public class Map {
 		return this.chunks[x][y];
 	}
 
-	public void addToGround(int res, int x, int y) {		
-		add(res, new Location(x, y), true);
+	public void addToGround(int res, int x, int y, boolean publishToServer) {		
+		add(res, new Location(x, y), true, publishToServer);
 	}
 	
-	public void addToBuild(int res, int x, int y) {
-		add(res, new Location(x, y), false);
+	public void addToBuild(int res, int x, int y, boolean publishToServer) {
+		add(res, new Location(x, y), false, publishToServer);
 	}
 	
 	public void move(){

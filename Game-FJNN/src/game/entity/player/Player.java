@@ -22,12 +22,9 @@ import game.entity.type.interfaces.EntityLight;
 import game.inventory.Inventory;
 import game.inventory.ItemCollector;
 import game.inventory.equipment.EquipmentInventory;
-import game.inventory.equipment.tools.BuildTool;
-import game.inventory.equipment.tools.DigTool;
-import game.inventory.requester.InventoryAcceptor;
 import game.map.Map;
 
-public class Player extends Entity implements EntityInventory, EntityLight, InventoryAcceptor{
+public class Player extends Entity implements EntityInventory, EntityLight{
 	
 	private static Player player;
 	public static Player getPlayer() {
@@ -40,12 +37,13 @@ public class Player extends Entity implements EntityInventory, EntityLight, Inve
 	private ItemCollector itemCollector;
 	
 	private ArrayList<Drone> drones = new ArrayList<>();
-	private EquipmentInventory inventory;
 	
-	public Player(Location location, int entityID){
+	public Player(Location location, int entityID, EquipmentInventory inv){
 		super(new ArrayList<>());
 		entityTypes.add(EntityType.Player);	
 		entityTypes.add(EntityType.LightEntity);
+		
+		this.itemCollector = new ItemCollector(this, inv, 3.0);
 		
 		Image image = new Image(ScreenCenter, EntityType.Player.getSize(), "", EntityType.Player.getSpriteSheet(), null);
 		super.create(entityID, EntityType.Player.createAnimation(false, DEFAULT_ENTITY_LAYER, image), ScreenCenter, EntityType.Player.getSize(), EntityType.Player.getSpeed(),
@@ -85,6 +83,15 @@ public class Player extends Entity implements EntityInventory, EntityLight, Inve
 		playerInterface.tick();
 		itemCollector.tick();
 	}
+
+	
+	@Override
+	public void move(Direction d) {
+		if(d.equals(Direction.DOWN) || d.equals(Direction.NONE)) {
+			this.moveManager.slowDownXVelocity();			
+		}else super.move(d);
+	}
+	
 	
 	@Override
 	public void setLocation(int x, int y){
@@ -117,15 +124,6 @@ public class Player extends Entity implements EntityInventory, EntityLight, Inve
 
 	public void addDrone(Drone drone) {
 		this.drones.add(drone);
-	}
-
-	@Override
-	public void acceptInventory(Inventory inv) {		
-		this.itemCollector = new ItemCollector(this, inv, 3.0);
-		this.inventory = (EquipmentInventory) itemCollector.getInventory();
-		
-		this.inventory.addItem(new DigTool());
-		this.inventory.addItem(new BuildTool());
 	}
 
 }

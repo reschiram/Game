@@ -18,7 +18,7 @@ public class ItemEntityRequest extends EntityRequest{
 	}
 
 	@Override
-	public void spawnEntity(int entityID) {
+	public void spawnEntity(int entityID, String extraInfos) {
 		new ItemEntity(itemType, new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID).show();
 	}
 

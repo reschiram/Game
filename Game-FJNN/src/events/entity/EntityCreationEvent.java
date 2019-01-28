@@ -1,6 +1,7 @@
 package events.entity;
 
 import Data.Location;
+import game.map.Map;
 
 public class EntityCreationEvent extends EntityEvent{
 
@@ -11,7 +12,10 @@ public class EntityCreationEvent extends EntityEvent{
 	private int requestID;
 	
 	public EntityCreationEvent(int entityType, Location blockSpawnLocation) {
-		super(null);
+		super(null, new Location(
+				blockSpawnLocation.getX() * Map.DEFAULT_SQUARESIZE,
+				blockSpawnLocation.getY() * Map.DEFAULT_SQUARESIZE)
+		);
 		this.blockSpawnLocation = blockSpawnLocation;
 		this.requestID = lastRrequestID+1;
 		lastRrequestID++;
