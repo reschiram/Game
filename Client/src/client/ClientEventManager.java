@@ -36,14 +36,24 @@ public class ClientEventManager {
 	}
 	
 	public void tick(){
+		Queue<ClientEvent> events = new Queue<>();
+		
 		while(!publishedEvents.isEmpty()){
-			ClientEvent  event = publishedEvents.get();
+			ClientEvent event = publishedEvents.get();
 			publishedEvents.remove();
 			if(event instanceof ToClientMessageEvent){
 				handleNewEvent(event, this.clientMessageEventListenerdb);
+				if(event.isActive())events.add(event);
 			}else if(event instanceof ClientLostConnectionToServerEvent){
 				handleNewEvent(event, this.clientLostConnectionToServerEventListenerdb);
+				if(event.isActive())events.add(event);
 			}
+		}
+		
+		while(!events.isEmpty()){
+			ClientEvent event = events.get();
+			events.remove();
+			publishedEvents.add(event);
 		}
 	}
 

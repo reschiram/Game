@@ -1,41 +1,39 @@
 package data.server;
 
-import java.util.ArrayList;
-
-import data.entities.ServerEntity;
 import server.ValidatedUser;
 
-public class Player {
+public class Player{
+	
+	private boolean isHost;
+	private ValidatedUser user;
 
-	private ValidatedUser validatedUser;
-	private boolean hasCatchedUp;
-	
-	private ArrayList<ServerEntity> knownEntity = new ArrayList<>();
+	public Player(ValidatedUser user, boolean isHost) {
+		this.user = user;
+		this.isHost = isHost;
+	}
 
-	public Player(ValidatedUser validatedUser, boolean hasCatchedUp) {
-		super();
-		this.validatedUser = validatedUser;
-		this.hasCatchedUp = hasCatchedUp;
+	public boolean isHost() {
+		return isHost;
 	}
-	
-	public ValidatedUser getValidatedUser() {
-		return validatedUser;
+
+	public ValidatedUser getUser() {
+		return user;
 	}
-	
-	public boolean hasCatchedUp() {
-		return hasCatchedUp;
+
+	public void setHost(boolean isHost) {
+		this.isHost = isHost;
 	}
-	
-	public void setHasCatchedUp(boolean catchUpStatus) {
-		this.hasCatchedUp = catchUpStatus;
+
+	public String getID() {
+		return user.getID();
 	}
-	
-	public void addKnownEntity(ServerEntity entity) {
-		this.knownEntity.add(entity);
+
+	public long getServerClientID() {
+		return user.getServerClientID();
 	}
-	
-	public boolean knowsEntity(ServerEntity entity) {
-		System.out.println("Entity Knwon: " + entity);
-		return this.knownEntity.contains(entity);
+
+	public String getUsername() {
+		return user.getUsername();
 	}
+
 }

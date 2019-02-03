@@ -2,9 +2,11 @@ package data.map;
 
 import Data.Location;
 import data.MapResource;
+import data.server.Lobby;
 import file.csv.CSV_File;
 import game.map.MapGenerationData;
 import game.map.MapGenerator;
+import server.GameSM;
 
 public class ServerMap {
 	
@@ -87,6 +89,10 @@ public class ServerMap {
 		if(x<0)x = width+x;
 		else if(x>= width)x = x-width;
 		return x;
+	}
+
+	public void start(Lobby lobby, GameSM gameSM) {
+		new MapSEM(lobby, gameSM);
 	}
 
 }

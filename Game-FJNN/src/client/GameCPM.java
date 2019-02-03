@@ -6,8 +6,10 @@ import data.PackageType;
 import data.readableData.BooleanData;
 import data.readableData.CompleteStringData;
 import data.readableData.IntegerData;
+import data.readableData.LongData;
 import data.readableData.ReadableData;
 import data.readableData.StringData;
+import data.user.User;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
@@ -29,25 +31,30 @@ import game.map.Map;
 
 public class GameCPM {
 	
+	public static final int maxMessageLength = DataPackage.MAXPACKAGELENGTH - (User.maxUsernameLength + 1);
+	
 	public static final int DataPackage_MapDownloadInfos = 14;
 	public static final int DataPackage_MapDownloadData = 16;
-	public static final int DataPackage_MapDownloadFinished = 18;	
 	
-	public static final int DataPackage_EntityCreationRequest_Player = 20;
-	public static final int DataPackage_EntityCreationRequest_Drone = 22;
-	public static final int DataPackage_EntityCreationRequest_ItemEntity = 24;
-	public static final int DataPackage_EntityCreationResponse = 26;
+	public static final int DataPackage_PlayerMessage = 18;
+	public static final int DataPackage_LobbyPlayerStatus = 20;
+	public static final int DataPackage_StartGame = 22;
 	
-	public static final int DataPackage_PlayerMoved = 28;
-	public static final int DataPackage_EntityPath = 30;
-	public static final int DataPackage_EntityStatus = 32;
+	public static final int DataPackage_EntityCreationRequest_Player = 24;
+	public static final int DataPackage_EntityCreationRequest_Drone = 26;
+	public static final int DataPackage_EntityCreationRequest_ItemEntity = 28;
+	public static final int DataPackage_EntityCreationResponse = 30;
 	
-	public static final int DataPackage_ItemAdd = 34;
-	public static final int DataPackage_ItemRemove = 36;
-	public static final int DataPackage_ItemSet = 38;
+	public static final int DataPackage_PlayerMoved = 32;
+	public static final int DataPackage_EntityPath = 34;
+	public static final int DataPackage_EntityStatus = 36;
 	
-	public static final int DataPackage_MapBlockAdd = 40;	
-	public static final int DataPackage_MapBlockDelete = 42;
+	public static final int DataPackage_ItemAdd = 38;
+	public static final int DataPackage_ItemRemove = 40;
+	public static final int DataPackage_ItemSet = 42;
+	
+	public static final int DataPackage_MapBlockAdd = 44;	
+	public static final int DataPackage_MapBlockDelete = 46;
 	
 	public static final int MapDownloadData_DataCount = 63;
 	
@@ -56,6 +63,7 @@ public class GameCPM {
 	}
 	
 	public void loadPackages() {
+		
 		//<=== Add MapDownload Packages ===>
 		DataPackage.setType(new PackageType(DataPackage_MapDownloadInfos, "MapDownloadInfos", new IntegerData("width"), new IntegerData("height"), new IntegerData("seed"), new IntegerData("PackageCount")));
 		
@@ -69,8 +77,20 @@ public class GameCPM {
 			content[base + 3] 	= new IntegerData("Build(1|" 	+ String.format("%02d", i));
 		}
 		DataPackage.setType(new PackageType(DataPackage_MapDownloadData, "MapDownloadData", content));
+
+		//<=== Add Lobby Packages ===>
 		
-		DataPackage.setType(new PackageType(DataPackage_MapDownloadFinished, "MapDownloadFinished", new BooleanData("succesfull")));
+		DataPackage.setType(new PackageType(DataPackage_LobbyPlayerStatus, "LobbyPlayerStatus",
+				new CompleteStringData("userName", User.maxUsernameLength), new BooleanData("isHost"), new IntegerData("Status")))
+		;
+		
+		DataPackage.setType(new PackageType(DataPackage_PlayerMessage, "PlayerMessage",
+				new CompleteStringData("userName", User.maxUsernameLength), new CompleteStringData("message", maxMessageLength)))
+		;
+		
+		DataPackage.setType(new PackageType(DataPackage_StartGame, "StartGame",
+				new LongData("Time")));
+		;
 		
 		//<=== Add Entity-Creation Packages ===>
 

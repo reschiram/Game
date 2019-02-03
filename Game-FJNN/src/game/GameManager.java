@@ -13,11 +13,8 @@ import Engine.Engine;
 import anim.AnimationType;
 import client.GameCEM;
 import client.GameCM;
-import client.GameCPM;
-import data.DataPackage;
 import data.MapResource;
 import data.Mouse;
-import data.PackageType;
 import data.Tickable;
 import events.GameEventManager;
 import files.FileManager;
@@ -90,22 +87,15 @@ public class GameManager implements Tickable{
 	private void start(MapDownloader mapDownloader) {
 		game = new Game(this);
 		game.start(mapDownloader);		
-		
-		HasStarted = true;
 		TickManager.release();
 		LoadScreen.destroyVisuals();
 		
-		try {
-			this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(PackageType.readPackageData(GameCPM.DataPackage_MapDownloadFinished, true)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		HasStarted = true;
 	}
-
-	long time = System.currentTimeMillis();
+	
 	public void tick(){
 		if(Mouse.getMouse()!=null)Mouse.getMouse().tick();		
-		if(System.currentTimeMillis()-time > 500 && FPSCounter!=null){
+		if(FPSCounter!=null && LatencyCounter != null){
 			FPSCounter.setText("FPS:"+Engine.getEngine(this, this.getClass()).getFPS());
 			LatencyCounter.setText("Latency:"+TickManager.getLatency()+" tick(s)");
 		}

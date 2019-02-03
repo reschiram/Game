@@ -3,10 +3,11 @@ package launcher;
 import client.GameCPM;
 import game.map.Map;
 import game.map.MapGenerationData;
+import launcher.lobby.Lobby;
 
 public class MapDownloader {
 
-	private Launcher launcher;
+	private Lobby launcher;
 
 	private MapGenerationData mapData;
 	private int packageAmount;
@@ -14,8 +15,8 @@ public class MapDownloader {
 	private int currentPackage = -1;
 	private boolean loaded = false;
 
-	public MapDownloader(Launcher launcher) {
-		this.launcher = launcher;
+	public MapDownloader(Lobby lobby) {
+		this.launcher = lobby;
 	}
 
 	public MapDownloader load(int width, int height, int seed, int packageAmount) {

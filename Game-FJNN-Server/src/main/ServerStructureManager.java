@@ -68,8 +68,6 @@ public class ServerStructureManager {
 
 	public void logIn(ValidatedUser validatedUser) {
 		this.lobby.addPlayer(validatedUser);		
-		
-		sm.getGameSM().sendMapToClient(validatedUser.getServerClientID(), this.lobby.getMaps().get(0));
 	}
 
 	public Lobby getLobby() {

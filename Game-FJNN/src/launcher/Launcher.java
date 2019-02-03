@@ -5,7 +5,7 @@ import data.Tickable;
 import data.exceptions.LoginInformationCreationException;
 import data.exceptions.UnsupportedPackageCreationException;
 import data.exceptions.client.ServerNotFoundException;
-import game.GameManager;
+import launcher.lobby.Lobby;
 import tick.TickManager;
 
 public class Launcher implements Tickable{
@@ -17,7 +17,6 @@ public class Launcher implements Tickable{
 	private LauncherGUI gui;	
 	private GameCM gameCM;
 	
-	private MapDownloader mapDownloader;	
 	private TickManager launcherTickManager;
 	
 	public Launcher(String ip, int port) {
@@ -29,8 +28,6 @@ public class Launcher implements Tickable{
 		} catch (ServerNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		this.mapDownloader = new MapDownloader(this);
 		
 		launcherTickManager = new TickManager(this);
 	}
@@ -44,18 +41,8 @@ public class Launcher implements Tickable{
 	}
 
 	@Override
-	public void tick() {		
-		if(this.mapDownloader.isFinished() && !this.mapDownloader.isLoaded()) {
-			this.gui.destroy();
-			launcherTickManager.kill();
-			new GameManager(mapDownloader, gameCM);
-		}
-		
+	public void tick() {				
 		this.gameCM.tick();
-	}
-
-	public MapDownloader getMapDownloader() {
-		return mapDownloader;
 	}
 
 	public LauncherGUI getGUI() {
@@ -64,6 +51,12 @@ public class Launcher implements Tickable{
 
 	public GameCM getGameCM() {
 		return gameCM;
+	}
+	
+	public void connectToLobby(String userName) {
+		launcherTickManager.kill();
+		this.gui.destroy();
+		new Lobby(gameCM, userName);
 	}
 
 }

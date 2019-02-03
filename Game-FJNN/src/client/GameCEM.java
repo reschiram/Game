@@ -35,6 +35,7 @@ public class GameCEM implements ToClientMessageEventListener{
 				Player p = (Player)playerMove.getEntity();
 				p.setLocation(playerMove.getCurrentPixelLocation().getX(), playerMove.getCurrentPixelLocation().getY());
 				p.setVelocity(playerMove.getVelocity());
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_EntityPath) {
 				EntityPathEvent entityPath = gameCM.getClientPackageManager().readEntityPathMessage(event.getMessage());
 				
@@ -45,31 +46,38 @@ public class GameCEM implements ToClientMessageEventListener{
 				pathUser.getPathController().setBlocked(false);
 				pathUser.getPathController().setTarget(entityPath.getPixelTarget(), false);
 				pathUser.getPathController().setBlocked(blocked);
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_EntityStatus) {
 				EntityStatusEvent entityStatus = gameCM.getClientPackageManager().readEntityStatusMessage(event.getMessage());
 				
 				entityStatus.getEntity().setLocation(entityStatus.getCurrentPixelLocation().getX(), entityStatus.getCurrentPixelLocation().getY());
 				if(!entityStatus.isAlive())	entityStatus.getEntity().destroy(false);	
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_ItemAdd) {
 				ItemAddEvent itemAdd = gameCM.getClientPackageManager().readItemAddMessage(event.getMessage());
 				
 				itemAdd.getInv().addItemFunktion(itemAdd.getItem());
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_ItemRemove) {
 				ItemRemoveEvent itemRemove = gameCM.getClientPackageManager().readItemRemoveMessage(event.getMessage());
 				
 				itemRemove.getInv().removeItemFunktion(itemRemove.getItem());
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_ItemSet) {
 				ItemSetEvent itemSet = gameCM.getClientPackageManager().readItemSetMessage(event.getMessage());
 				
 				itemSet.getInv().setItemFunktion(itemSet.getSlot(), itemSet.getItem());
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_MapBlockAdd) {
 				MapBlockAddEvent mapBlockAdd = gameCM.getClientPackageManager().readBlockAddMessage(event.getMessage());
 				
 				Map.getMap().add(mapBlockAdd.getResource().getID(), mapBlockAdd.getBlockLocation(), mapBlockAdd.getResource().isGround(), false);
+				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_MapBlockDelete) {
 				MapBlockDeleteEvent mapBlockDelete = gameCM.getClientPackageManager().readBlockDeleteMessage(event.getMessage());
 				
 				Map.getMap().deleteBlock(mapBlockDelete.getMapBlock().getLocation(), mapBlockDelete.getMapBlock().getResource().getLayerUp(), mapBlockDelete.getMapBlock().getResource().isGround(), false);
+				event.setActive(false);
 			}
 		}catch (Exception e) {
 			System.out.println("Error");

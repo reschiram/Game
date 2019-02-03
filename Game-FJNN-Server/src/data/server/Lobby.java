@@ -12,20 +12,23 @@ public class Lobby {
 	private ArrayList<Player> players = new ArrayList<>();
 	
 	private GameSM gameSM;
+	private LobbyEM lobbyEM;
 	
 	private long id;
 	
 	public Lobby(long id, GameSM gameSM) {
 		this.id = id;
-		new LobbyEM(this, gameSM);
 		this.gameSM = gameSM;
+		
+		this.lobbyEM = new LobbyEM(this, gameSM);
 	}
 	
 	public void addPlayer(ValidatedUser user) {
-		Player p = new Player(user, false);
-		this.players.add(p);
+		Player player = new Player(user, this.players.size() == 0);
+		this.players.add(player);
+		gameSM.sendMapToClient(user.getServerClientID(), this.getCurrentMap());
 		
-		gameSM.getServerManager().getEventManager().registerServerMessageEventListener(new PlayerCatchUpManager(p, this), 4);
+		lobbyEM.sendPlayerAdd(player);
 	}
 
 	public void addMap(ServerMap serverMap) {
@@ -43,8 +46,9 @@ public class Lobby {
 	public void removePlayer(String userID) {
 		for(int i = 0; i < players.size(); i++) {
 			Player p = players.get(i);
-			if(p.getValidatedUser().getID().equals(userID)) {
-				players.remove(i);
+			if(p.getID().equals(userID)) {
+				players.remove(i);				
+				lobbyEM.sendPlayerRemove(p);
 				return;
 			}
 		}
@@ -53,7 +57,7 @@ public class Lobby {
 	public Player getPlayer(long clientID) {
 		for(int i = 0; i < players.size(); i++) {
 			Player p = players.get(i);
-			if(p.getValidatedUser().getServerClientID() == clientID) {
+			if(p.getServerClientID() == clientID) {
 				return p;
 			}
 		}
@@ -75,9 +79,9 @@ public class Lobby {
 	public ArrayList<Player> getConnectedPlayers() {
 		return (ArrayList<Player>) players.clone();
 	}
-
-	public GameSM getGameSM() {
-		return gameSM;
+	
+	public void startGame() {
+		this.getCurrentMap().start(this, gameSM);
 	}
 
 }
