@@ -29,7 +29,7 @@ public class GameSEM implements ServerLostConnectionToClientEventListener, NewCl
 	
 	@Override
 	public void clientLogout(ClientLogoutEvent event) {
-		this.serverMain.getServerStructureManager().logOut(event.getValidatedUser());
+		this.serverMain.getServerStructureManager().logOut(event.getValidatedUser().getID());
 		
 		this.serverMain.getConsoleManager().getGUI().println("Client: " + event.getClientID()
 				+ " has logged out. Client has been validated as User: " + event.getValidatedUser().toString());
@@ -50,6 +50,7 @@ public class GameSEM implements ServerLostConnectionToClientEventListener, NewCl
 
 	@Override
 	public void messageFromClient(ToServerMessageEvent event) {
+		
 	}
 
 	@Override

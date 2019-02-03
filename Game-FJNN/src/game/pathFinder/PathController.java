@@ -53,11 +53,12 @@ public class PathController {
 	public void setBlockTarget(Location blockLocation, boolean publishToServer) {
 		if(this.blocked)return;
 		
-		if(blockLocation==null || lastRequest!=null){
+
+		if (lastRequest != null) {
 			this.lastRequest.setState(PathRequest.STATE_EXPIRED);
 			this.lastRequest = null;
-			return;
 		}
+		if (blockLocation == null) return;
 		
 		this.lastRequest = pathSystem.addPathRequest(this.entity, new Location(blockLocation.getX()*Map.DEFAULT_SQUARESIZE, blockLocation.getY()*Map.DEFAULT_SQUARESIZE), publishToServer);
 	}
@@ -69,11 +70,11 @@ public class PathController {
 	public void setTarget(Location loc, boolean publishToServer) {
 		if(this.blocked)return;
 		
-		if(loc==null || lastRequest!=null){
+		if (lastRequest != null) {
 			this.lastRequest.setState(PathRequest.STATE_EXPIRED);
 			this.lastRequest = null;
-			return;
 		}
+		if (loc == null) return;
 		
 		this.lastRequest = pathSystem.addPathRequest(this.entity, loc, publishToServer);
 	}

@@ -1,23 +1,15 @@
 package game.entity.requester;
 
 import Data.Location;
+import client.Request;
 import game.map.Map;
 
-public abstract class EntityRequest {
-	
-	private static int lastRequestID = 0;
-	
-	private int requestID;
+public abstract class EntityRequest extends Request{
 	private Location blockSpawn;
 	
 	public EntityRequest(Location blockSpawn) {
-		lastRequestID++;
-		this.requestID = lastRequestID;
+		super();
 		this.blockSpawn = blockSpawn;
-	}
-
-	public int getRequestID() {
-		return requestID;
 	}
 
 	public Location getBlockSpawn() {
@@ -29,7 +21,7 @@ public abstract class EntityRequest {
 	}
 
 	public int getPixelSpawn_Y() {
-		return blockSpawn.getX() * Map.DEFAULT_SQUARESIZE;
+		return blockSpawn.getY() * Map.DEFAULT_SQUARESIZE;
 	}
 
 	public abstract void spawnEntity(int entityID, String extraInfos) throws Exception;

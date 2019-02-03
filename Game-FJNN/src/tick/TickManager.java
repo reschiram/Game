@@ -9,6 +9,8 @@ public class TickManager {
 	private long ticks = 0;
 	private long startTime = 0;
 	
+	private boolean run = true;
+	
 	private boolean released = false;
 	public void release(){
 		released = true;
@@ -20,7 +22,7 @@ public class TickManager {
 			@Override
 			public void run() {
 				startTime = System.currentTimeMillis();
-				while(true){
+				while(run){
 					tickable.tick();
 					int wait = (int) (TICK_DURATION - getLatency()*TICK_DURATION);
 					if(!released)wait = 10;
@@ -49,6 +51,10 @@ public class TickManager {
 
 	public long getCurrentTick() {
 		return ticks;
+	}
+
+	public void kill() {
+		run = false;
 	}
 
 }

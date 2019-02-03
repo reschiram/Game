@@ -15,13 +15,17 @@ public class PlayerRequest extends EntityRequest {
 	
 	@Override
 	public void spawnEntity(int entityID, String extraInfos) throws Exception {	
+		boolean isOwnPlayer = EntityRequesterService.getEntityRequesterService().readIsOwnPlayer(extraInfos, 0);
+		
 		Inventory inv = null;
-		inv = EntityRequesterService.getEntityRequesterService().readInventory(extraInfos, 0);
+		inv = EntityRequesterService.getEntityRequesterService().readInventory(extraInfos, 1);
 		
 		inv.addItemFunktion(new DigTool());
 		inv.addItemFunktion(new BuildTool());
 		
-		new Player(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv).show();;
+		System.out.println("PlayerID: " + entityID);
+		
+		new Player(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv, isOwnPlayer).show();
 	}
 
 }

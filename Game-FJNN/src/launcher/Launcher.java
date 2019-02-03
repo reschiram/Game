@@ -17,7 +17,8 @@ public class Launcher implements Tickable{
 	private LauncherGUI gui;	
 	private GameCM gameCM;
 	
-	private MapDownloader mapDownloader;
+	private MapDownloader mapDownloader;	
+	private TickManager launcherTickManager;
 	
 	public Launcher(String ip, int port) {
 		this.gui = new LauncherGUI(this);
@@ -31,7 +32,7 @@ public class Launcher implements Tickable{
 		
 		this.mapDownloader = new MapDownloader(this);
 		
-		new TickManager(this);
+		launcherTickManager = new TickManager(this);
 	}
 
 	public void login(String username, String password) {
@@ -43,13 +44,14 @@ public class Launcher implements Tickable{
 	}
 
 	@Override
-	public void tick() {
-		this.gameCM.tick();
-		
+	public void tick() {		
 		if(this.mapDownloader.isFinished() && !this.mapDownloader.isLoaded()) {
 			this.gui.destroy();
+			launcherTickManager.kill();
 			new GameManager(mapDownloader, gameCM);
 		}
+		
+		this.gameCM.tick();
 	}
 
 	public MapDownloader getMapDownloader() {

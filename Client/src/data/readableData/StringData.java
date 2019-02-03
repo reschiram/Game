@@ -7,7 +7,7 @@ public class StringData extends ReadableData<String>{
 
 	public static final String Default_Format = "ISO_8859_1";
 	
-	private String format;
+	protected String format;
 	
 	public StringData(String name, int charAmount) {
 		super(name, charAmount);

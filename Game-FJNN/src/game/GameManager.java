@@ -11,9 +11,13 @@ import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
 import Engine.Engine;
 import anim.AnimationType;
+import client.GameCEM;
 import client.GameCM;
+import client.GameCPM;
+import data.DataPackage;
 import data.MapResource;
 import data.Mouse;
+import data.PackageType;
 import data.Tickable;
 import events.GameEventManager;
 import files.FileManager;
@@ -36,6 +40,7 @@ public class GameManager implements Tickable{
 	}
 		
 	private Game game;
+	private GameCM gameCM;
 	private MapEditor mapEditor;
 	private StringRenderOperation FPSCounter;
 	private StringRenderOperation LatencyCounter;
@@ -45,6 +50,9 @@ public class GameManager implements Tickable{
 	public GameManager(MapDownloader mapDownloader, GameCM gameCM){
 		new GameEventManager(gameCM);	
 		new EntityRequester(gameCM);
+		new GameCEM(gameCM);
+		
+		this.gameCM = gameCM;
 		
 		new Engine(1920, 1080, new Dimension(800,800));
 		Engine.getEngine(this, this.getClass()).getWindow().setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -75,29 +83,40 @@ public class GameManager implements Tickable{
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(FPSCounter, 10);
 		LatencyCounter = new StringRenderOperation(new Location(1800,80), new Dimension(120, 50), "Latency:"+TickManager.getLatency()+" tick(s)", null, Color.WHITE);
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(LatencyCounter, 10);
-		start(mapDownloader);			
-		HasStarted = true;
-		TickManager.release();
-		LoadScreen.destroyVisuals();
+		
+		start(mapDownloader);
 	}
 	
 	private void start(MapDownloader mapDownloader) {
 		game = new Game(this);
-		game.start(mapDownloader);
-//		this.mapEditor = new MapEditor(new MapLoader(FileManager.MAP_TEST));
+		game.start(mapDownloader);		
+		
+		HasStarted = true;
+		TickManager.release();
+		LoadScreen.destroyVisuals();
+		
+		try {
+			this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(PackageType.readPackageData(GameCPM.DataPackage_MapDownloadFinished, true)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	long time = System.currentTimeMillis();
 	public void tick(){
-		if(Mouse.getMouse()!=null)Mouse.getMouse().tick();
-		if(game!=null)game.tick();
-		else if(mapEditor!=null)mapEditor.tick();
+		if(Mouse.getMouse()!=null)Mouse.getMouse().tick();		
 		if(System.currentTimeMillis()-time > 500 && FPSCounter!=null){
 			FPSCounter.setText("FPS:"+Engine.getEngine(this, this.getClass()).getFPS());
 			LatencyCounter.setText("Latency:"+TickManager.getLatency()+" tick(s)");
 		}
 		
-		if(hasStarted()) GameEventManager.getEventManager().tick();
+		if(hasStarted()) {
+			GameEventManager.getEventManager().tick();
+			this.gameCM.tick();
+			
+			if(game!=null) game.tick();
+			else if(mapEditor!=null)mapEditor.tick();
+		}
 	}
 	
 	private void setKillAble(){

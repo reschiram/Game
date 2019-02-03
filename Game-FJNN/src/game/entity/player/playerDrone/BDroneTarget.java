@@ -19,13 +19,13 @@ public class BDroneTarget extends DroneTarget{
 	
 	@Override
 	public boolean interact() {
-		Mapdata data = Map.getMap().getChunks()[location.x/Map.DEFAULT_CHUNKSIZE][location.y/Map.DEFAULT_CHUNKSIZE].getMapData(location, false)[Entity.DEFAULT_ENTITY_UP];
+		Mapdata data = Map.getMap().getChunks()[blockLocation.x/Map.DEFAULT_CHUNKSIZE][blockLocation.y/Map.DEFAULT_CHUNKSIZE].getMapData(blockLocation, false)[Entity.DEFAULT_ENTITY_UP];
 		if(data==null){
 			Recipe recipe = Recipe.getRecipe(res.getID());
 			for(Drone drone: this.drones){
 				InvModule invModule = (InvModule) drone.getModule(InvModule.class);
 				if(recipe!=null && recipe.craft(invModule.getInventory())){
-					Map.getMap().add(res.getID(), location, res.isGround(), true);
+					Map.getMap().add(res.getID(), blockLocation, res.isGround(), true);
 					this.done = true;
 					break;
 				}

@@ -2,19 +2,14 @@ package game;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.KeyEvent;
 
 import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
 import Engine.Engine;
-import client.GameCM;
 import file.File;
 import file.ktv.KTV_File;
 import data.VehicleResource;
-import events.GameEventManager;
-import events.entity.EntityCreationEvent;
 import files.FileManager;
-import game.entity.loader.EntityLoader;
 import game.entity.player.Player;
 import game.entity.requester.EntityRequester;
 import game.entity.type.EntityType;
@@ -41,7 +36,6 @@ public class Game {
 	private MapLoader mapLoader;
 	private DayManager dayManager;
 	private EquipmentInventoryMenu inventoryMenu;
-	private GameCM gameCM;
 	
 	private boolean started = false;		
 	private StringRenderOperation PlayerPosition = new StringRenderOperation(new Location(10,20), new Dimension(200, 40), "Player-Position: X:0 Y:0", null, Color.white);
@@ -82,18 +76,10 @@ public class Game {
 		
 		dayManager.createTime(10, new Location(PlayerPosition.Hitbox.getX(), PlayerPosition.Hitbox.getY()+20));
 		
-		EntityRequester.getEntityRequester().requestPlayer(new Location(0, 10));
-//		if(FileManager.PLAYER.get("Location.X")!=null) player = (Player) new EntityLoader().Load(Player.class, FileManager.PLAYER);
-//		else player = new Player(new Location(0, 0));
-//		player.show();
-		
-//		inventoryMenu = new EquipmentInventoryMenu((EquipmentInventory) player.getInventory(), player.getLocation(), 6);
-//		inventoryMenu.createVisuals().hide();		
-		
+		EntityRequester.getEntityRequester().requestPlayer(new Location(0, 20));		
 		started = true;
 		
 		LIGHTOVERLAY.updateComplete();
-		map.finalize();
 	}
 
 	public void tick() {
@@ -101,11 +87,16 @@ public class Game {
 			this.gameInterface.			tick();
 			this.map.getEntityManager().tick();
 			this.dayManager.			tick();
-			this.inventoryMenu.			tick();
 			
 			LIGHTOVERLAY.				tick();
 
 			if (Player.getPlayer() != null) {
+				if(inventoryMenu == null) {
+					inventoryMenu = new EquipmentInventoryMenu((EquipmentInventory) Player.getPlayer().getInventory(), Player.getPlayer().getLocation(), 6);
+					inventoryMenu.createVisuals().hide();
+				}
+				this.inventoryMenu.tick();				
+				
 				Location blockLoc = Player.getPlayer().getBlockLocation();
 				this.PlayerPosition.setText("Player-Position: (X: " + blockLoc.getX() + " Y: " + blockLoc.getY() + ")");
 			} else {

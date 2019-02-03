@@ -16,7 +16,6 @@ import game.entity.manager.EntityManager;
 import game.entity.player.Player;
 import game.entity.type.EntityType;
 import game.inventory.items.ItemType;
-import game.map.Map;
 
 public class EntityRequester implements ToClientMessageEventListener{
 	
@@ -48,7 +47,7 @@ public class EntityRequester implements ToClientMessageEventListener{
 	}
 
 	public void requestDrone(Player player, int droneType) {
-		DroneRequest request = new DroneRequest(player.getCenterLocation(), droneType, player);		
+		DroneRequest request = new DroneRequest(player.getBlockLocation(), droneType, player);		
 		sendRequest(request, -1);		
 		this.requests.put(request.getRequestID(), request);
 	}
@@ -61,8 +60,8 @@ public class EntityRequester implements ToClientMessageEventListener{
 			
 			String extraInfos = ((StringData) event.getMessage().getDataStructures()[2]).getData();
 			
-			if(requests.containsKey(requestID)) {
-				System.out.println("Error: unidentified Entity-Creation");
+			if(!requests.containsKey(requestID)) {
+				System.out.println("Error: unidentified Entity-Creation: "+requestID);
 				return;
 			}
 			
@@ -76,7 +75,7 @@ public class EntityRequester implements ToClientMessageEventListener{
 			
 			event.setActive(false);
 		}else if (event.getMessage().getId() == GameCPM.DataPackage_EntityCreationRequest_Drone) {
-			int oldRequestID = ((IntegerData) event.getMessage().getDataStructures()[1]).getData().intValue();
+			int oldRequestID = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();
 			int droneType = ((IntegerData) event.getMessage().getDataStructures()[3]).getData().intValue();
 			int droneHostID = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
 			
@@ -87,17 +86,17 @@ public class EntityRequester implements ToClientMessageEventListener{
 			}
 			Player p = (Player) entity;
 			
-			DroneRequest request = new DroneRequest(p.getCenterLocation(), droneType, p);
+			DroneRequest request = new DroneRequest(p.getBlockLocation(), droneType, p);
 			this.requests.put(request.getRequestID(), request);
 			sendRequest(request, oldRequestID);		
 
 			event.setActive(false);
 		} else if (event.getMessage().getId() == GameCPM.DataPackage_EntityCreationRequest_ItemEntity) {
-			int oldRequestID = ((IntegerData) event.getMessage().getDataStructures()[1]).getData().intValue();
+			int oldRequestID = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();
 			String itemType = ((StringData) event.getMessage().getDataStructures()[3]).getData();
 
-			int spawnPixelX = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
-			int spawnPixelY = ((IntegerData) event.getMessage().getDataStructures()[5]).getData().intValue();
+			int spawnBlockX = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
+			int spawnBlockY = ((IntegerData) event.getMessage().getDataStructures()[5]).getData().intValue();
 
 			ItemType type = ItemType.getItemType(itemType);
 			if (type == null) {
@@ -105,17 +104,17 @@ public class EntityRequester implements ToClientMessageEventListener{
 				return;
 			}
 
-			ItemEntityRequest request = new ItemEntityRequest(type, new Location(spawnPixelX / Map.DEFAULT_SQUARESIZE, spawnPixelY / Map.DEFAULT_SQUARESIZE));
+			ItemEntityRequest request = new ItemEntityRequest(type, new Location(spawnBlockX, spawnBlockY));
 			this.requests.put(request.getRequestID(), request);
 			sendRequest(request, oldRequestID);		
 
 			event.setActive(false);
 		} else if (event.getMessage().getId() == GameCPM.DataPackage_EntityCreationRequest_Player) {
-			int oldRequestID = ((IntegerData) event.getMessage().getDataStructures()[1]).getData().intValue();
-			int spawnPixelX = ((IntegerData) event.getMessage().getDataStructures()[3]).getData().intValue();
-			int spawnPixelY = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
+			int oldRequestID = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();
+			int spawnBlockX = ((IntegerData) event.getMessage().getDataStructures()[3]).getData().intValue();
+			int spawnBlockY = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
 
-			PlayerRequest request = new PlayerRequest(new Location(spawnPixelX / Map.DEFAULT_SQUARESIZE, spawnPixelY / Map.DEFAULT_SQUARESIZE));
+			PlayerRequest request = new PlayerRequest(new Location(spawnBlockX, spawnBlockY));
 			this.requests.put(request.getRequestID(), request);
 			sendRequest(request, oldRequestID);		
 
@@ -130,16 +129,16 @@ public class EntityRequester implements ToClientMessageEventListener{
 				DroneRequest droneRequest = (DroneRequest) request;
 				
 				message = PackageType.readPackageData(GameCPM.DataPackage_EntityCreationRequest_Drone,
-						oldRequestID, request.getRequestID(), EntityType.Drone, droneRequest.getDroneType(), droneRequest.getPlayer().getID(), request.getPixelSpawn_X(), request.getPixelSpawn_Y());
+						oldRequestID, request.getRequestID(), EntityType.Drone.getID(), droneRequest.getDroneType(), droneRequest.getPlayer().getID(), request.getBlockSpawn().getX(), request.getBlockSpawn().getY());
 			}else if(request instanceof ItemEntityRequest) {
 				ItemEntityRequest itemEntityRequest = (ItemEntityRequest) request;
 				
 				message = PackageType.readPackageData(GameCPM.DataPackage_EntityCreationRequest_ItemEntity,
-						oldRequestID, request.getRequestID(), EntityType.ItemEntity, itemEntityRequest.getItemType().getID(), request.getPixelSpawn_X(), request.getPixelSpawn_Y());
+						oldRequestID, request.getRequestID(), EntityType.ItemEntity.getID(), itemEntityRequest.getItemType().getID(), request.getBlockSpawn().getX(), request.getBlockSpawn().getY());
 			}else if(request instanceof PlayerRequest) {
 				
 				message = PackageType.readPackageData(GameCPM.DataPackage_EntityCreationRequest_Player,
-						oldRequestID, request.getRequestID(), EntityType.Player, request.getPixelSpawn_X(), request.getPixelSpawn_Y());
+						oldRequestID, request.getRequestID(), EntityType.Player.getID(), request.getBlockSpawn().getX(), request.getBlockSpawn().getY());
 			}
 
 			gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));			

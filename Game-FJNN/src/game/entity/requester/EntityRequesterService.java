@@ -39,4 +39,31 @@ public class EntityRequesterService {
 		}
 		return inv;		
 	}
+
+	public String readInventory(Inventory inv) throws Exception {
+		String invInfo = "";
+		
+		if(inv instanceof EquipmentInventory) {
+			EquipmentInventory equipInv = (EquipmentInventory) inv;
+			invInfo += String.format("%0"+maxInvSlotsLength+"d", equipInv.getItemSize());
+			invInfo += String.format("%0"+maxEquipSlotsLength+"d", equipInv.getEquipmentSize());
+		} else {
+			invInfo += String.format("%0"+maxInvSlotsLength+"d", inv.getSize());
+			invInfo += String.format("%0"+maxEquipSlotsLength+"d", 0);			
+		}
+		
+		invInfo += String.format("%0"+maxInvIDLength+"d", inv.getInvID());		
+		return invInfo;
+	}
+
+	public boolean readIsOwnPlayer(String extraInfos, int start) {
+		char info = extraInfos.charAt(start);
+		return info == 'y';
+	}
+
+	public String readIsOwnPlayer(boolean isOwnPlayer) {
+		return isOwnPlayer ? "y" : "n";
+	}
+	
+	
 }

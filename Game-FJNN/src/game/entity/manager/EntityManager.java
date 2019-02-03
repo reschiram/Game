@@ -130,7 +130,7 @@ public class EntityManager {
 	public Entity getEntity(int entityID) {
 		for(int x = 0; x < entitys.length; x++) {
 			for(int y = 0; y < entitys[x].length; y++) {
-				for(int i = 0; i < entitys[x][y].entitys.size(); i++) {
+				for(int i = 0; entitys[x][y] != null && i < entitys[x][y].entitys.size(); i++) {
 					Entity entity = entitys[x][y].entitys.get(i);
 					if(entity.getID() == entityID) {
 						return entity;

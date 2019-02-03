@@ -1,13 +1,12 @@
 package client;
 
-import Data.Direction;
 import Data.Location;
 import data.DataPackage;
 import data.PackageType;
 import data.readableData.BooleanData;
+import data.readableData.CompleteStringData;
 import data.readableData.IntegerData;
 import data.readableData.ReadableData;
-import data.readableData.ShortIntData;
 import data.readableData.StringData;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
@@ -32,22 +31,23 @@ public class GameCPM {
 	
 	public static final int DataPackage_MapDownloadInfos = 14;
 	public static final int DataPackage_MapDownloadData = 16;
+	public static final int DataPackage_MapDownloadFinished = 18;	
 	
-	public static final int DataPackage_EntityCreationRequest_Player = 18;
-	public static final int DataPackage_EntityCreationRequest_Drone = 20;
-	public static final int DataPackage_EntityCreationRequest_ItemEntity = 22;
-	public static final int DataPackage_EntityCreationResponse = 24;
+	public static final int DataPackage_EntityCreationRequest_Player = 20;
+	public static final int DataPackage_EntityCreationRequest_Drone = 22;
+	public static final int DataPackage_EntityCreationRequest_ItemEntity = 24;
+	public static final int DataPackage_EntityCreationResponse = 26;
 	
-	public static final int DataPackage_PlayerMoved = 26;
-	public static final int DataPackage_EntityPath = 28;
-	public static final int DataPackage_EntityStatus = 30;
+	public static final int DataPackage_PlayerMoved = 28;
+	public static final int DataPackage_EntityPath = 30;
+	public static final int DataPackage_EntityStatus = 32;
 	
-	public static final int DataPackage_ItemAdd = 32;
-	public static final int DataPackage_ItemRemove = 34;
-	public static final int DataPackage_ItemSet = 36;
+	public static final int DataPackage_ItemAdd = 34;
+	public static final int DataPackage_ItemRemove = 36;
+	public static final int DataPackage_ItemSet = 38;
 	
-	public static final int DataPackage_MapBlockAdd = 38;	
-	public static final int DataPackage_MapBlockDelete = 40;
+	public static final int DataPackage_MapBlockAdd = 40;	
+	public static final int DataPackage_MapBlockDelete = 42;
 	
 	public static final int MapDownloadData_DataCount = 63;
 	
@@ -70,21 +70,23 @@ public class GameCPM {
 		}
 		DataPackage.setType(new PackageType(DataPackage_MapDownloadData, "MapDownloadData", content));
 		
+		DataPackage.setType(new PackageType(DataPackage_MapDownloadFinished, "MapDownloadFinished", new BooleanData("succesfull")));
+		
 		//<=== Add Entity-Creation Packages ===>
 
 		DataPackage.setType(new PackageType(DataPackage_EntityCreationRequest_Player, "EntityCreationRequest_Player",
 				new IntegerData("Old_EntityRequest_ID"), new IntegerData("Current_EntityRequest_ID"), new IntegerData("EntityType"),
-				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y")));
 
 		DataPackage.setType(new PackageType(DataPackage_EntityCreationRequest_ItemEntity, "EntityCreationRequest_ItemEntity",
 				new IntegerData("Old_EntityRequest_ID"), new IntegerData("Current_EntityRequest_ID"), new IntegerData("EntityType"),
-				new StringData("ItemType", ItemType.Max_IDLength),
-				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
+				new CompleteStringData("ItemType", ItemType.Max_IDLength),
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y")));
 
 		DataPackage.setType(new PackageType(DataPackage_EntityCreationRequest_Drone, "EntityCreationRequest_Drone",
 				new IntegerData("Old_EntityRequest_ID"), new IntegerData("Current_EntityRequest_ID"), new IntegerData("EntityType"),
 				new IntegerData("DroneType"), new IntegerData("EntityHost_ID"),
-				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y")));
 
 		DataPackage.setType(new PackageType(DataPackage_EntityCreationResponse, "EntityCreationResponse",
 				new IntegerData("EntityRequest_ID"), new IntegerData("Entity_ID"),
@@ -93,7 +95,7 @@ public class GameCPM {
 		//<=== Add Entity-Event Packages ===>
 
 		DataPackage.setType(new PackageType(DataPackage_PlayerMoved, "PlayerMoved", new IntegerData("Entity_ID"),
-				new IntegerData("Move_X"), new IntegerData("Move_Y"), new BooleanData("Slow_Down"),
+				new IntegerData("Velocity_X"), new IntegerData("Velocity_Y"),
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
 		DataPackage.setType(new PackageType(DataPackage_EntityPath, "EntityPath", new IntegerData("Entity_ID"),
@@ -104,35 +106,31 @@ public class GameCPM {
 				new BooleanData("Alive"),
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
-		DataPackage.setType(new PackageType(DataPackage_EntityStatus, "EntityStatus", new IntegerData("Entity_ID"),
-				new BooleanData("Alive"),
-				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
-		
 		//<=== Add Inventory-Event Packages ===>
 		
 		DataPackage.setType(new PackageType(DataPackage_ItemAdd, "ItemAdd", new IntegerData("Inventory_ID"),
-				new StringData("ItemType", ItemType.Max_IDLength), new IntegerData("Amount")));
+				new CompleteStringData("ItemType", ItemType.Max_IDLength), new IntegerData("Amount")));
 		
 		DataPackage.setType(new PackageType(DataPackage_ItemRemove, "ItemRemove", new IntegerData("Inventory_ID"),
-				new StringData("ItemType", ItemType.Max_IDLength), new IntegerData("Amount")));
+				new CompleteStringData("ItemType", ItemType.Max_IDLength), new IntegerData("Amount")));
 		
 		DataPackage.setType(new PackageType(DataPackage_ItemSet, "ItemSet", new IntegerData("Inventory_ID"),
-				new StringData("ItemType", ItemType.Max_IDLength), new IntegerData("Amount"), new IntegerData("new_Slot")));
+				new CompleteStringData("ItemType", ItemType.Max_IDLength), new IntegerData("Amount"), new IntegerData("new_Slot")));
 		
 		//<=== Add Map-Event Packages ===>
 		
 		DataPackage.setType(new PackageType(DataPackage_MapBlockAdd, "MapBlockAdd", new IntegerData("resourceID"),
-				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new ShortIntData("Layer")));
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new IntegerData("Layer")));
 		
 		DataPackage.setType(new PackageType(DataPackage_MapBlockDelete, "MapBlockDelete", new BooleanData("doDrops"),
-				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new ShortIntData("Layer")));
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new IntegerData("Layer")));
 	}
 	
 	//<=== create: Entity-Events ===>
 
 	public PackageType createPlayerMovedMessage(PlayerMoveEvent event) throws Exception {
 		return PackageType.readPackageData(DataPackage_PlayerMoved, event.getEntity().getID(),
-				event.getMoveX(), event.getMoveY(), event.isSlowDown(),
+				event.getVelocity().getXSpeed(), event.getVelocity().getYSpeed(),
 				event.getCurrentPixelLocation().getX(),	event.getCurrentPixelLocation().getY());
 	}
 
@@ -152,11 +150,10 @@ public class GameCPM {
 	
 	public PlayerMoveEvent readPlayerMoveMessage(PackageType message) {
 		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
-		int directionX = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
-		int directionY = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
-		boolean isSlowDown = ((BooleanData) message.getDataStructures()[3]).getData().booleanValue();
-		int pixelPosX = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
-		int pixelPosY = ((IntegerData) message.getDataStructures()[5]).getData().intValue();
+		int velocityX = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
+		int velocityY = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
+		int pixelPosX = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
+		int pixelPosY = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
 		
 		Entity entity = EntityManager.getEntityManager().getEntity(entityID);
 		if(!(entity instanceof Player)) {
@@ -164,7 +161,7 @@ public class GameCPM {
 			return null;
 		}
 		
-		return new PlayerMoveEvent((Player) entity, Direction.getDirection(directionX, directionY), isSlowDown, new Location(pixelPosX, pixelPosY));
+		return new PlayerMoveEvent((Player) entity, velocityX, velocityY, new Location(pixelPosX, pixelPosY));
 	}
 	
 	public EntityPathEvent readEntityPathMessage(PackageType message) {

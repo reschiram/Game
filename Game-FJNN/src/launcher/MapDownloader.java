@@ -63,7 +63,7 @@ public class MapDownloader {
 		
 		if (isFinished()) {
 			launcher.getGUI().println("Map: (" + mapData.getSeed() + "|" + mapData.getWidth() + "|"
-					+ mapData.getHeight() + "|" + packageAmount + ") was already downloaded");
+					+ mapData.getHeight() + "|" + packageAmount + ") was already downloaded");			
 		}
 	}
 

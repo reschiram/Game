@@ -1,7 +1,6 @@
 package main;
 
 import console.ConsoleManager;
-import data.ServerMap;
 import data.Tickable;
 import data.exceptions.server.ServerPortException;
 import server.GameSEM;
@@ -14,7 +13,7 @@ public class ServerMain implements Tickable{
 	private GameSM gameSM;
 	private ServerStructureManager sdm;
 	private ServerFileManager fileManager = new ServerFileManager();
-	private GameSEM gameSEM;
+	private TickManager tickManager;
 	
 	public ServerMain(String generalPassword) {
 		this.consoleManager = new ConsoleManager(this);
@@ -28,10 +27,12 @@ public class ServerMain implements Tickable{
 			e.printStackTrace();
 		}
 		
-		this.gameSEM = new GameSEM(this);
-		new TickManager(this);
+		new GameSEM(this);
+		tickManager = new TickManager(this);
+		tickManager.release();
 	}
 
+	@Override
 	public void tick() {
 		this.gameSM.tick();
 		this.consoleManager.tick();

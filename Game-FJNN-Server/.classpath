@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/UserSystem"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Game-FJNN"/>
 	<classpathentry kind="lib" path="res"/>
+	<classpathentry kind="lib" path="C:/Users/Jonas/Java/Projekt-Game/Git/jars/Engine - Kopie.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

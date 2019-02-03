@@ -116,4 +116,8 @@ public class Inventory {
 		return invID;
 	}
 
+	public void setInvID(int id) {
+		this.invID = id;
+	}
+
 }

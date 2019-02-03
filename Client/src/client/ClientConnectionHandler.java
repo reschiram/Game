@@ -138,7 +138,7 @@ public class ClientConnectionHandler {
 				out.write(packages.get().getByteData());
 				packages.remove();
 			}
-			out.flush();
+//			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 			if(this.client.run() && !ended){
