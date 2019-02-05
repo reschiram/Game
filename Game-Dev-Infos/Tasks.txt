@@ -1,15 +1,18 @@
 Game (G):
 	Refactor: G-1
 		G-3: PixelLocation-BlockLocation
-	PathSystem: G-2
-	MapSaveUpdate: G-7
-	add Game-Events: G-11
-	Integrate Network In Game: G-4
-		G-5: Create Game-Server
-		G-6: Integrate Client
-		G-8: Create Launcher
-		G-9: ServerClient Fixes -> MapDownload
-		G-10: Create game server events/interactions  
+	PathSystem: G-2 (Done)
+	MapSaveUpdate: G-7 (Done)
+ 	add Game-Events: G-11 (Done)
+ 	Integrate Network In Game: G-4 (Done)
+		G-5: Create Game-Server (Done)
+		G-6: Integrate Client (Done)
+		G-8: Create Launcher (Done)
+		G-9: ServerClient Fixes -> MapDownload (Done)
+		G-10: Create game server events/interactions (Done)
+	Fixes: G-12 
+		G-13: fix DroneTarget publish
+		G-14: fix ItemEntity-Target   
 Network (N):
 	Permission Test: N-1
 	Server Console: N-2
