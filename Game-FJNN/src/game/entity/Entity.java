@@ -22,8 +22,8 @@ import game.map.Map;
 public abstract class Entity {
 	
 	public static Direction DEFAULT_DIRECTION = Direction.LEFT; 
-	public static int DEFAULT_ENTITY_LAYER = 4;
-	public static int DEFAULT_ENTITY_UP    = 0;
+	public static final int DEFAULT_ENTITY_LAYER = 3;
+	public static final int DEFAULT_ENTITY_UP    = 0;
 	
 	protected ImageData[] images;
 	protected Animation anim;

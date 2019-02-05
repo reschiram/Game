@@ -13,7 +13,8 @@ import data.readableData.IntegerData;
 import data.readableData.StringData;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
-import game.entity.player.Player;
+import game.entity.player.PlayerContext;
+import game.entity.player.playerDrone.DroneHost;
 import game.entity.type.EntityType;
 import game.inventory.items.ItemType;
 
@@ -46,8 +47,8 @@ public class EntityRequester implements ToClientMessageEventListener{
 		this.requests.put(request.getRequestID(), request);
 	}
 
-	public void requestDrone(Player player, int droneType) {
-		DroneRequest request = new DroneRequest(player.getBlockLocation(), droneType, player);		
+	public void requestDrone(DroneHost host, int droneType) {
+		DroneRequest request = new DroneRequest(host.getBlockLocation(), droneType, host);		
 		sendRequest(request, -1);		
 		this.requests.put(request.getRequestID(), request);
 	}
@@ -80,11 +81,11 @@ public class EntityRequester implements ToClientMessageEventListener{
 			int droneHostID = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
 			
 			Entity entity = EntityManager.getEntityManager().getEntity(droneHostID);
-			if (entity == null || !(entity instanceof Player)) {
+			if (entity == null || !(entity instanceof PlayerContext)) {
 				System.out.println("Error: unidentified entity or not player as host for drone");
 				return;
 			}
-			Player p = (Player) entity;
+			PlayerContext p = (PlayerContext) entity;
 			
 			DroneRequest request = new DroneRequest(p.getBlockLocation(), droneType, p);
 			this.requests.put(request.getRequestID(), request);

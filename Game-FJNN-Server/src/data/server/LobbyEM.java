@@ -79,26 +79,36 @@ public class LobbyEM implements ToServerMessageEventListener{
 	}
 
 	public void sendPlayerRemove(Player player) {		
+		Player newHost = null;		
+		if(player.isHost() && lobby.getConnectedPlayers().size() > 0) {
+			newHost = lobby.getConnectedPlayers().get(0);
+			newHost.setHost(true);
+		}
+		
 		for(Player cp : lobby.getConnectedPlayers()) {
 			try {
 				gameSM.getServerManager().sendMessage(cp.getServerClientID(),
 						DataPackage.getPackage(PackageType.readPackageData(GameSPM.DataPackage_LobbyPlayerStatus,
 								player.getUsername(), player.isHost(), launcher.lobby.Lobby.playerStatus_Remove)))
-				;				
-			} catch (InvalidServerClientIDException | Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		if(player.isHost() && lobby.getConnectedPlayers().size() > 0) {
-			try {
-				Player newHost = lobby.getConnectedPlayers().get(0);
-				newHost.setHost(true);
-	
-				gameSM.getServerManager().sendMessage(newHost.getServerClientID(),
-						DataPackage.getPackage(PackageType.readPackageData(GameSPM.DataPackage_LobbyPlayerStatus,
-								newHost.getUsername(), newHost.isHost(), launcher.lobby.Lobby.playerStatus_None)))
 				;
+				
+				if(!player.getID().equals(cp.getID())) {					
+					gameSM.getServerManager().sendMessage(cp.getServerClientID(),
+							DataPackage.getPackage(PackageType.readPackageData(GameSPM.DataPackage_PlayerMessage,
+									"Server", "User: " + player.getUsername() + " has left the lobby")))
+					;
+				}
+				
+				if(newHost != null) {
+					try {
+						gameSM.getServerManager().sendMessage(cp.getServerClientID(),
+								DataPackage.getPackage(PackageType.readPackageData(GameSPM.DataPackage_LobbyPlayerStatus,
+										newHost.getUsername(), newHost.isHost(), launcher.lobby.Lobby.playerStatus_None)))
+						;
+					} catch (InvalidServerClientIDException | Exception e) {
+						e.printStackTrace();
+					}
+				}
 			} catch (InvalidServerClientIDException | Exception e) {
 				e.printStackTrace();
 			}

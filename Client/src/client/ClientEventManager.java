@@ -18,9 +18,14 @@ public class ClientEventManager {
 	private ArrayList<ClientLostConnectionToServerEventListener>[] clientLostConnectionToServerEventListenerdb = new ArrayList[10];
 	
 	private Queue<ClientEvent> publishedEvents = new Queue<>();
+	private Queue<ClientEvent> newPublishedEvents = new Queue<>();
+
+	private boolean inUse = false;
 	
 	public void publishClientEvent(ClientEvent event){
-		this.publishedEvents.add(event);
+		waitForInUse();		
+		this.newPublishedEvents.add(event);		
+		endInUse();
 	}
 
 	public void registerClientMessageEventListener(ToClientMessageEventListener listener, int priority) {
@@ -35,25 +40,25 @@ public class ClientEventManager {
 		this.clientLostConnectionToServerEventListenerdb[priority].add(listener);
 	}
 	
-	public void tick(){
-		Queue<ClientEvent> events = new Queue<>();
+	public void tick(){		
+		waitForInUse();		
+		while (!newPublishedEvents.isEmpty()) {
+			publishedEvents.add(newPublishedEvents.get());
+			newPublishedEvents.remove();
+		}			
+		endInUse();
 		
-		while(!publishedEvents.isEmpty()){
+		int length = publishedEvents.getLength();
+		for(int i = 0; i < length; i++){
 			ClientEvent event = publishedEvents.get();
 			publishedEvents.remove();
 			if(event instanceof ToClientMessageEvent){
 				handleNewEvent(event, this.clientMessageEventListenerdb);
-				if(event.isActive())events.add(event);
+				if(event.isActive())publishedEvents.add(event);
 			}else if(event instanceof ClientLostConnectionToServerEvent){
 				handleNewEvent(event, this.clientLostConnectionToServerEventListenerdb);
-				if(event.isActive())events.add(event);
+				if(event.isActive())publishedEvents.add(event);
 			}
-		}
-		
-		while(!events.isEmpty()){
-			ClientEvent event = events.get();
-			events.remove();
-			publishedEvents.add(event);
 		}
 	}
 
@@ -73,5 +78,24 @@ public class ClientEventManager {
 				}
 			}
 		}
+	}
+
+	private void waitForInUse() {
+		if(inUse ){
+			synchronized (newPublishedEvents) {
+				try {
+					newPublishedEvents.wait();
+				} catch (InterruptedException e) {e.printStackTrace();}
+			}
+		}		
+		
+		inUse = true;
+	}
+	
+	private void endInUse(){
+		inUse = false;				
+		synchronized (newPublishedEvents) {
+			newPublishedEvents.notifyAll();
+		}		
 	}
 }

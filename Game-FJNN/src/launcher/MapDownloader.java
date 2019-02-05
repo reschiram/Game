@@ -1,9 +1,11 @@
 package launcher;
 
 import client.GameCPM;
+import game.GameManager;
 import game.map.Map;
 import game.map.MapGenerationData;
 import launcher.lobby.Lobby;
+import menu.LoadScreen;
 
 public class MapDownloader {
 
@@ -32,14 +34,15 @@ public class MapDownloader {
 		return this;
 	}
 
-	public void addData(int[] data, int dataID) {
+	public boolean addData(int[] data, int dataID) {
 		if (isFinished() || inavlidID(dataID)) {
 			launcher.getGUI().println("MapData " + dataID + " was already downloaded");
-			return;
+			return false;
 		}
 		
 		if(dataID > currentPackage+1) {
 			System.out.println("Messages lost: " + currentPackage + " -> " + dataID);
+			return false;
 		}
 
 		int index = dataID * GameCPM.MapDownloadData_DataCount;
@@ -66,6 +69,7 @@ public class MapDownloader {
 			launcher.getGUI().println("Map: (" + mapData.getSeed() + "|" + mapData.getWidth() + "|"
 					+ mapData.getHeight() + "|" + packageAmount + ") was already downloaded");			
 		}
+		return true;
 	}
 
 	private boolean inavlidID(int dataID) {
@@ -79,7 +83,20 @@ public class MapDownloader {
 
 	public Map getMap() {
 		this.loaded = true;
-		Map map = new Map(mapData.getGroundData(), mapData.getBuildData(), mapData.getSeed());
+		Map map = new Map(mapData.getWidth(), mapData.getHeight(), mapData.getSeed());
+		double currentProgress = LoadScreen.loadScreen.getProgress();
+		double max = map.getWidth() * map.getHeight();
+		double current = 0;
+		for(int x = 0; x < map.getWidth(); x++) {
+			for(int y = 0; y < map.getHeight(); y++) {
+				map.addDirect(mapData.getGroundData()[x][y][0] , x, y, false);
+				map.addDirect(mapData.getGroundData()[x][y][1] , x, y, false);
+				map.addDirect(mapData.getBuildData ()[x][y][0] , x, y, false);
+				map.addDirect(mapData.getBuildData ()[x][y][1] , x, y, false);
+				current++;
+				LoadScreen.loadScreen.setProgress(currentProgress + (current / max));
+			}
+		}
 		map.finalize();
 		return map;
 	}

@@ -18,7 +18,6 @@ import data.Mouse;
 import data.Tickable;
 import events.GameEventManager;
 import files.FileManager;
-import game.dev.mapEditor.MapEditor;
 import game.entity.requester.EntityRequester;
 import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
@@ -38,7 +37,6 @@ public class GameManager implements Tickable{
 		
 	private Game game;
 	private GameCM gameCM;
-	private MapEditor mapEditor;
 	private StringRenderOperation FPSCounter;
 	private StringRenderOperation LatencyCounter;
 	
@@ -100,12 +98,11 @@ public class GameManager implements Tickable{
 			LatencyCounter.setText("Latency:"+TickManager.getLatency()+" tick(s)");
 		}
 		
+		GameEventManager.getEventManager().tick();
+		
 		if(hasStarted()) {
-			GameEventManager.getEventManager().tick();
-			this.gameCM.tick();
-			
+			this.gameCM.tick();			
 			if(game!=null) game.tick();
-			else if(mapEditor!=null)mapEditor.tick();
 		}
 	}
 	

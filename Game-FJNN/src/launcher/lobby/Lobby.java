@@ -23,12 +23,12 @@ public class Lobby implements Tickable{
 	private TickManager tickManager;
 	private MapDownloader mapDownloader;
 	
-	private String playerUsername;	
-	private ArrayList<String> players = new ArrayList<>();
+	private SPlayer currentPlayer;	
+	private ArrayList<SPlayer> players = new ArrayList<>();
 	
 	public Lobby(GameCM gameCM, String playerUsername) {
 		this.gameCM = gameCM;
-		this.playerUsername = playerUsername;
+		this.currentPlayer = new SPlayer(playerUsername, false);
 		
 		this.lobbyGUI = new LobbyGUI(this);
 		this.tickManager = new TickManager(this);
@@ -62,33 +62,59 @@ public class Lobby implements Tickable{
 	public void sendMessage(String message) {
 		if(message.length() > GameCPM.maxMessageLength) return;
 		try {
-			this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(PackageType.readPackageData(GameCPM.DataPackage_PlayerMessage, playerUsername, message)));
+			this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(PackageType.readPackageData(GameCPM.DataPackage_PlayerMessage, currentPlayer.getUsername(), message)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		this.lobbyGUI.println("[" + playerUsername + "] : " + message);
+		this.lobbyGUI.println("[" + currentPlayer.getUsername() + "] : " + message);
 	}
 
 	public void updatPlayerStatus(String username, boolean isHost, int status) {
 		if (status == playerStatus_Add) {
-			if (players.contains(username)) {
-				System.out.println("Error: Player-Add: Player already connected");
-			} else {
-				players.add(username);
-				if (username.equals(this.playerUsername)) {
-					this.lobbyGUI.enableStart(isHost);
+			if(username.equals(currentPlayer.getUsername())) {
+				this.currentPlayer.setHost(isHost);
+				this.lobbyGUI.enableStart(isHost);
+				players.add(currentPlayer);
+			} else {	
+				for (SPlayer p : players) {
+					if (p.getUsername().equals(username)) {
+						System.out.println("Error: Player-Add: Player already connected");
+						return;
+					}
+				}			
+				players.add(new SPlayer(username, isHost));
+			}			
+		} else if (status == playerStatus_Remove) {
+			SPlayer knownPlayer = null;
+			for (SPlayer p : players) {
+				if (p.getUsername().equals(username)) {
+					knownPlayer = p;
+					break;
 				}
 			}
-		} else if (status == playerStatus_Remove) {
-			if (!players.contains(username)) {
+			
+			if (knownPlayer == null) {
 				System.out.println("Error: Player-Remove: Player not connected");
 			} else {
-				players.remove(username);
+				players.remove(knownPlayer);
 			}
 		} else if (status == playerStatus_None) {
-			this.lobbyGUI.enableStart(isHost);
+			boolean update = false;
+			for (SPlayer p : players) {
+				if (p.getUsername().equals(username)) {
+					p.setHost(isHost);
+					if (p.getUsername().equals(currentPlayer.getUsername())) this.lobbyGUI.enableStart(isHost);
+					update = true;
+					break;
+				}
+			}
+			if(!update) {
+				System.out.println("Error: Player-Update: Player not connected");
+				return;
+			}
 		}
+		
 		this.lobbyGUI.updatePlayers(players);
 	}
 

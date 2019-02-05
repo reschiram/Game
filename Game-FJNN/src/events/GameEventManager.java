@@ -15,6 +15,7 @@ import events.inventory.ItemSetEvent;
 import events.map.MapBlockAddEvent;
 import events.map.MapBlockDeleteEvent;
 import events.map.MapEvent;
+import game.GameManager;
 
 public class GameEventManager {
 	
@@ -28,8 +29,7 @@ public class GameEventManager {
 	
 	private Queue<EntityEvent> entityEvents = new Queue<>();	
 	private Queue<InventoryEvent> inventoryEvents = new Queue<>();	
-	private Queue<MapEvent> mapEvents = new Queue<>();
-	
+	private Queue<MapEvent> mapEvents = new Queue<>();	
 	private Queue<GameEvent> events = new Queue<>();
 	
 	public GameEventManager(GameCM gameCM) {
@@ -50,6 +50,9 @@ public class GameEventManager {
 	}
 	
 	public void tick() {
+		if(!GameManager.hasStarted()) {
+			return;
+		}
 		handleEntityEvents();
 		handleInventoryEvent();
 		handleMapEvent();
@@ -119,7 +122,14 @@ public class GameEventManager {
 			GameEvent event = events.get();
 			events.remove();
 			try {
-				System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
+				PackageType message = null;
+				if (event instanceof DroneTargetEvent) {
+					System.out.println("sendDroneTarget");
+					message = this.gameCM.getClientPackageManager().createDroneTargetMessage((DroneTargetEvent) event);
+				} else {
+					System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
+				}
+				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

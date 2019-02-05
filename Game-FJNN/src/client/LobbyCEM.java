@@ -30,9 +30,9 @@ public class LobbyCEM implements ToClientMessageEventListener{
 			for (int i = 0; i < data.length; i++) {
 				data[i] = ((IntegerData) event.getMessage().getDataStructures()[i + 1]).getData().intValue();
 			}
-			this.lobby.getMapDownloader().addData(data,
+			boolean added = this.lobby.getMapDownloader().addData(data,
 				((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue());
-			event.setActive(false);
+			if(added) event.setActive(false);
 		} else if (event.getMessage().getId() == GameCPM.DataPackage_LobbyPlayerStatus) {
 			String username = ((StringData) event.getMessage().getDataStructures()[0]).getData();
 			boolean isHost = ((BooleanData) event.getMessage().getDataStructures()[1]).getData().booleanValue();

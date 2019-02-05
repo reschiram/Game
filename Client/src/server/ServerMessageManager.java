@@ -20,8 +20,10 @@ public class ServerMessageManager {
 			ServerMessage message = serverMessages.get();
 			serverMessages.remove();
 			ServerClient sc = this.server.getConnectionHandler().getServerClient(message.getId());
-			sc.sendToClient(message.getMessage());
-//			sc.flush();
+			if(sc!=null) {
+				sc.sendToClient(message.getMessage());
+				sc.flush();
+			}
 		}
 		
 		endInUse();

@@ -83,7 +83,6 @@ public class EntityManager {
 				if(entity.hasType(Type))entitys.add(entity);
 			}
 		}
-//		System.out.println("<--->");
 		return entitys;
 	}
 

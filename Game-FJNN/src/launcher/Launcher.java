@@ -10,7 +10,7 @@ import tick.TickManager;
 
 public class Launcher implements Tickable{
 	
-	public static void main(String args[]) {
+	public static void main(String args[]) {	    
 		new Launcher(args[0], 12345);
 	}
 	

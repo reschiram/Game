@@ -1,28 +1,28 @@
 package game.entity.requester;
 
 import Data.Location;
-import game.entity.player.Player;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneConstructor;
+import game.entity.player.playerDrone.DroneHost;
 import game.inventory.Inventory;
 
 public class DroneRequest extends EntityRequest{
 	
-	private Player player;
+	private DroneHost host;
 	private int droneType;
 
-	public DroneRequest(Location blockSpawn, int droneType, Player player) {
+	public DroneRequest(Location blockSpawn, int droneType, DroneHost host) {
 		super(blockSpawn);
 		this.droneType = droneType;
-		this.player = player;
+		this.host = host;
 	}
 
 	public int getDroneType() {
 		return droneType;
 	}
 
-	public Player getPlayer() {
-		return player;
+	public DroneHost getPlayer() {
+		return host;
 	}
 	
 	@Override
@@ -30,9 +30,9 @@ public class DroneRequest extends EntityRequest{
 		Inventory inv = null;
 		inv = EntityRequesterService.getEntityRequesterService().readInventory(extraInfos, 0);
 		
-		Drone drone = new Drone(player, entityID);
+		Drone drone = new Drone(host, entityID);
 		DroneConstructor.constructDrone(drone, droneType, inv);
 		drone.show();
-		player.addDrone(drone);
+		host.addDrone(drone);
 	}
 }

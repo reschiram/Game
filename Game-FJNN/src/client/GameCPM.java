@@ -2,6 +2,7 @@ package client;
 
 import Data.Location;
 import data.DataPackage;
+import data.MapResource;
 import data.PackageType;
 import data.readableData.BooleanData;
 import data.readableData.CompleteStringData;
@@ -10,6 +11,7 @@ import data.readableData.LongData;
 import data.readableData.ReadableData;
 import data.readableData.StringData;
 import data.user.User;
+import events.DroneTargetEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
@@ -20,7 +22,8 @@ import events.map.MapBlockAddEvent;
 import events.map.MapBlockDeleteEvent;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
-import game.entity.player.Player;
+import game.entity.player.PlayerDummie;
+import game.entity.player.playerDrone.DroneHost;
 import game.gridData.map.MapBlock;
 import game.gridData.map.MapDummieBlock;
 import game.gridData.map.Mapdata;
@@ -48,13 +51,14 @@ public class GameCPM {
 	public static final int DataPackage_PlayerMoved = 32;
 	public static final int DataPackage_EntityPath = 34;
 	public static final int DataPackage_EntityStatus = 36;
+	public static final int DataPackage_DroneTarget = 38;
 	
-	public static final int DataPackage_ItemAdd = 38;
-	public static final int DataPackage_ItemRemove = 40;
-	public static final int DataPackage_ItemSet = 42;
+	public static final int DataPackage_ItemAdd = 40;
+	public static final int DataPackage_ItemRemove = 42;
+	public static final int DataPackage_ItemSet = 44;
 	
-	public static final int DataPackage_MapBlockAdd = 44;	
-	public static final int DataPackage_MapBlockDelete = 46;
+	public static final int DataPackage_MapBlockAdd = 46;	
+	public static final int DataPackage_MapBlockDelete = 48;
 	
 	public static final int MapDownloadData_DataCount = 63;
 	
@@ -126,6 +130,10 @@ public class GameCPM {
 				new BooleanData("Alive"),
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
+		DataPackage.setType(new PackageType(DataPackage_DroneTarget, "DroneTarget", new IntegerData("Entity_ID"),
+				new BooleanData("Build"), new BooleanData("isAdd"), new IntegerData("resID"),
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y")));
+		
 		//<=== Add Inventory-Event Packages ===>
 		
 		DataPackage.setType(new PackageType(DataPackage_ItemAdd, "ItemAdd", new IntegerData("Inventory_ID"),
@@ -166,6 +174,12 @@ public class GameCPM {
 				event.getCurrentPixelLocation().getX(),	event.getCurrentPixelLocation().getY());
 	}
 
+	public PackageType createDroneTargetMessage(DroneTargetEvent event) throws Exception {
+		return PackageType.readPackageData(DataPackage_DroneTarget, event.getHost().getID(),
+				event.isBuild(), event.isAdd(), event.getResID(),
+				event.getBlockLoc().getX(),	event.getBlockLoc().getY());
+	}
+
 	//<=== read: Entity-Events ===>
 	
 	public PlayerMoveEvent readPlayerMoveMessage(PackageType message) {
@@ -176,12 +190,15 @@ public class GameCPM {
 		int pixelPosY = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
 		
 		Entity entity = EntityManager.getEntityManager().getEntity(entityID);
-		if(!(entity instanceof Player)) {
-			System.out.println("Error: player move event occoured for a non-player entity");
+		if(entity == null) {
+			System.out.println("Error: player move event occoured for a unknown entity");
 			return null;
+		}else if (!(entity instanceof PlayerDummie)) {
+			System.out.println("Error: player move event occoured for a non-player entity");	
+			return new PlayerMoveEvent(null, velocityX, velocityY, new Location(pixelPosX, pixelPosY));			
 		}
 		
-		return new PlayerMoveEvent((Player) entity, velocityX, velocityY, new Location(pixelPosX, pixelPosY));
+		return new PlayerMoveEvent((PlayerDummie) entity, velocityX, velocityY, new Location(pixelPosX, pixelPosY));
 	}
 	
 	public EntityPathEvent readEntityPathMessage(PackageType message) {
@@ -191,7 +208,11 @@ public class GameCPM {
 		int pixelPosX = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
 		int pixelPosY = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
 		
-		Entity entity = EntityManager.getEntityManager().getEntity(entityID);
+		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
+		if(entity == null) {
+			System.out.println("Error: entity path event occourred for a unknown entity");
+			return null;
+		}
 		
 		return new EntityPathEvent(entity, new Location(pixelTargetPos_X, pixelTargetPos_Y), new Location(pixelPosX, pixelPosY));
 	}
@@ -202,9 +223,33 @@ public class GameCPM {
 		int pixelPosX = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
 		int pixelPosY = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
 		
-		Entity entity = EntityManager.getEntityManager().getEntity(entityID);
+		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
+		if(entity == null) {
+			System.out.println("Error: entity status update event occourred for a unknown entity: " + entityID);
+			return null;
+		}
 		
 		return new EntityStatusEvent(entity, isAlive, new Location(pixelPosX, pixelPosY));
+	}
+	
+	public DroneTargetEvent readDroneTargetMessage(PackageType message) {
+		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
+		boolean isBuild = ((BooleanData) message.getDataStructures()[1]).getData().booleanValue();
+		boolean isAdd = ((BooleanData) message.getDataStructures()[2]).getData().booleanValue();
+		int resID = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
+		int blockPosX = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
+		int blockPosY = ((IntegerData) message.getDataStructures()[5]).getData().intValue();
+		
+		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
+		if(entity == null) {
+			System.out.println("Error: entity status update event occourred for a unknown entity: " + entityID);
+			return null;
+		}else if (!(entity instanceof DroneHost)) {
+			System.out.println("Error: drone target event occoured for a non-drone-host entity");	
+			return new DroneTargetEvent(null, new Location(blockPosX, blockPosY), isBuild, isAdd, resID);
+		}
+		
+		return new DroneTargetEvent((DroneHost) entity, new Location(blockPosX, blockPosY), isBuild, isAdd, resID);
 	}
 	
 	//<=== create: Inventory-Events ===>
@@ -233,6 +278,10 @@ public class GameCPM {
 		
 		Item item = new Item(ItemType.getItemType(itemType), amount);
 		Inventory inv = Inventory.getInventory(invID);
+		if(inv == null) {
+			System.out.println("Error: item add event occourred for a unknown inventory");
+			return null;
+		}
 		
 		return new ItemAddEvent(inv, item);
 	}
@@ -244,6 +293,10 @@ public class GameCPM {
 		
 		Item item = new Item(ItemType.getItemType(itemType), amount);
 		Inventory inv = Inventory.getInventory(invID);
+		if(inv == null) {
+			System.out.println("Error: item remove event occourred for a unknown inventory");
+			return null;
+		}
 		
 		return new ItemRemoveEvent(inv, item);
 	}
@@ -256,6 +309,10 @@ public class GameCPM {
 		
 		Item item = new Item(ItemType.getItemType(itemType), amount);
 		Inventory inv = Inventory.getInventory(invID);
+		if(inv == null) {
+			System.out.println("Error: item set event occourred for a unknown inventory");
+			return null;
+		}
 		
 		return new ItemSetEvent(inv, item, slot);
 	}
@@ -282,11 +339,7 @@ public class GameCPM {
 		int blockPos_Y = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
 		int layer = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
 		
-		Mapdata block = Map.getMap().getMapData(new Location(blockPos_X, blockPos_Y))[layer];
-		if(block != null && !(block instanceof MapBlock)) {
-			System.out.println("Error: BlockPart was given");
-			block = ((MapDummieBlock)block).getBlock();
-		}
+		Mapdata block = new MapBlock(MapResource.getMapResource(resourceID), layer, new Location(blockPos_X, blockPos_Y));
 		
 		return new MapBlockAddEvent((MapBlock) block, resourceID, new Location(blockPos_X, blockPos_Y));
 	}
@@ -298,7 +351,10 @@ public class GameCPM {
 		int layer = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
 		
 		Mapdata block = Map.getMap().getMapData(new Location(blockPos_X, blockPos_Y))[layer];
-		if(block != null && !(block instanceof MapBlock)) {
+		if(block == null) {
+			System.out.println("Error: mapBlock delete event occurred for a non existing block");
+			return null;
+		}else if(!(block instanceof MapBlock)) {
 			System.out.println("Error: BlockPart was given");
 			block = ((MapDummieBlock)block).getBlock();
 		}

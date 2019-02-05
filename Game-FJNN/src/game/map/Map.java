@@ -369,6 +369,10 @@ public class Map {
 		for(int x = 0; x<Width; x++){
 			for(int y = 0; y<Height; y++){
 				updateBlock(x, y);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[0], false);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[1], false);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[2], false);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[3], false);
 			}
 			updateSurface(x);
 		}
@@ -391,5 +395,20 @@ public class Map {
 
 	public PathSystem getPathSystem() {
 		return pathSystem;
+	}
+
+	public void addDirect(int resID, int blockX, int blockY, boolean sendToServer) {
+		MapResource res = MapResource.getMapResource(resID);
+		if(res == null) return;
+		Location blockLoc = new Location(blockX, blockY);
+		MapBlock block = new MapBlock(res, (res.isGround() ? DEFAULT_GROUNDLAYER : DEFAULT_BUILDLAYER) + res.getLayerUp(), blockLoc);
+		
+		Mapdata[] parts = block.create();
+		for(int i = 1; i<parts.length; i++){
+			getChunk(parts[i].getLocation()).set(parts[i]);
+		}
+		block.show();
+		getChunk(blockLoc).set(block);
+		if(sendToServer) GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(block));
 	}
 }

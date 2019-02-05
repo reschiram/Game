@@ -2,6 +2,7 @@ package game.entity.requester;
 
 import Data.Location;
 import game.entity.player.Player;
+import game.entity.player.PlayerDummie;
 import game.inventory.Inventory;
 import game.inventory.equipment.EquipmentInventory;
 import game.inventory.equipment.tools.BuildTool;
@@ -23,9 +24,15 @@ public class PlayerRequest extends EntityRequest {
 		inv.addItemFunktion(new DigTool());
 		inv.addItemFunktion(new BuildTool());
 		
-		System.out.println("PlayerID: " + entityID);
-		
-		new Player(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv, isOwnPlayer).show();
+		if(isOwnPlayer) {
+			Player p = new Player(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv);
+			p.activate();
+			p.show();
+		} else {
+			PlayerDummie p = new PlayerDummie(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv);
+			p.activate();
+			p.show();
+		}
 	}
 
 }

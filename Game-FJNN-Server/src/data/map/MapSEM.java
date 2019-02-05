@@ -127,6 +127,9 @@ public class MapSEM implements ToServerMessageEventListener{
 
 			event.setActive(false);
 			send = true;
+		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneTarget) {
+			event.setActive(false);
+			send = true;
 		}
 		
 		if(send) {
@@ -158,7 +161,7 @@ public class MapSEM implements ToServerMessageEventListener{
 				return;
 			}
 
-			System.out.println("recieveDroneRequest-OldRequestID: " + oldRequestID);
+			System.out.println(event.getClientID() + ": recieveDroneRequest-OldRequestID: " + oldRequestID);
 			ServerDroneEntity drone = null;
 			if (oldRequestID < 0) {
 				Inventory inv = getInventory(9, 0, oldRequestID);
@@ -181,7 +184,7 @@ public class MapSEM implements ToServerMessageEventListener{
 			int blockPos_Y = ((IntegerData) event.getMessage().getDataStructures()[5]).getData().intValue();
 
 			ServerItemEntity itemEntity = null;
-			System.out.println("recieveItemRequest-OldRequestID: " + oldRequestID);
+//			System.out.println("recieveItemRequest-OldRequestID: " + oldRequestID);
 			if (oldRequestID < 0) {
 				itemEntity = new ServerItemEntity(-1, new Location(blockPos_X * Map.DEFAULT_SQUARESIZE, blockPos_Y * Map.DEFAULT_SQUARESIZE), EntityType.ItemEntity,
 						ItemType.getItemType(itemType));
@@ -200,7 +203,7 @@ public class MapSEM implements ToServerMessageEventListener{
 			int blockPos_Y = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
 
 			ServerPlayerEntity playerEntity = null;
-			System.out.println("recievePlayerRequest-OldRequestID: " + oldRequestID);
+			System.out.println(event.getClientID() + ": recievePlayerRequest-OldRequestID: " + oldRequestID);
 			if (oldRequestID < 0) {
 				EquipmentInventory inv = (EquipmentInventory) getInventory(40, 9, oldRequestID);
 
