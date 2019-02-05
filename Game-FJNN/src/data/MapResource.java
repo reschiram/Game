@@ -172,8 +172,8 @@ public class MapResource extends Resource {
 		this.spriteIds = ids;
 	}
 
-	public void drop(Location loc) {
-		this.drops.drop(loc);
+	public void drop(Location blockLoc) {
+		this.drops.drop(blockLoc);
 	}
 
 	public boolean hasDrops() {

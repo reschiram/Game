@@ -22,8 +22,8 @@ import game.map.Map;
 public abstract class Entity {
 	
 	public static Direction DEFAULT_DIRECTION = Direction.LEFT; 
-	public static int DEFAULT_ENTITY_LAYER = 4;
-	public static int DEFAULT_ENTITY_UP    = 0;
+	public static final int DEFAULT_ENTITY_LAYER = 3;
+	public static final int DEFAULT_ENTITY_UP    = 0;
 	
 	protected ImageData[] images;
 	protected Animation anim;
@@ -48,14 +48,15 @@ public abstract class Entity {
 		this.entityTypes.add(EntityType.Entity);
 	}
 	
-	protected void create(Animation anim, Location location, Dimension size, int speed, Direction direction, int layer, ImageData... images){
+	protected void create(int id, Animation anim, Location location, Dimension size, int speed, Direction direction, int layer, ImageData... images){
 		this.images = images;
 		this.anim = anim;
 		this.hitbox = new Hitbox(location, size);
 		this.speed = speed;
 		this.direction = direction;
 		this.layer = layer;
-		this.id = EntityManager.getEntityManager().register(this);	
+		this.id = id;
+		EntityManager.getEntityManager().register(this);	
 		this.moveManager = new EntityMoveManager(this);
 	}
 	
@@ -84,7 +85,7 @@ public abstract class Entity {
 		active = false;
 	}
 	
-	public void destroy(){
+	public void destroy(boolean publishToServer){
 		for(ImageData image: images){
 			image.getImage().disabled = true;
 			Engine.getEngine(this, this.getClass()).removeImage(layer, image.getImage());
@@ -93,7 +94,7 @@ public abstract class Entity {
 		this.anim.stop();
 		EntityManager.getEntityManager().remove(this);
 		
-		GameEventManager.getEventManager().publishEvent(new EntityStatusEvent(this, false));
+		if(publishToServer) GameEventManager.getEventManager().publishEvent(new EntityStatusEvent(this, false));
 	}
 	
 	public void tick(){

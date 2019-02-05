@@ -12,6 +12,8 @@ import Engine.Engine;
 
 public class LoadScreen {
 	
+	public static LoadScreen loadScreen = null;
+	
 	private double progress = 0.0;
 	
 	private Image background;
@@ -36,6 +38,7 @@ public class LoadScreen {
 		this.background = new Image(new Location(0,0), new Dimension(bi.getWidth(), bi.getHeight()), "", new SpriteSheet(bi), null);
 		
 		this.progresssBar = new Image(progressBarLoc, new Dimension(1, (int)progressBarDim.getHeight()), "", new SpriteSheet(Image.createColorImage(progressBarDim.width, progressBarDim.height, Color.GREEN)), null);
+		loadScreen = this;
 	}
 	
 	public LoadScreen create(){

@@ -165,6 +165,15 @@ public class EntityMoveManager {
 			if(this.velocity.getYSpeed() > 0)this.velocity.setYSpeed(entity.getMaxSpeed());
 			else if(this.velocity.getYSpeed() < 0)this.velocity.setYSpeed(-entity.getMaxSpeed());
 		}
+	}
+
+	public Velocity getVelocity() {
+		return velocity;
+	}
+
+	public void setVelocity(Velocity velocity) {
+		this.velocity.setXSpeed(velocity.getXSpeed());
+		this.velocity.setYSpeed(velocity.getYSpeed());
 	} 
 
 }

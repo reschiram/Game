@@ -15,10 +15,10 @@ public class IRModule extends DroneModule{
 		if(!this.requestedItems.isEmpty() && collectItems()){
 			if(this.drone.getBlockLocation().distance_Math(this.drone.getHost().getBlockLocation()) != 0){
 				if(!this.drone.getPathController().hasTarget() || ((this.drone.getPathController().reachedDestination() && !this.drone.isWorking()) || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))){
-					this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation());
+					this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation(), DroneModule.publishPathToServer);
 				}
 			}else{
-				this.drone.getPathController().setTarget(null);
+				this.drone.getPathController().setTarget(null, DroneModule.publishPathToServer);
 				
 				Inventory pInv = this.drone.getHost().getInventory();
 				Inventory dInv = ((InvModule)this.drone.getModule(InvModule.class)).getInventory();

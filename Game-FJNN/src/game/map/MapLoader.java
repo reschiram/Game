@@ -99,9 +99,9 @@ public class MapLoader {
 					Integer id = Integer.parseInt(squareData.substring(from, from+idLength)); 					
 					if(id != 0) {
 						if (i >= 2) {
-							map.addToBuild(id, x, y);
+							map.addToBuild(id, x, y, false);
 						} else {
-							map.addToGround(id, x, y);
+							map.addToGround(id, x, y, false);
 						}
 					}
 				}

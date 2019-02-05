@@ -8,7 +8,12 @@ public class EntityPathEvent extends EntityEvent{
 	private Location pixelTarget;
 
 	public EntityPathEvent(Entity entity, Location pixelTarget) {
-		super(entity);
+		super(entity, entity.getLocation());
+		this.pixelTarget = pixelTarget;
+	}
+
+	public EntityPathEvent(Entity entity, Location pixelTarget, Location currentPixelLoc) {
+		super(entity, currentPixelLoc);
 		this.pixelTarget = pixelTarget;
 	}
 

@@ -6,7 +6,7 @@ import anim.AnimationType;
 
 public abstract class Resource {
 	
-	public static String noResourceID = "0000";
+	public static final String noResourceID = "0000";
 
 	protected int id;
 	protected SpriteSheet sprites;

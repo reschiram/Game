@@ -1,6 +1,5 @@
 package server;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -76,10 +75,8 @@ public class ServerClient {
 				while(!packages.isEmpty()){
 					this.out.write(packages.get().getByteData());
 					packages.remove();
-					this.out.flush();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
 				if(!isConnected()){
 					if(!ended){
 						ended = true;
@@ -100,7 +97,6 @@ public class ServerClient {
 		try {
 			this.out.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
 			if(!isConnected()){
 				if(!ended){
 					ended = true;
@@ -134,7 +130,6 @@ public class ServerClient {
 				income = new byte[DataPackage.MAXPACKAGELENGTH];
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
 			if(!isConnected()){
 				if(!ended){
 					ended = true;

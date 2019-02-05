@@ -10,8 +10,8 @@ public class InvModule extends DroneModule{
 //	protected InventoryMenu invMenu;
 //	protected ButtonTrigger trigger;
 	
-	public InvModule(int invSize) {
-		this.inv = new Inventory(invSize);
+	public InvModule(Inventory inv) {
+		this.inv = inv;
 //		this.invMenu = new InventoryMenu(inv, new Location(0,0), 5);
 //		this.invMenu.createVisual();
 //		this.invMenu.hide();
@@ -72,5 +72,4 @@ public class InvModule extends DroneModule{
 	public Inventory getInventory() {
 		return this.inv;
 	}
-
 }

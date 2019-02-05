@@ -10,9 +10,20 @@ public class EquipmentInventory extends Inventory{
 
 	private Equipment[] equipmentSlot;
 	
-	public EquipmentInventory(int size, int equipmentSlots) {
-		super(size);
+	public EquipmentInventory(int size, int equipmentSlots, int invID) {
+		super(size, invID);
 		this.equipmentSlot = new Equipment[equipmentSlots];
+	}
+	
+	@Override
+	public int addItemFunktion(Item item){
+		int added = super.addItemFunktion(item);
+		if(item instanceof Equipment){
+			boolean addedToEquipment = addToEquipment(item, true, true);
+			if(added!=0)return added;
+			else if(addedToEquipment)return 0;
+		}
+		return added;
 	}
 	
 	@Override
@@ -37,6 +48,16 @@ public class EquipmentInventory extends Inventory{
 		return false;
 	}
 
+	@Override
+	public int removeItemFunktion(Item item){
+		int removed = super.removeItemFunktion(item);
+		if(item instanceof Equipment){
+			boolean removedFromEquipment = removeFromEquipment(item, true);
+			return (removed==0 || (removed!=0 && removedFromEquipment)) ? 0 : item.getAmount();
+		}
+		return removed;
+	}
+	
 	@Override
 	public int removeItem(Item item){
 		int removed = super.removeItem(item);
@@ -80,14 +101,6 @@ public class EquipmentInventory extends Inventory{
 		}
 		return canAdd;
 	}
-
-	@Override
-	public boolean addItem(ItemType itemType) {
-		Item item = null;
-		if(itemType instanceof EquipmentType) item = ((EquipmentType)itemType).createEquipment();
-		else item = new Item(itemType);
-		return this.addItem(item)!=0;
-	}
 	
 	@Override
 	public Item getItem(int index) {
@@ -99,13 +112,20 @@ public class EquipmentInventory extends Inventory{
 		return this.equipmentSlot[index];
 	}
 
-
 	@Override
 	public void setItem(int slot, Item item) {
 		if(slot<getItemSize())super.setItem(slot, item);
 		else if(item instanceof Equipment) {
 			equipmentSlot[slot-getItemSize()] = (Equipment) item;
 			GameEventManager.getEventManager().publishEvent(new ItemSetEvent(this, item, slot));
+		}
+	}
+	
+	@Override
+	public void setItemFunktion(int slot, Item item) {
+		if(slot<getItemSize())super.setItemFunktion(slot, item);
+		else if(item instanceof Equipment) {
+			equipmentSlot[slot-getItemSize()] = (Equipment) item;
 		}
 	}
 }

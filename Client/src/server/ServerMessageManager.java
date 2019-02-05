@@ -16,13 +16,14 @@ public class ServerMessageManager {
 	public void tick() {
 		waitForInUse();
 		
-		if(!serverMessages.isEmpty())System.out.println("startNextPackages");
 		while(!serverMessages.isEmpty()){
 			ServerMessage message = serverMessages.get();
 			serverMessages.remove();
 			ServerClient sc = this.server.getConnectionHandler().getServerClient(message.getId());
-			sc.sendToClient(message.getMessage());
-			sc.flush();
+			if(sc!=null) {
+				sc.sendToClient(message.getMessage());
+				sc.flush();
+			}
 		}
 		
 		endInUse();

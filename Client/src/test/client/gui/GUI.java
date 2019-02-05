@@ -29,7 +29,7 @@ import test.client.main.ClientTestMain;
 
 public class GUI {
 
-	public static Font DEFAULT_FONT = new Font("TimesNewRoman", Font.BOLD, 20);
+	public static final Font DEFAULT_FONT = new Font("TimesNewRoman", Font.BOLD, 20);
 	
 	private JFrame window;
 	private JLabel packageTypeName;

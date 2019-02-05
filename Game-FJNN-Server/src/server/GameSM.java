@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import data.DataPackage;
 import data.PackageType;
-import data.ServerMap;
 import data.exceptions.server.InvalidServerClientIDException;
 import data.exceptions.server.ServerPortException;
+import data.map.ServerMap;
 
 public class GameSM {
 	
@@ -62,5 +62,9 @@ public class GameSM {
 		} catch (Exception | InvalidServerClientIDException e) {
 			e.printStackTrace();
 		}		
+	}
+
+	public GameSPM getGameSPM() {
+		return gameSPM;
 	}
 }

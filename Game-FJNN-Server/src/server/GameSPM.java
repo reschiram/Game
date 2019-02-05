@@ -2,6 +2,11 @@ package server;
 
 import client.GameCPM;
 import data.PackageType;
+import data.entities.ServerDroneEntity;
+import data.entities.ServerItemEntity;
+import data.entities.ServerPlayerEntity;
+import data.server.request.ServerEntityRequest;
+import game.entity.type.EntityType;
 import game.map.MapGenerationData;
 
 public class GameSPM extends GameCPM{
@@ -66,4 +71,40 @@ public class GameSPM extends GameCPM{
 		return PackageType.readPackageData(DataPackage_MapDownloadData, content); 
 	}
 
+	public PackageType passRequestMessage(ServerEntityRequest request) throws Exception {
+		if(request.getServerEntity() instanceof ServerDroneEntity) {
+			ServerDroneEntity sde = (ServerDroneEntity) request.getServerEntity();
+			System.out.println("RequestEntity: "+sde);
+			
+			return PackageType.readPackageData(DataPackage_EntityCreationRequest_Drone, request.getRequestID(),
+					request.getClientRequestID(), EntityType.Drone.getID(),
+					sde.getDroneType(), sde.getDroneHost().getId(),
+					sde.getBlockLocation().getX(), sde.getBlockLocation().getY())
+			;
+		}else if(request.getServerEntity() instanceof ServerPlayerEntity) {
+			ServerPlayerEntity spe = (ServerPlayerEntity) request.getServerEntity();
+			System.out.println("RequestEntity: "+spe);
+			
+			return PackageType.readPackageData(DataPackage_EntityCreationRequest_Player, request.getRequestID(),
+					request.getClientRequestID(), EntityType.Player.getID(),
+					spe.getBlockLocation().getX(), spe.getBlockLocation().getY())
+			;
+		}else if(request.getServerEntity() instanceof ServerItemEntity) {
+			ServerItemEntity sie = (ServerItemEntity) request.getServerEntity();
+			System.out.println("RequestEntity: "+sie);
+			
+			return PackageType.readPackageData(DataPackage_EntityCreationRequest_ItemEntity, request.getRequestID(),
+					request.getClientRequestID(), EntityType.ItemEntity.getID(), sie.getType().getID(),
+					sie.getBlockLocation().getX(), sie.getBlockLocation().getY())
+			;
+		}
+		return null;
+	}
+
+	public PackageType answerRequest(long currentClientID, ServerEntityRequest request, int currentClientRequestID)throws Exception {
+		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+				currentClientRequestID, request.getServerEntity().getId(),
+				request.getServerEntity().getExtraInfos(currentClientID))
+		;			
+	}
 }

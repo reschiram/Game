@@ -8,33 +8,33 @@ import Data.Location;
 import Data.Image.Image;
 import data.ImageData;
 import game.entity.Entity;
-import game.entity.player.Player;
 import game.entity.player.playerDrone.module.DroneModule;
 import game.entity.type.EntityType;
+import game.entity.type.interfaces.PathUser;
 import game.map.Map;
 import game.pathFinder.PathController;
 
-public class Drone extends Entity{
+public class Drone extends Entity implements PathUser{
 
 	protected PathController pathFinder;
-	protected Player player;
+	protected DroneHost host;
 	
 	protected int[] lastMoved = new int[]{0,0};
 	protected boolean isWorking = false;
 	
 	private HashMap<Class<?>, DroneModule> modules = new HashMap<>();
 	
-	public Drone(Player player){
+	public Drone(DroneHost host, int entityID){
 		super(new ArrayList<>());
 		this.entityTypes.add(EntityType.Drone);
 		
 		EntityType type = EntityType.Drone;
-		Image image = new Image(player.getLocation().clone(), type.getSize(), "", type.getSpriteSheet(), null);
+		Image image = new Image(host.getLocation().clone(), type.getSize(), "", type.getSpriteSheet(), null);
 		image.setSpriteState(type.getSpriteIds()[0]);
-		super.create(type.createAnimation(false, Map.DEFAULT_BUILDLAYER+DEFAULT_ENTITY_UP+1, image), image.getLocation().clone(), type.getSize(), type.getSpeed(),
-				DEFAULT_DIRECTION, Map.DEFAULT_BUILDLAYER+DEFAULT_ENTITY_UP+1, new ImageData(new Location(0,0), image));
+		super.create(entityID, type.createAnimation(false, Entity.DEFAULT_ENTITY_LAYER, image), image.getLocation().clone(), type.getSize(), type.getSpeed(),
+				DEFAULT_DIRECTION, Entity.DEFAULT_ENTITY_LAYER, new ImageData(new Location(0,0), image));
 		
-		this.player = player;		
+		this.host = host;		
 		this.pathFinder = new PathController(this, Map.getMap().getPathSystem());
 		
 		this.moveManager.setDoAccelerateXVelocity(false);
@@ -71,8 +71,8 @@ public class Drone extends Entity{
 		return this.pathFinder;
 	}
 
-	public Player getHost() {
-		return this.player;
+	public DroneHost getHost() {
+		return this.host;
 	}
 
 	public DroneModule getModule(Class<?> moduleClass) {

@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.KeyEvent;
 
 import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
@@ -11,8 +10,8 @@ import file.File;
 import file.ktv.KTV_File;
 import data.VehicleResource;
 import files.FileManager;
-import game.entity.loader.EntityLoader;
 import game.entity.player.Player;
+import game.entity.requester.EntityRequester;
 import game.entity.type.EntityType;
 import game.inventory.equipment.EquipmentInventory;
 import game.inventory.menu.EquipmentInventoryMenu;
@@ -32,7 +31,6 @@ public class Game {
 		return LIGHTOVERLAY;
 	}
 	
-	private Player player;
 	private Map map;
 	private GameInterface gameInterface;
 	private MapLoader mapLoader;
@@ -78,17 +76,10 @@ public class Game {
 		
 		dayManager.createTime(10, new Location(PlayerPosition.Hitbox.getX(), PlayerPosition.Hitbox.getY()+20));
 		
-		if(FileManager.PLAYER.get("Location.X")!=null) player = (Player) new EntityLoader().Load(Player.class, FileManager.PLAYER);
-		else player = new Player(new Location(0, 0));
-		player.show();
-		
-		inventoryMenu = new EquipmentInventoryMenu((EquipmentInventory) player.getInventory(), player.getLocation(), 6);
-		inventoryMenu.createVisuals().hide();		
-		
+		EntityRequester.getEntityRequester().requestPlayer(new Location(0, 20));		
 		started = true;
 		
 		LIGHTOVERLAY.updateComplete();
-		map.finalize();
 	}
 
 	public void tick() {
@@ -96,16 +87,26 @@ public class Game {
 			this.gameInterface.			tick();
 			this.map.getEntityManager().tick();
 			this.dayManager.			tick();
-			this.inventoryMenu.			tick();
 			
 			LIGHTOVERLAY.				tick();
-			
-			this.PlayerPosition.setText("Player-Position: X:"+player.getBlockLocation().getX()+" Y:"+player.getBlockLocation().getY());
-			
-			if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_Z)){
-				mapLoader.saveMap();
-				new EntityLoader().save(player, FileManager.PLAYER);
+
+			if (Player.getPlayer() != null) {
+				if(inventoryMenu == null) {
+					inventoryMenu = new EquipmentInventoryMenu((EquipmentInventory) Player.getPlayer().getInventory(), Player.getPlayer().getLocation(), 6);
+					inventoryMenu.createVisuals().hide();
+				}
+				this.inventoryMenu.tick();				
+				
+				Location blockLoc = Player.getPlayer().getBlockLocation();
+				this.PlayerPosition.setText("Player-Position: (X: " + blockLoc.getX() + " Y: " + blockLoc.getY() + ")");
+			} else {
+				this.PlayerPosition.setText("Player-Position: (X: " + 0 + " Y: " + 0 + ")");				
 			}
+			
+//			if(Engine.getInputManager().getKeyDown().contains(KeyEvent.VK_Z)){
+//				mapLoader.saveMap();
+//				new EntityLoader().save(player, FileManager.PLAYER);
+//			}
 		}else if(mapLoader!=null){
 			this.gM.LoadScreen.setProgress(0.5+0.49*mapLoader.getProgress());
 		}

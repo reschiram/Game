@@ -10,6 +10,7 @@ import game.entity.Entity;
 import game.entity.ItemEntity;
 import game.entity.manager.EntityManager;
 import game.entity.type.EntityType;
+import game.inventory.items.Item;
 import game.map.Map;
 
 public class ItemCollector {
@@ -49,8 +50,8 @@ public class ItemCollector {
 			int entityY = this.entity.getY()+ this.entity.getHeight()/2;
 			
 			if((itemX-entityX)*(itemX-entityX) + (itemY-entityY)*(itemY-entityY)<=COLLECTRANGE*COLLECTRANGE){
-				entity.destroy();
-				inventoy.addItem(((ItemEntity)entity).getItemType());
+				entity.destroy(true);
+				inventoy.addItem(new Item(((ItemEntity)entity).getItemType()));
 				collectable.remove(entity);
 				return;
 			}

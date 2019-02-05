@@ -16,17 +16,17 @@ public abstract class DroneTarget {
 	
 	private static int MARKERLEVEL = 3;
 	
-	protected Location location;
+	protected Location blockLocation;
 	protected Image marker;
 	
 	protected boolean done = false;
 
 	protected ArrayList<Drone> drones = new ArrayList<>();
 	
-	public DroneTarget(Location location, Drone... drones){
-		this.location = location.clone();
+	public DroneTarget(Location blockLocation, Drone... drones){
+		this.blockLocation = blockLocation.clone();
 		for(Drone drone: drones)addDrone(drone);
-		this.marker = new Image(new Location(location.getX()*Map.DEFAULT_SQUARESIZE, location.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),
+		this.marker = new Image(new Location(blockLocation.getX()*Map.DEFAULT_SQUARESIZE, blockLocation.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),
 				"", Sprites.Marker.getSpriteSheet(), null);
 	}
 	
@@ -56,21 +56,21 @@ public abstract class DroneTarget {
 			while(this.drones.size()>0){
 				Drone drone = this.drones.get(0);
 				CTModule module = (CTModule) drone.getModule(CTBModule.class);
-				if(module != null)module.removeTarget(this.location);
+				if(module != null)module.removeTarget(this.blockLocation);
 				module = (CTModule) drone.getModule(CTDModule.class);
-				if(module!=null)module.removeTarget(this.location);
+				if(module!=null)module.removeTarget(this.blockLocation);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	public Location getLocation() {
-		return location;
+	public Location getBlockLocation() {
+		return blockLocation;
 	}
 
 	public Location getPixelLocation() {
-		return new Location(location.getX() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, location.getY() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
+		return new Location(blockLocation.getX() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, blockLocation.getY() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
 	}
 
 	public void removeDrone(Drone drone) {

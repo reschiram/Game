@@ -3,8 +3,10 @@ package main;
 import java.util.ArrayList;
 
 import data.MapResource;
-import data.ServerMap;
+import data.map.ServerMap;
 import data.server.Lobby;
+import game.entity.type.EntityType;
+import game.inventory.items.ItemType;
 import server.ValidatedUser;
 import sprites.Sprites;
 
@@ -18,10 +20,12 @@ public class ServerStructureManager {
 		
 		Sprites.create();
 		MapResource.create();
+		ItemType.Load();
+		EntityType.create();
 	}
 
 	private void loadLobby() {
-		this.lobby = new Lobby(1l);
+		this.lobby = new Lobby(1l, sm.getGameSM());
 		
 		loadMaps();
 	}
@@ -31,13 +35,13 @@ public class ServerStructureManager {
 		if(maps == null || maps.size() == 0) {
 			ServerMap map = new ServerMap(this.sm.getFileManager().getCSVFile("maps/Test"));
 			map.generateMap(39485636);
-			map.save(sm.getFileManager());
+			map.getMapFile().save(sm.getFileManager());
 			return;
 		}
 		
 		for(String mapName: maps) {
 			ServerMap map = new ServerMap(this.sm.getFileManager().getCSVFile("maps/"+mapName));
-			map.load();
+			map.getMapFile().load();
 			lobby.addMap(map);
 		}
 		
@@ -58,16 +62,12 @@ public class ServerStructureManager {
 		return message;
 	}
 
-	public void logOut(ValidatedUser validatedUser) {
-		this.lobby.removePlayer(validatedUser);
+	public void logOut(String userID) {
+		this.lobby.removePlayer(userID);
 	}
 
 	public void logIn(ValidatedUser validatedUser) {
 		this.lobby.addPlayer(validatedUser);		
-		
-		System.out.println("login");
-		
-		sm.getGameSM().sendMapToClient(validatedUser.getServerClientID(), this.lobby.getMaps().get(0));
 	}
 
 	public Lobby getLobby() {

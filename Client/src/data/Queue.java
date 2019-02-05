@@ -14,11 +14,15 @@ public class Queue<ContentType> {
 	private Node head = null;
 	private Node tail = null;
 	
+	private int length = 0;
+	
 	public void add(ContentType Object){
 		Node n = new Node(Object);
 		if(tail!=null)tail.next = n;
 		tail = n;
 		if(head==null)head = n;
+		
+		length++;
 	}
 	
 	public ContentType get(){
@@ -28,7 +32,8 @@ public class Queue<ContentType> {
 	public void remove(){
 		if(head!=null){
 			head=head.next;
-			if(head==null)tail=null;
+			if(head==null)tail=null;			
+			length = (length > 0) ? (length-1) : 0;
 		}
 	}
 	
@@ -44,6 +49,10 @@ public class Queue<ContentType> {
 			node = node.next;
 		}
 		return clone;
+	}
+	
+	public int getLength() {
+		return length;
 	}
 
 }

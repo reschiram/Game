@@ -189,12 +189,12 @@ public class MapEditor {
 					int y = Mouse.getMouse().getPosition().y/Map.DEFAULT_SQUARESIZE; 
 					if(Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON1)){
 						if(res!=null && x>0 && y>0 && !map.hasResource(res, x, y)){
-							if(res.isGround())map.addToGround(res.getID(), x, y);
-							else map.addToBuild(res.getID(), x, y);
+							if(res.isGround())map.addToGround(res.getID(), x, y, false);
+							else map.addToBuild(res.getID(), x, y, false);
 						}
 					}else if(Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON3)){
-						if(!build)map.addToGround(0, x, y);
-						else map.addToBuild(0, x, y);
+						if(!build)map.addToGround(0, x, y, false);
+						else map.addToBuild(0, x, y, false);
 					}
 				}
 			}

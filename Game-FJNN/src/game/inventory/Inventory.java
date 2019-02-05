@@ -1,5 +1,7 @@
 package game.inventory;
 
+import java.util.HashMap;
+
 import events.GameEventManager;
 import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
@@ -9,14 +11,22 @@ import game.inventory.items.ItemType;
 
 public class Inventory {
 	
-	private Item[] items;	
-	
-	public Inventory(int size){
-		this.items = new Item[size];
+	private static final HashMap<Integer, Inventory> inventories = new HashMap<>();
+	public static Inventory getInventory(int invID) {
+		return inventories.get(invID);
 	}
 	
-	public int addItem(Item item){
-		GameEventManager.getEventManager().publishEvent(new ItemAddEvent(this, item));
+	private Item[] items;	
+	private int invID;
+	
+	public Inventory(int size, int invID){
+		this.items = new Item[size];
+		this.invID = invID;
+		
+		inventories.put(invID, this);
+	}
+	
+	public int addItemFunktion(Item item) {
 		int freeSpace = -1;
 		for(int i = 0; i<items.length; i++){
 			if(items[i]!=null){
@@ -25,7 +35,7 @@ public class Inventory {
 					items[i].setAmount(items[i].getAmount()+amount);
 					if(amount!=item.getAmount()){
 						item.setAmount(item.getAmount()-amount);
-						return addItem(item);
+						return addItemFunktion(item);
 					}else return 0;
 				}
 			}else if(freeSpace == -1)freeSpace = i;
@@ -37,21 +47,30 @@ public class Inventory {
 		return item.getAmount();
 	}
 	
-	public int removeItem(Item item){
-		GameEventManager.getEventManager().publishEvent(new ItemRemoveEvent(this, item));
+	public int addItem(Item item){
+		GameEventManager.getEventManager().publishEvent(new ItemAddEvent(this, item));
+		return addItemFunktion(item);
+	}
+
+	public int removeItemFunktion(Item item){
 		for(int i = 0; i < this.items.length; i++){
 			if(items[i]!=null && items[i].isSimilar(item)){
 				int amount = items[i].getAmount()-item.getAmount();
 				if(amount<=0){
 					items[i] = null;
 					if(amount<0){
-						return removeItem(new Item(item.getItemType(), Math.abs(amount)));
+						return removeItemFunktion(new Item(item.getItemType(), Math.abs(amount)));
 					}else return 0;
 				}else items[i].setAmount(amount);
 				return 0;
 			}
 		}
-		return item.getAmount();
+		return item.getAmount();		
+	}
+	
+	public int removeItem(Item item){
+		GameEventManager.getEventManager().publishEvent(new ItemRemoveEvent(this, item));
+		return removeItemFunktion(item);
 	}
 	
 	public int getSize(){
@@ -69,31 +88,17 @@ public class Inventory {
 		return false;
 	}
 
-	public boolean addItem(ItemType itemType) {
-		GameEventManager.getEventManager().publishEvent(new ItemAddEvent(this, new Item(itemType)));
-		int freeSpace = -1;
-		for(int i = 0; i<items.length; i++){
-			if(items[i]!=null){
-				if(items[i].canAdd(itemType)){
-					items[i].setAmount(items[i].getAmount()+1);
-					return true;
-				}
-			}else if(freeSpace == -1)freeSpace = i;
-		}
-		if(freeSpace!=-1){
-			items[freeSpace] = new Item(itemType);
-			return true;
-		}
-		return false;
-	}
-
 	public Item getItem(int index) {
 		return this.items[index];
 	}
 
+	public void setItemFunktion(int slot, Item item) {
+		this.items[slot] = item;
+	}
+
 	public void setItem(int slot, Item item) {
 		GameEventManager.getEventManager().publishEvent(new ItemSetEvent(this, item, slot));
-		this.items[slot] = item;
+		setItemFunktion(slot, item);
 	}
 
 	public boolean hasItem(Item item) {
@@ -105,6 +110,14 @@ public class Inventory {
 			}
 		}
 		return false;
+	}
+
+	public int getInvID() {
+		return invID;
+	}
+
+	public void setInvID(int id) {
+		this.invID = id;
 	}
 
 }

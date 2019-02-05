@@ -21,7 +21,7 @@ public abstract class CTModule extends DroneModule{
 				currentDroneTarget = getNextDroneTarget();
 				if(currentDroneTarget!=null){
 //					System.out.println("NextDroneTarget");
-					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation());
+					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
 				}
 			 }
 		}else{
@@ -36,7 +36,7 @@ public abstract class CTModule extends DroneModule{
 					}
 				}else{
 //					System.out.println("CurrentDroneTarget");
-					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation());
+					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
 				}
 			} 
 		}
@@ -69,8 +69,8 @@ public abstract class CTModule extends DroneModule{
 		for(DroneTarget target: targets.values()){
 			int d = getDistance(target);
 			if(distance == -1 || d < distance){
-				boolean canReach = this.drone.canReach(target.getLocation()); 
-				if(canReach && this.canInteract(target.getLocation())){
+				boolean canReach = this.drone.canReach(target.getBlockLocation()); 
+				if(canReach && this.canInteract(target.getBlockLocation())){
 					distance = d;
 					next = target;
 				}
@@ -84,10 +84,10 @@ public abstract class CTModule extends DroneModule{
 	}
 
 	private int getDistance(DroneTarget target) {
-		int x = Math.abs(Map.getMap().getXOver(this.drone.getX()+this.drone.getWidth() /2) - Map.getMap().getXOver(target.getLocation().getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
+		int x = Math.abs(Map.getMap().getXOver(this.drone.getX()+this.drone.getWidth() /2) - Map.getMap().getXOver(target.getBlockLocation().getX()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
 		if(x> (Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)/2)x-=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
 		if(x<-(Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE)/2)x+=Map.getMap().getWidth()*Map.DEFAULT_SQUARESIZE;
-		int y = Math.abs(					   this.drone.getY()+this.drone.getHeight()/2  - 					  (target.getLocation().getY()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
+		int y = Math.abs(					   this.drone.getY()+this.drone.getHeight()/2  - 					  (target.getBlockLocation().getY()*Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2));
 
 		return (int) Math.sqrt(x*x+y*y);
 	}
@@ -99,14 +99,14 @@ public abstract class CTModule extends DroneModule{
 			target.removeDrone(this.drone);
 			this.targets.remove(key);
 		}
-		if(currentDroneTarget!=null && this.currentDroneTarget.getLocation().equals(loc)){
+		if(currentDroneTarget!=null && this.currentDroneTarget.getBlockLocation().equals(loc)){
 			this.currentDroneTarget=null;
-			this.drone.getPathController().setTarget(null);
+			this.drone.getPathController().setTarget(null, DroneModule.publishPathToServer);
 		}
 	}
 	
 	public boolean addTarget(DroneTarget target){
-		Location location = target.getLocation();
+		Location location = target.getBlockLocation();
 		int key = location.getX()+location.getY()*Map.getMap().getWidth();		
 		if(hasTarget(key, target)) return false;
 		targets.put(location.getX()+location.getY()*Map.getMap().getWidth(), target);

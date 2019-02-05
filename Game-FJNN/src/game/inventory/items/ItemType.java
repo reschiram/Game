@@ -8,6 +8,8 @@ import sprites.Sprites;
 
 public class ItemType {
 
+	public static final int Max_IDLength = 20;
+	
 	public static ItemType Lamp;
 	public static ItemType Dirt;
 	public static ItemType Stone;

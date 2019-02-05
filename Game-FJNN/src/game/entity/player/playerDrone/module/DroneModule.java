@@ -4,6 +4,8 @@ import game.entity.player.playerDrone.Drone;
 
 public abstract class DroneModule {
 	
+	public static final boolean publishPathToServer = false;
+	
 	protected Drone drone;
 	
 	public abstract void tick();

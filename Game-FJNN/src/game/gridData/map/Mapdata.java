@@ -91,7 +91,7 @@ public abstract class Mapdata extends GridData{
 	@Override
 	public void damage(int amount){
 		super.damage(amount);
-		if(this.isDestroyed())Map.getMap().deleteBlock(location, this.getResource().getLayerUp(), this.getResource().isGround());
+		if(this.isDestroyed())Map.getMap().deleteBlock(location, this.getResource().getLayerUp(), this.getResource().isGround(), true);
 	}
 
 	public int getSurfaceLevel() {

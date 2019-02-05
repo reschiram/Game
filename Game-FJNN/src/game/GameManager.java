@@ -11,11 +11,14 @@ import Data.Location;
 import Data.GraphicOperation.StringRenderOperation;
 import Engine.Engine;
 import anim.AnimationType;
+import client.GameCEM;
+import client.GameCM;
 import data.MapResource;
 import data.Mouse;
 import data.Tickable;
+import events.GameEventManager;
 import files.FileManager;
-import game.dev.mapEditor.MapEditor;
+import game.entity.requester.EntityRequester;
 import game.inventory.crafting.Recipe;
 import game.inventory.items.ItemType;
 import launcher.MapDownloader;
@@ -26,20 +29,26 @@ import tick.TickManager;
 public class GameManager implements Tickable{
 	
 	public static TickManager TickManager;
-		
-	private Game game;
-	private MapEditor mapEditor;
-	private StringRenderOperation FPSCounter;
-	private StringRenderOperation LatencyCounter;
-	
-	LoadScreen LoadScreen;
 
 	private static boolean HasStarted = false;
 	public static boolean hasStarted() {
 		return HasStarted;
 	}
+		
+	private Game game;
+	private GameCM gameCM;
+	private StringRenderOperation FPSCounter;
+	private StringRenderOperation LatencyCounter;
 	
-	public GameManager(MapDownloader mapDownloader){
+	LoadScreen LoadScreen;
+	
+	public GameManager(MapDownloader mapDownloader, GameCM gameCM){
+		new GameEventManager(gameCM);	
+		new EntityRequester(gameCM);
+		new GameCEM(gameCM);
+		
+		this.gameCM = gameCM;
+		
 		new Engine(1920, 1080, new Dimension(800,800));
 		Engine.getEngine(this, this.getClass()).getWindow().setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
@@ -69,26 +78,31 @@ public class GameManager implements Tickable{
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(FPSCounter, 10);
 		LatencyCounter = new StringRenderOperation(new Location(1800,80), new Dimension(120, 50), "Latency:"+TickManager.getLatency()+" tick(s)", null, Color.WHITE);
 		Engine.getEngine(this, this.getClass()).addGraphicOperation(LatencyCounter, 10);
-		start(mapDownloader);			
-		HasStarted = true;
-		TickManager.release();
-		LoadScreen.destroyVisuals();
+		
+		start(mapDownloader);
 	}
 	
 	private void start(MapDownloader mapDownloader) {
 		game = new Game(this);
-		game.start(mapDownloader);
-//		this.mapEditor = new MapEditor(new MapLoader(FileManager.MAP_TEST));
+		game.start(mapDownloader);		
+		TickManager.release();
+		LoadScreen.destroyVisuals();
+		
+		HasStarted = true;
 	}
-
-	long time = System.currentTimeMillis();
+	
 	public void tick(){
-		if(Mouse.getMouse()!=null)Mouse.getMouse().tick();
-		if(game!=null)game.tick();
-		else if(mapEditor!=null)mapEditor.tick();
-		if(System.currentTimeMillis()-time > 500 && FPSCounter!=null){
+		if(Mouse.getMouse()!=null)Mouse.getMouse().tick();		
+		if(FPSCounter!=null && LatencyCounter != null){
 			FPSCounter.setText("FPS:"+Engine.getEngine(this, this.getClass()).getFPS());
 			LatencyCounter.setText("Latency:"+TickManager.getLatency()+" tick(s)");
+		}
+		
+		GameEventManager.getEventManager().tick();
+		
+		if(hasStarted()) {
+			this.gameCM.tick();			
+			if(game!=null) game.tick();
 		}
 	}
 	
