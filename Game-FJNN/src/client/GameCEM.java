@@ -106,6 +106,7 @@ public class GameCEM implements ToClientMessageEventListener{
 				event.setActive(false);
 			}else if(event.getMessage().getId() == GameCPM.DataPackage_DroneTarget) {
 				DroneTargetEvent droneTarget = gameCM.getClientPackageManager().readDroneTargetMessage(event.getMessage());
+				System.out.println("Drone Target Update: " + droneTarget + " | " + ((droneTarget == null) ? "null" : (droneTarget.getHost() + " | " + droneTarget.isBuild())));
 				if(droneTarget == null) {
 					return;
 				}				

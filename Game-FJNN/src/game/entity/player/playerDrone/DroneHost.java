@@ -6,6 +6,7 @@ import Data.Hitbox;
 import Data.Location;
 import data.MapResource;
 import game.entity.Entity;
+import game.entity.player.PlayerDummie;
 import game.entity.player.playerDrone.module.CTBModule;
 import game.entity.player.playerDrone.module.CTDModule;
 import game.gridData.map.Mapdata;
@@ -28,7 +29,7 @@ public interface DroneHost {
 
 	public int getID();
 	
-	public default void addBuildTarget(Location loc, int resID) {
+	public default void addBuildTarget(Location loc, int resID) {		
 		//find BDrones|DDrones
 		ArrayList<Drone> BDrones = new ArrayList<>();
 		ArrayList<Drone> DDrones = new ArrayList<>();
@@ -79,6 +80,9 @@ public interface DroneHost {
 	}
 
 	public default void addDestructionTarget(Location loc, boolean add) {
+		if(this instanceof PlayerDummie) {
+			System.out.println((add ? "add" : "remove") + " destruction target for player dummie : " + loc);
+		}		
 		//find DDrones
 		ArrayList<Drone> DDrones = new ArrayList<>();
 		for(Drone drone: getPlayerDrones()){

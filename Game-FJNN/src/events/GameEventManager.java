@@ -124,7 +124,6 @@ public class GameEventManager {
 			try {
 				PackageType message = null;
 				if (event instanceof DroneTargetEvent) {
-					System.out.println("sendDroneTarget");
 					message = this.gameCM.getClientPackageManager().createDroneTargetMessage((DroneTargetEvent) event);
 				} else {
 					System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());

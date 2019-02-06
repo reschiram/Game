@@ -38,7 +38,7 @@ public class DigTool extends Tool{
 			boolean isAdd = !Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON3);
 			player.addDestructionTarget(loc, isAdd);
 			
-			GameEventManager.getEventManager().publishEvent(new DroneTargetEvent(player, loc, true, isAdd, 0));
+			GameEventManager.getEventManager().publishEvent(new DroneTargetEvent(player, loc, false, isAdd, 0));
 		}
 	}
 	
