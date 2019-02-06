@@ -2,7 +2,7 @@ package client;
 
 import data.events.client.ToClientMessageEvent;
 import data.events.client.ToClientMessageEventListener;
-import events.DroneTargetEvent;
+import events.entity.DroneUpdateEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
@@ -12,7 +12,7 @@ import events.inventory.ItemSetEvent;
 import events.map.MapBlockAddEvent;
 import events.map.MapBlockDeleteEvent;
 import game.entity.player.PlayerContext;
-import game.entity.player.playerDrone.DroneHost;
+import game.entity.player.playerDrone.Drone;
 import game.entity.type.interfaces.PathUser;
 import game.map.Map;
 
@@ -104,19 +104,15 @@ public class GameCEM implements ToClientMessageEventListener{
 				
 				Map.getMap().deleteBlock(mapBlockDelete.getMapBlock().getLocation(), mapBlockDelete.getMapBlock().getResource().getLayerUp(), mapBlockDelete.getMapBlock().getResource().isGround(), false);
 				event.setActive(false);
-			}else if(event.getMessage().getId() == GameCPM.DataPackage_DroneTarget) {
-				DroneTargetEvent droneTarget = gameCM.getClientPackageManager().readDroneTargetMessage(event.getMessage());
-				System.out.println("Drone Target Update: " + droneTarget + " | " + ((droneTarget == null) ? "null" : (droneTarget.getHost() + " | " + droneTarget.isBuild())));
+			}else if(event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate) {
+				DroneUpdateEvent droneTarget = gameCM.getClientPackageManager().readDroneUpdateMessage(event.getMessage());
+				System.out.println("Drone Update: " + droneTarget + " | " + ((droneTarget == null) ? "null" : (droneTarget.getEntity() + " | " + droneTarget.getDroneTargetInfosChange())));
 				if(droneTarget == null) {
 					return;
 				}				
 				
-				DroneHost host = droneTarget.getHost();
-				if(droneTarget.isBuild()) {
-					host.addBuildTarget(droneTarget.getBlockLoc(), droneTarget.getResID());
-				} else {
-					host.addDestructionTarget(droneTarget.getBlockLoc(), droneTarget.isAdd());
-				}
+				Drone drone = droneTarget.getEntity();
+				drone.update(droneTarget);
 				event.setActive(false);
 			}
 		}catch (Exception e) {

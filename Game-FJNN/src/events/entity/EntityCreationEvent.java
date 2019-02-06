@@ -1,9 +1,10 @@
 package events.entity;
 
 import Data.Location;
+import game.entity.Entity;
 import game.map.Map;
 
-public class EntityCreationEvent extends EntityEvent{
+public class EntityCreationEvent<EntityType extends Entity> extends EntityEvent<EntityType>{
 
 	private static int lastRrequestID = 0;
 	

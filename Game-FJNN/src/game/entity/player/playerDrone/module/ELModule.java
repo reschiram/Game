@@ -1,5 +1,8 @@
 package game.entity.player.playerDrone.module;
 
+import events.GameEventManager;
+import events.entity.DroneUpdateEvent;
+
 public class ELModule extends DroneModule{
 	
 	private double maxEnergyLoad;
@@ -30,10 +33,14 @@ public class ELModule extends DroneModule{
 				this.drone.getPathController().setBlocked(true);
 			}
 			this.isLoading = true;
+			
+			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
 		}
 		if(energyLoad > 0.8*maxEnergyLoad){
 			this.drone.getPathController().setBlocked(false);
 			this.isLoading = false;
+			
+			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
 		}
 	}
 
@@ -45,6 +52,20 @@ public class ELModule extends DroneModule{
 	private void recharge() {
 		this.energyLoad+=rechargeSpeed;
 		if(this.energyLoad>maxEnergyLoad)this.energyLoad = maxEnergyLoad;
+	}
+
+	public double getEnergyLevel() {
+		return energyLoad;
+	}
+	
+	public boolean isCharging() {
+		return isLoading;
+	}
+
+	public void updateEnergyLoad(double droneEnergy, boolean droneCharging) {
+		this.energyLoad = droneEnergy;
+		this.isLoading = droneCharging;
+		this.tick();
 	}
 
 }

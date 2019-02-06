@@ -3,6 +3,12 @@ package game.entity.player.playerDrone.module;
 import java.util.HashMap;
 
 import Data.Location;
+import client.commData.DroneTargetInfos;
+import data.MapResource;
+import events.GameEventManager;
+import events.entity.DroneUpdateEvent;
+import game.entity.player.playerDrone.BDroneTarget;
+import game.entity.player.playerDrone.DDroneTarget;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneTarget;
 import game.map.Map;
@@ -10,7 +16,7 @@ import game.map.Map;
 public abstract class CTModule extends DroneModule{
 	
 	protected HashMap<Integer, DroneTarget> targets = new HashMap<>();
-	protected DroneTarget currentDroneTarget;
+	private DroneTarget currentDroneTarget;
 
 	protected double maxDistanceFromTarget;
 	
@@ -19,9 +25,11 @@ public abstract class CTModule extends DroneModule{
 		if(currentDroneTarget==null){
 			 if(!targets.isEmpty()){
 				currentDroneTarget = getNextDroneTarget();
+				GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
 				if(currentDroneTarget!=null){
-//					System.out.println("NextDroneTarget");
-					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
+					if(canSetDroneTarget()) {
+						this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
+					}
 				}
 			 }
 		}else{
@@ -35,8 +43,9 @@ public abstract class CTModule extends DroneModule{
 						this.drone.setIsWorking(false);
 					}
 				}else{
-//					System.out.println("CurrentDroneTarget");
-					if(canSetDroneTarget())this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
+					if(canSetDroneTarget()) {
+						this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
+					}
 				}
 			} 
 		}
@@ -92,24 +101,27 @@ public abstract class CTModule extends DroneModule{
 		return (int) Math.sqrt(x*x+y*y);
 	}
 
-	public void removeTarget(Location loc) {
+	public void removeTarget(Location loc) {		
 		int key = loc.getX()+loc.getY()*Map.getMap().getWidth();
 		if(targets.containsKey(key)){
 			DroneTarget target = this.targets.get(key);
 			target.removeDrone(this.drone);
 			this.targets.remove(key);
+			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, new DroneTargetInfos(target, false)));
 		}
 		if(currentDroneTarget!=null && this.currentDroneTarget.getBlockLocation().equals(loc)){
-			this.currentDroneTarget=null;
 			this.drone.getPathController().setTarget(null, DroneModule.publishPathToServer);
+			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, new DroneTargetInfos(currentDroneTarget, false)));
+			this.currentDroneTarget=null;
 		}
 	}
 	
-	public boolean addTarget(DroneTarget target){
+	public boolean addTarget(DroneTarget target){		
 		Location location = target.getBlockLocation();
 		int key = location.getX()+location.getY()*Map.getMap().getWidth();		
 		if(hasTarget(key, target)) return false;
 		targets.put(location.getX()+location.getY()*Map.getMap().getWidth(), target);
+		GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, new DroneTargetInfos(target, true)));
 		return true;
 	}
 	
@@ -129,4 +141,60 @@ public abstract class CTModule extends DroneModule{
 		
 		maxDistanceFromTarget = Math.sqrt(maxx*maxx+maxy*maxy);
 	}
+
+	public DroneTargetInfos getCurrentTarget() {
+		return new DroneTargetInfos(currentDroneTarget, false);
+	}
+
+	public void updateTarget(DroneTargetInfos newCurrentTarget) {
+		if(newCurrentTarget == null) return;	
+		int newKey = newCurrentTarget.getBlockLocation().getX()+newCurrentTarget.getBlockLocation().getY()*Map.getMap().getWidth();
+		
+		if(currentDroneTarget != null) {
+			
+		}
+		
+		if (newCurrentTarget.isNull() && currentDroneTarget != null) {
+			int key = currentDroneTarget.getBlockLocation().getX()
+					+ currentDroneTarget.getBlockLocation().getY() * Map.getMap().getWidth();
+			
+			if(hasTarget(key, currentDroneTarget)) this.targets.remove(key);			
+			this.currentDroneTarget = null;
+			this.drone.getPathController().setTarget(null, false);
+			
+			if(this.targets.containsKey(newKey)) {
+				DroneTarget target = this.targets.get(newKey);
+				this.targets.remove(newKey);
+				target.removeDrone(this.drone);
+			}
+			return;
+		} else if (newCurrentTarget.isDone()) {
+			int key = currentDroneTarget.getBlockLocation().getX()
+					+ currentDroneTarget.getBlockLocation().getY() * Map.getMap().getWidth();
+			
+			if(hasTarget(key, currentDroneTarget)) this.targets.remove(key);			
+			this.currentDroneTarget = null;
+			this.drone.getPathController().setTarget(null, false);
+			
+			if(this.targets.containsKey(newKey)) {
+				DroneTarget target = this.targets.get(newKey);
+				this.targets.remove(newKey);
+				target.setDone(true);
+				target.interact();
+			}
+			return;
+		}
+		
+		DroneTarget newDroneTarget = null;
+		if(newCurrentTarget.isBuild()) {
+			newDroneTarget = new BDroneTarget(newCurrentTarget.getBlockLocation(), MapResource.getMapResource(newCurrentTarget.getResID()), this.drone);
+		} else {
+			newDroneTarget = new DDroneTarget(newCurrentTarget.getBlockLocation(), this.drone);
+		}
+		if(newCurrentTarget != null) {
+			this.currentDroneTarget = newDroneTarget;
+			this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), false);
+		}
+	}
+	
 }

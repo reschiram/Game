@@ -4,7 +4,7 @@ import Data.Location;
 import data.Velocity;
 import game.entity.player.PlayerContext;
 
-public class PlayerMoveEvent extends EntityEvent{
+public class PlayerMoveEvent extends EntityEvent<PlayerContext>{
 	private Velocity velocity;
 
 	public PlayerMoveEvent(PlayerContext player) {

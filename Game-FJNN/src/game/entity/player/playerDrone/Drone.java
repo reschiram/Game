@@ -6,9 +6,13 @@ import java.util.HashMap;
 import Data.Direction;
 import Data.Location;
 import Data.Image.Image;
+import client.commData.DroneTargetInfos;
 import data.ImageData;
+import events.entity.DroneUpdateEvent;
 import game.entity.Entity;
+import game.entity.player.playerDrone.module.CTBModule;
 import game.entity.player.playerDrone.module.DroneModule;
+import game.entity.player.playerDrone.module.ELModule;
 import game.entity.type.EntityType;
 import game.entity.type.interfaces.PathUser;
 import game.map.Map;
@@ -90,6 +94,27 @@ public class Drone extends Entity implements PathUser{
 	
 	public void setIsWorking(boolean isWorking){
 		this.isWorking = isWorking;
+	}
+
+	public void update(DroneUpdateEvent droneUpdate) {
+		if(this.modules.containsKey(ELModule.class)) {
+			ELModule module = (ELModule) this.modules.get(ELModule.class);	
+			module.updateEnergyLoad(droneUpdate.getDroneEnergy(), droneUpdate.isDroneCharging());
+		}
+		
+		DroneTargetInfos changeInfos = droneUpdate.getDroneTargetInfosChange();
+		if(changeInfos != null && !changeInfos.isNull() && !changeInfos.isDone()) {
+			if(droneUpdate.getDroneTargetInfosChange().isBuild()) {
+				this.host.addBuildTarget(changeInfos.getBlockLocation(), changeInfos.doAdd() ? changeInfos.getResID() : -1);
+			} else {
+				this.host.addDestructionTarget(changeInfos.getBlockLocation(), changeInfos.doAdd());
+			}
+		}
+		
+		if(this.modules.containsKey(CTBModule.class)) {
+			CTBModule module = (CTBModule) this.modules.get(CTBModule.class);
+			module.updateTarget(droneUpdate.getCurrentBDroneTarget());
+		}
 	}
 	
 }

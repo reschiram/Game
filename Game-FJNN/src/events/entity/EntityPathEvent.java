@@ -3,7 +3,7 @@ package events.entity;
 import Data.Location;
 import game.entity.Entity;
 
-public class EntityPathEvent extends EntityEvent{
+public class EntityPathEvent extends EntityEvent<Entity>{
 	
 	private Location pixelTarget;
 

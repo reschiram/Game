@@ -4,18 +4,18 @@ import Data.Location;
 import events.GameEvent;
 import game.entity.Entity;
 
-public abstract class EntityEvent extends GameEvent{
+public abstract class EntityEvent<EntityType extends Entity> extends GameEvent{
 	
-	private Entity entity;
+	private EntityType entity;
 	private Location currentPixelLoc;
 	
-	public EntityEvent(Entity entity, Location currentPixelLoc) {
+	public EntityEvent(EntityType entity, Location currentPixelLoc) {
 		super();
 		this.entity = entity;
 		this.currentPixelLoc = currentPixelLoc;
 	}
 
-	public Entity getEntity() {
+	public EntityType getEntity() {
 		return entity;
 	}
 

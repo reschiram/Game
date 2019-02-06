@@ -1,17 +1,20 @@
 package client;
 
 import Data.Location;
+import client.commData.DroneTargetData;
+import client.commData.DroneTargetInfos;
 import data.DataPackage;
 import data.MapResource;
 import data.PackageType;
 import data.readableData.BooleanData;
 import data.readableData.CompleteStringData;
+import data.readableData.DoubleData;
 import data.readableData.IntegerData;
 import data.readableData.LongData;
 import data.readableData.ReadableData;
 import data.readableData.StringData;
 import data.user.User;
-import events.DroneTargetEvent;
+import events.entity.DroneUpdateEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
@@ -23,7 +26,7 @@ import events.map.MapBlockDeleteEvent;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.entity.player.PlayerDummie;
-import game.entity.player.playerDrone.DroneHost;
+import game.entity.player.playerDrone.Drone;
 import game.gridData.map.MapBlock;
 import game.gridData.map.MapDummieBlock;
 import game.gridData.map.Mapdata;
@@ -51,7 +54,7 @@ public class GameCPM {
 	public static final int DataPackage_PlayerMoved = 32;
 	public static final int DataPackage_EntityPath = 34;
 	public static final int DataPackage_EntityStatus = 36;
-	public static final int DataPackage_DroneTarget = 38;
+	public static final int DataPackage_DroneUpdate = 38;
 	
 	public static final int DataPackage_ItemAdd = 40;
 	public static final int DataPackage_ItemRemove = 42;
@@ -130,9 +133,10 @@ public class GameCPM {
 				new BooleanData("Alive"),
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
-		DataPackage.setType(new PackageType(DataPackage_DroneTarget, "DroneTarget", new IntegerData("Entity_ID"),
-				new BooleanData("Build"), new BooleanData("isAdd"), new IntegerData("resID"),
-				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y")));
+		DataPackage.setType(new PackageType(DataPackage_DroneUpdate, "DroneUpdate", new IntegerData("Entity_ID"),
+				new DoubleData("EnergyCount"), new IntegerData("isCharging"),
+				new DroneTargetData("currentBDroneTarget"), new DroneTargetData("currentDDroneTarget"), new DroneTargetData("droneTargetChange"),
+				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
 		//<=== Add Inventory-Event Packages ===>
 		
@@ -174,10 +178,11 @@ public class GameCPM {
 				event.getCurrentPixelLocation().getX(),	event.getCurrentPixelLocation().getY());
 	}
 
-	public PackageType createDroneTargetMessage(DroneTargetEvent event) throws Exception {
-		return PackageType.readPackageData(DataPackage_DroneTarget, event.getHost().getID(),
-				event.isBuild(), event.isAdd(), event.getResID(),
-				event.getBlockLoc().getX(),	event.getBlockLoc().getY());
+	public PackageType createDroneUpdateMessage(DroneUpdateEvent event) throws Exception {
+		return PackageType.readPackageData(DataPackage_DroneUpdate, event.getEntity().getID(),
+				event.getDroneEnergy(),	event.isDroneCharging(),
+				event.getCurrentBDroneTarget(), event.getCurrentDDroneTarget(), event.getDroneTargetInfosChange(),
+				event.getCurrentPixelLocation().getX(),	event.getCurrentPixelLocation().getY());
 	}
 
 	//<=== read: Entity-Events ===>
@@ -232,24 +237,28 @@ public class GameCPM {
 		return new EntityStatusEvent(entity, isAlive, new Location(pixelPosX, pixelPosY));
 	}
 	
-	public DroneTargetEvent readDroneTargetMessage(PackageType message) {
+	public DroneUpdateEvent readDroneUpdateMessage(PackageType message) {
 		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
-		boolean isBuild = ((BooleanData) message.getDataStructures()[1]).getData().booleanValue();
-		boolean isAdd = ((BooleanData) message.getDataStructures()[2]).getData().booleanValue();
-		int resID = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
-		int blockPosX = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
-		int blockPosY = ((IntegerData) message.getDataStructures()[5]).getData().intValue();
+		double energyLevel = ((DoubleData) message.getDataStructures()[1]).getData().doubleValue();
+		boolean isCharging = ((BooleanData) message.getDataStructures()[2]).getData().booleanValue();
+		DroneTargetInfos currentBDroneTargetInfos = ((DroneTargetData) message.getDataStructures()[3]).getData();
+		DroneTargetInfos currentDDroneTargetInfos = ((DroneTargetData) message.getDataStructures()[4]).getData();
+		DroneTargetInfos changeTargetInfos = ((DroneTargetData) message.getDataStructures()[5]).getData();
+		int pixelPosX = ((IntegerData) message.getDataStructures()[6]).getData().intValue();
+		int pixelPosY = ((IntegerData) message.getDataStructures()[7]).getData().intValue();
 		
 		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
 		if(entity == null) {
 			System.out.println("Error: entity status update event occourred for a unknown entity: " + entityID);
 			return null;
-		}else if (!(entity instanceof DroneHost)) {
-			System.out.println("Error: drone target event occoured for a non-drone-host entity");	
-			return new DroneTargetEvent(null, new Location(blockPosX, blockPosY), isBuild, isAdd, resID);
+		}else if (!(entity instanceof Drone)) {
+			System.out.println("Error: drone target event occoured for a non-drone entity");
+			return new DroneUpdateEvent(null, energyLevel, isCharging, currentDDroneTargetInfos,
+					currentBDroneTargetInfos, changeTargetInfos, new Location(pixelPosX, pixelPosY));
 		}
-		
-		return new DroneTargetEvent((DroneHost) entity, new Location(blockPosX, blockPosY), isBuild, isAdd, resID);
+
+		return new DroneUpdateEvent((Drone) entity, energyLevel, isCharging, currentDDroneTargetInfos,
+				currentBDroneTargetInfos, changeTargetInfos, new Location(pixelPosX, pixelPosY));
 	}
 	
 	//<=== create: Inventory-Events ===>

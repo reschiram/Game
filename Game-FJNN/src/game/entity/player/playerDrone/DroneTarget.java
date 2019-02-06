@@ -75,9 +75,18 @@ public abstract class DroneTarget {
 
 	public void removeDrone(Drone drone) {
 		this.drones.remove(drone);
+		if(this.done = false) this.done = true;
 		if(this.drones.isEmpty()){
 			this.destroyVisulas();
 		}
+	}
+
+	public boolean isDone() {
+		return done;
+	}
+
+	public void setDone(boolean done) {
+		this.done = done;
 	}
 
 }

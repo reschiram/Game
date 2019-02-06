@@ -127,7 +127,7 @@ public class MapSEM implements ToServerMessageEventListener{
 
 			event.setActive(false);
 			send = true;
-		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneTarget) {
+		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneUpdate) {
 			event.setActive(false);
 			send = true;
 		}

@@ -4,6 +4,7 @@ import Data.Queue;
 import client.GameCM;
 import data.DataPackage;
 import data.PackageType;
+import events.entity.DroneUpdateEvent;
 import events.entity.EntityEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
@@ -27,7 +28,7 @@ public class GameEventManager {
 	
 	private GameCM gameCM;
 	
-	private Queue<EntityEvent> entityEvents = new Queue<>();	
+	private Queue<EntityEvent<?>> entityEvents = new Queue<>();	
 	private Queue<InventoryEvent> inventoryEvents = new Queue<>();	
 	private Queue<MapEvent> mapEvents = new Queue<>();	
 	private Queue<GameEvent> events = new Queue<>();
@@ -39,7 +40,7 @@ public class GameEventManager {
 	
 	public void publishEvent(GameEvent event) {
 		if(event instanceof EntityEvent) {
-			this.entityEvents.add((EntityEvent) event);
+			this.entityEvents.add((EntityEvent<?>) event);
 		}else if(event instanceof InventoryEvent) {
 			this.inventoryEvents.add((InventoryEvent) event);
 		}else if(event instanceof MapEvent) {
@@ -61,7 +62,7 @@ public class GameEventManager {
 
 	private void handleEntityEvents() {
 		while(!entityEvents.isEmpty()) {
-			EntityEvent event = entityEvents.get();
+			EntityEvent<?> event = entityEvents.get();
 			entityEvents.remove();
 			try{
 				PackageType message = null;
@@ -71,6 +72,8 @@ public class GameEventManager {
 					message = this.gameCM.getClientPackageManager().createEntityPathMessage((EntityPathEvent) event);		
 				} else if (event instanceof EntityStatusEvent) {
 					message = this.gameCM.getClientPackageManager().createEntityStatusMessage((EntityStatusEvent) event);
+				}else if (event instanceof DroneUpdateEvent) {
+					message = this.gameCM.getClientPackageManager().createDroneUpdateMessage((DroneUpdateEvent) event);
 				}
 				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {
@@ -123,12 +126,8 @@ public class GameEventManager {
 			events.remove();
 			try {
 				PackageType message = null;
-				if (event instanceof DroneTargetEvent) {
-					message = this.gameCM.getClientPackageManager().createDroneTargetMessage((DroneTargetEvent) event);
-				} else {
-					System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
-				}
-				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
+				System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
+				if(message != null) this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

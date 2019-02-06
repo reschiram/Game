@@ -5,8 +5,6 @@ import java.awt.event.MouseEvent;
 import Data.Location;
 import Engine.Engine;
 import data.ButtonTrigger;
-import events.DroneTargetEvent;
-import events.GameEventManager;
 import game.entity.Entity;
 import game.entity.player.playerDrone.DroneHost;
 import game.inventory.equipment.EquipmentType;
@@ -44,8 +42,6 @@ public class BuildTool extends Tool{
 			boolean isAdd = !Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON3);
 			int resID = (((BuildToolMenu) this.menu).getSelected());
 			player.addBuildTarget(loc, isAdd ? resID : -1);
-			
-			GameEventManager.getEventManager().publishEvent(new DroneTargetEvent(player, loc, true, isAdd, resID));
 		}
 	}
 	
