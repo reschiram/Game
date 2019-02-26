@@ -24,6 +24,7 @@ public abstract class DroneTarget {
 	protected ArrayList<Drone> drones = new ArrayList<>();
 	
 	public DroneTarget(Location blockLocation, Drone... drones){
+		System.out.println("Target: " + blockLocation);
 		this.blockLocation = blockLocation.clone();
 		for(Drone drone: drones)addDrone(drone);
 		this.marker = new Image(new Location(blockLocation.getX()*Map.DEFAULT_SQUARESIZE, blockLocation.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),

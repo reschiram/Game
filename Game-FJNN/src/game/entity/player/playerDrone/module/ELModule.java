@@ -29,17 +29,20 @@ public class ELModule extends DroneModule{
 					&& !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 				
 				this.drone.getPathController().setBlocked(false);
-				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation(), DroneModule.publishPathToServer);
+				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation(), true);
 				this.drone.getPathController().setBlocked(true);
+			} else if(!this.isLoading) {
+				this.isLoading = true;
+				
+				System.out.println("Start Loading Energy");
+				GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
 			}
-			this.isLoading = true;
-			
-			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
 		}
-		if(energyLoad > 0.8*maxEnergyLoad){
+		if(energyLoad > 0.8*maxEnergyLoad && isLoading){
 			this.drone.getPathController().setBlocked(false);
 			this.isLoading = false;
 			
+			System.out.println("Stop Loading Energy");
 			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
 		}
 	}

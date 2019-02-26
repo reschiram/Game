@@ -34,12 +34,12 @@ public class DroneUpdateEvent extends EntityEvent<Drone>{
 		if(module != null) {
 			CTDModule ctdModule = (CTDModule) module;
 			this.currentDDroneTarget = ctdModule.getCurrentTarget();
-		}
+		} else this.currentDDroneTarget = new DroneTargetInfos(null, false); 
 		module = this.getEntity().getModule(CTBModule.class);
 		if(module != null) {
 			CTBModule ctbModule = (CTBModule) module;
 			this.currentBDroneTarget = ctbModule.getCurrentTarget();
-		}
+		} else this.currentBDroneTarget = new DroneTargetInfos(null, false);
 	}
 
 	public DroneUpdateEvent(Drone drone, double energyLevel, boolean isCharging,

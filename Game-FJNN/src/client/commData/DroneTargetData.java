@@ -4,131 +4,137 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import Data.Location;
-import data.readableData.BooleanData;
-import data.readableData.IntegerData;
 import data.readableData.ReadableData;
 import game.entity.player.playerDrone.BDroneTarget;
 import game.entity.player.playerDrone.DDroneTarget;
 
 public class DroneTargetData extends ReadableData<DroneTargetInfos>{
 	
-	private IntegerData blockPosX = new IntegerData("blockPos_X");
-	private IntegerData blockPosY = new IntegerData("blockPos_Y");
-	private IntegerData resID = new IntegerData("resID");
-	private BooleanData done = new BooleanData("isDone");
-	private BooleanData isBuild = new BooleanData("isBuild");
-	private BooleanData isNull = new BooleanData("isNull");
-	private BooleanData doAdd = new BooleanData("doAdd");
+	private int blockPosX;
+	private int blockPosY;
+	private int resID;
+	private boolean done;
+	private boolean isBuild;
+	private boolean isNull;
+	private boolean doAdd;
 
 	public DroneTargetData(String name) {
-		super(name, 4 + 4 + 4 + 1 + 1 + 1);
+		super(name, 4 + 4 + 4 + 1 + 1 + 1 + 1);
 	}
 
 	@Override
 	public void readData(byte[] data) throws Exception {
-		blockPosX	.readData(Arrays.copyOfRange(data, 						0, 4						));
-		blockPosY	.readData(Arrays.copyOfRange(data, 						4, 4 + 4					));
-		resID		.readData(Arrays.copyOfRange(data, 					4 + 4, 4 + 4 + 4				));
-		done		.readData(Arrays.copyOfRange(data, 				4 + 4 + 4, 4 + 4 + 4 + 1			));
-		isBuild		.readData(Arrays.copyOfRange(data, 			4 + 4 + 4 + 1, 4 + 4 + 4 + 1 + 1		));
-		isNull		.readData(Arrays.copyOfRange(data, 		4 + 4 + 4 + 1 + 1, 4 + 4 + 4 + 1 + 1 + 1	));
-		doAdd		.readData(Arrays.copyOfRange(data, 	4 + 4 + 4 + 1 + 1 + 1, 4 + 4 + 4 + 1 + 1 + 1 + 1));
+		blockPosX 	= readInt		(Arrays.copyOfRange(data, 						0, 4						));
+		blockPosY 	= readInt		(Arrays.copyOfRange(data, 						4, 4 + 4					));
+		resID		= readInt		(Arrays.copyOfRange(data, 					4 + 4, 4 + 4 + 4				));
+		done		= readboolean	(Arrays.copyOfRange(data, 				4 + 4 + 4, 4 + 4 + 4 + 1			));
+		isBuild		= readboolean	(Arrays.copyOfRange(data, 			4 + 4 + 4 + 1, 4 + 4 + 4 + 1 + 1		));
+		isNull		= readboolean	(Arrays.copyOfRange(data, 		4 + 4 + 4 + 1 + 1, 4 + 4 + 4 + 1 + 1 + 1	));
+		doAdd		= readboolean	(Arrays.copyOfRange(data, 	4 + 4 + 4 + 1 + 1 + 1, 4 + 4 + 4 + 1 + 1 + 1 + 1));
 
-		this.data = new DroneTargetInfos(resID.getData().intValue(),
-				new Location(blockPosX.getData().intValue(), blockPosY.getData().intValue()),
-				done.getData().booleanValue(), isBuild.getData().booleanValue(), isNull.getData().booleanValue(),
-				doAdd.getData().booleanValue());
+		this.data = new DroneTargetInfos(resID, new Location(blockPosX, blockPosY), done, isBuild, isNull, doAdd);
+	}
+
+	private boolean readboolean(byte[] data) {
+		return (data[0] == 1);
+	}
+
+	private int readInt(byte[] data) {
+		return ByteBuffer.wrap(data).getInt();
 	}
 
 	@Override
 	public void readData(Object data) throws Exception {
 		if(data instanceof BDroneTarget) {
 			BDroneTarget target = (BDroneTarget) data;
-			this.blockPosX.readData(target.getBlockLocation().getX());
-			this.blockPosY.readData(target.getBlockLocation().getY());
-			this.resID.readData(target.getID());
-			this.done.readData(target.isDone());
-			this.isBuild.readData(true);
-			this.isNull.readData(false);
-			this.doAdd.readData(true);
+//			System.out.println("publish BDroneTarget: " + target.isDone() + "|" + false + "|" + target.getBlockLocation());
+			this.blockPosX = target.getBlockLocation().getX();
+			this.blockPosY = target.getBlockLocation().getY();
+			this.resID = target.getID();
+			this.done = target.isDone();
+			this.isBuild = true;
+			this.isNull = false;
+			this.doAdd = true;
 		} else if(data instanceof DDroneTarget) {
 			DDroneTarget target = (DDroneTarget) data;
-			this.blockPosX.readData(target.getBlockLocation().getX());
-			this.blockPosY.readData(target.getBlockLocation().getY());
-			this.resID.readData(-1);
-			this.done.readData(target.isDone());
-			this.isBuild.readData(false);
-			this.isNull.readData(false);
-			this.doAdd.readData(true);
+//			System.out.println("publish DDroneTarget: " + target.isDone() + "|"  + false + "|" + target.getBlockLocation());
+			this.blockPosX = target.getBlockLocation().getX();
+			this.blockPosY = target.getBlockLocation().getY();
+			this.resID = 0;
+			this.done = target.isDone();
+			this.isBuild = false;
+			this.isNull = false;
+			this.doAdd = true;
 		} else if(data instanceof DroneTargetInfos) {
 			DroneTargetInfos target = (DroneTargetInfos) data;
-			this.blockPosX.readData(target.getBlockLocation().getX());
-			this.blockPosY.readData(target.getBlockLocation().getY());
-			this.resID.readData(target.getResID());
-			this.done.readData(target.isDone());
-			this.isBuild.readData(target.isBuild());
-			this.isNull.readData(target.isNull());
-			this.doAdd.readData(target.doAdd());
+//			System.out.println("publish CDroneTargetInfos: " + target.isDone() + "|"  + target.isNull() + "|" + target.getBlockLocation());
+			this.blockPosX = target.getBlockLocation().getX();
+			this.blockPosY = target.getBlockLocation().getY();
+			this.resID = target.getResID();
+			this.done = target.isDone();
+			this.isBuild = target.isBuild();
+			this.isNull = target.isNull();
+			this.doAdd = target.doAdd();
 		} else {
-			this.blockPosX.readData(-1);
-			this.blockPosY.readData(-1);
-			this.resID.readData(-1);
-			this.done.readData(true);
-			this.isBuild.readData(false);
-			this.isNull.readData(true);
-			this.doAdd.readData(false);
+//			System.out.println("publish null: " + true + "|"  + true + "|" + 0 + "|" + 0);
+			this.blockPosX = 0;
+			this.blockPosY = 0;
+			this.resID = 0;
+			this.done = true;
+			this.isNull = true;
 		}
 
-		this.data = new DroneTargetInfos(resID.getData().intValue(),
-				new Location(blockPosX.getData().intValue(), blockPosY.getData().intValue()),
-				done.getData().booleanValue(), isBuild.getData().booleanValue(), isNull.getData().booleanValue(),
-				doAdd.getData().booleanValue());
+		this.data = new DroneTargetInfos(resID, new Location(blockPosX, blockPosY), done, isBuild, isNull, doAdd);
 	}
 
 	@Override
 	public void readString(String data) throws Exception {
 		String[] infos = data.split("|");
-		blockPosX.readData(infos[0]);
-		blockPosY.readData(infos[1]);
-		resID.readData(infos[2]);
-		done.readData(infos[3]);
-		isBuild.readData(infos[4]);
-		isNull.readString(infos[5]);
-		doAdd.readString(infos[6]);
+		blockPosX = Integer.parseInt(infos[0]);
+		blockPosY = Integer.parseInt(infos[1]);
+		resID = Integer.parseInt(infos[2]);
+		done = Boolean.parseBoolean(infos[3]);
+		isBuild = Boolean.parseBoolean(infos[4]);
+		isNull = Boolean.parseBoolean(infos[5]);
+		doAdd = Boolean.parseBoolean(infos[6]);
 
-		this.data = new DroneTargetInfos(resID.getData().intValue(),
-				new Location(blockPosX.getData().intValue(), blockPosY.getData().intValue()),
-				done.getData().booleanValue(), isBuild.getData().booleanValue(), isNull.getData().booleanValue(),
-				doAdd.getData().booleanValue());
+		this.data = new DroneTargetInfos(resID, new Location(blockPosX, blockPosY), done, isBuild, isNull, doAdd);
 	}
 
 	@Override
 	public byte[] toData() throws Exception {
 		byte[] data = new byte[this.byteLength];
-		ByteBuffer.wrap(data).put(this.blockPosX.toData());
-		ByteBuffer.wrap(data).put(this.blockPosY.toData());
-		ByteBuffer.wrap(data).put(this.resID.toData());
-		ByteBuffer.wrap(data).put(this.done.toData());
-		ByteBuffer.wrap(data).put(this.isBuild.toData());
-		ByteBuffer.wrap(data).put(this.isNull.toData());
-		ByteBuffer.wrap(data).put(this.doAdd.toData());
-		return null;
+		ByteBuffer warpper = ByteBuffer.wrap(data);
+		warpper.putInt(blockPosX);
+		warpper.putInt(blockPosY);
+		warpper.putInt(resID);
+		warpper.put(done ? new byte[]{1} : new byte[]{0});
+		warpper.put(isBuild ? new byte[]{1} : new byte[]{0});
+		warpper.put(isNull ? new byte[]{1} : new byte[]{0});
+		warpper.put(doAdd ? new byte[]{1} : new byte[]{0});
+		return data;
 	}
 
 	@Override
 	public String toString() {
-		return blockPosX.toString() + "|" +blockPosY.toString() + "|" + resID.toString() + "|" + done.toString() + "|" + isBuild.toString() + "|" + isNull.toString() + "|" + doAdd.toString();
+		return blockPosX + "|" +blockPosY + "|" + resID + "|" + done + "|" + isBuild + "|" + isNull + "|" + doAdd;
 	}
 
 	@Override
 	public DroneTargetData clone() {
 		DroneTargetData targetData = new DroneTargetData(this.getName());
-		if(this.data != null) {
-			try {
-				targetData.readData(this.data);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		try {			
+			targetData.blockPosX = this.blockPosX;
+			targetData.blockPosY = this.blockPosY;
+			targetData.resID = this.resID;
+			targetData.done = this.done;
+			targetData.isBuild = this.isBuild;
+			targetData.isNull = this.isNull;
+			targetData.doAdd = this.doAdd;
+			
+			targetData.data = new DroneTargetInfos(resID, new Location(blockPosX, blockPosY), done, isBuild, isNull, doAdd);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return targetData;
 	}

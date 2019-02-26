@@ -112,7 +112,11 @@ public class GameCEM implements ToClientMessageEventListener{
 				}				
 				
 				Drone drone = droneTarget.getEntity();
-				drone.update(droneTarget);
+				try {
+					drone.update(droneTarget);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
 				event.setActive(false);
 			}
 		}catch (Exception e) {

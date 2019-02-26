@@ -43,8 +43,8 @@ public class DroneTargetInfos {
 			this.isNull = false;
 			this.doAdd = add;
 		} else if(droneTarget == null) {
-			this.resID = -1;
-			this.blockLoc = new Location(-1, -1);
+			this.resID = 0;
+			this.blockLoc = new Location(0, 0);
 			this.isDone = true;
 			this.isBuild = false;
 			this.isNull = true;

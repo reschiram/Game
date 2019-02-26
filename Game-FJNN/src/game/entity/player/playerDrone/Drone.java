@@ -11,6 +11,7 @@ import data.ImageData;
 import events.entity.DroneUpdateEvent;
 import game.entity.Entity;
 import game.entity.player.playerDrone.module.CTBModule;
+import game.entity.player.playerDrone.module.CTDModule;
 import game.entity.player.playerDrone.module.DroneModule;
 import game.entity.player.playerDrone.module.ELModule;
 import game.entity.type.EntityType;
@@ -113,6 +114,11 @@ public class Drone extends Entity implements PathUser{
 		
 		if(this.modules.containsKey(CTBModule.class)) {
 			CTBModule module = (CTBModule) this.modules.get(CTBModule.class);
+			module.updateTarget(droneUpdate.getCurrentBDroneTarget());
+		}
+		
+		if(this.modules.containsKey(CTDModule.class)) {
+			CTDModule module = (CTDModule) this.modules.get(CTDModule.class);
 			module.updateTarget(droneUpdate.getCurrentBDroneTarget());
 		}
 	}

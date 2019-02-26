@@ -150,32 +150,19 @@ public abstract class CTModule extends DroneModule{
 		if(newCurrentTarget == null) return;	
 		int newKey = newCurrentTarget.getBlockLocation().getX()+newCurrentTarget.getBlockLocation().getY()*Map.getMap().getWidth();
 		
-		if(currentDroneTarget != null) {
-			
+		if(currentDroneTarget != null && (newCurrentTarget.isDone() || newCurrentTarget.isNull())) {			
+			this.currentDroneTarget = null;
+			this.drone.getPathController().setTarget(null, false);			
 		}
 		
-		if (newCurrentTarget.isNull() && currentDroneTarget != null) {
-			int key = currentDroneTarget.getBlockLocation().getX()
-					+ currentDroneTarget.getBlockLocation().getY() * Map.getMap().getWidth();
-			
-			if(hasTarget(key, currentDroneTarget)) this.targets.remove(key);			
-			this.currentDroneTarget = null;
-			this.drone.getPathController().setTarget(null, false);
-			
+		if (newCurrentTarget.isNull()) {			
 			if(this.targets.containsKey(newKey)) {
 				DroneTarget target = this.targets.get(newKey);
 				this.targets.remove(newKey);
 				target.removeDrone(this.drone);
 			}
 			return;
-		} else if (newCurrentTarget.isDone()) {
-			int key = currentDroneTarget.getBlockLocation().getX()
-					+ currentDroneTarget.getBlockLocation().getY() * Map.getMap().getWidth();
-			
-			if(hasTarget(key, currentDroneTarget)) this.targets.remove(key);			
-			this.currentDroneTarget = null;
-			this.drone.getPathController().setTarget(null, false);
-			
+		} else if (newCurrentTarget.isDone()) {			
 			if(this.targets.containsKey(newKey)) {
 				DroneTarget target = this.targets.get(newKey);
 				this.targets.remove(newKey);
@@ -185,12 +172,7 @@ public abstract class CTModule extends DroneModule{
 			return;
 		}
 		
-		DroneTarget newDroneTarget = null;
-		if(newCurrentTarget.isBuild()) {
-			newDroneTarget = new BDroneTarget(newCurrentTarget.getBlockLocation(), MapResource.getMapResource(newCurrentTarget.getResID()), this.drone);
-		} else {
-			newDroneTarget = new DDroneTarget(newCurrentTarget.getBlockLocation(), this.drone);
-		}
+		DroneTarget newDroneTarget = this.targets.get(newKey);
 		if(newCurrentTarget != null) {
 			this.currentDroneTarget = newDroneTarget;
 			this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), false);

@@ -134,7 +134,7 @@ public class GameCPM {
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
 		DataPackage.setType(new PackageType(DataPackage_DroneUpdate, "DroneUpdate", new IntegerData("Entity_ID"),
-				new DoubleData("EnergyCount"), new IntegerData("isCharging"),
+				new DoubleData("EnergyCount"), new BooleanData("isCharging"),
 				new DroneTargetData("currentBDroneTarget"), new DroneTargetData("currentDDroneTarget"), new DroneTargetData("droneTargetChange"),
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		

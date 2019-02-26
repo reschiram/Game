@@ -3,6 +3,8 @@ package data.map;
 import java.util.HashMap;
 
 import Data.Location;
+import client.commData.DroneTargetData;
+import client.commData.DroneTargetInfos;
 import data.DataPackage;
 import data.MapResource;
 import data.PackageType;
@@ -128,6 +130,14 @@ public class MapSEM implements ToServerMessageEventListener{
 			event.setActive(false);
 			send = true;
 		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneUpdate) {
+			DroneTargetInfos currentBDroneTargetInfos = ((DroneTargetData) event.getMessage().getDataStructures()[3]).getData();
+			DroneTargetInfos currentDDroneTargetInfos = ((DroneTargetData) event.getMessage().getDataStructures()[4]).getData();
+			DroneTargetInfos nextDroneTargetInfos = ((DroneTargetData) event.getMessage().getDataStructures()[5]).getData();
+			
+			System.out.print  ("BDroneTarget: " + ((DroneTargetData) event.getMessage().getDataStructures()[3]).toString() + " -> " + currentBDroneTargetInfos.getBlockLocation() + " => ");
+			System.out.print  ("DDroneTarget: " + ((DroneTargetData) event.getMessage().getDataStructures()[4]).toString() + " -> " + currentDDroneTargetInfos.getBlockLocation() + " => ");
+			System.out.println("CDroneTarget: " + ((DroneTargetData) event.getMessage().getDataStructures()[5]).toString() + " -> " + nextDroneTargetInfos.getBlockLocation());
+			
 			event.setActive(false);
 			send = true;
 		}
