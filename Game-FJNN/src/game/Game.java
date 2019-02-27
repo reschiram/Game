@@ -84,6 +84,8 @@ public class Game {
 
 	public void tick() {
 		if(this.started){
+			this.map.tick();			
+			
 			this.gameInterface.			tick();
 			this.map.getEntityManager().tick();
 			this.dayManager.			tick();

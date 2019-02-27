@@ -19,15 +19,15 @@ public class Grass extends UpdatableBlockData{
 		
 		int x = Map.getMap().getXOver((mx-1)*Map.DEFAULT_SQUARESIZE)/Map.DEFAULT_SQUARESIZE;
 		int state = 0;
-		Mapdata currentData = Map.getMap().getChunk(x,y).getMapData(x, y  , res.isGround())[0];
+		Mapdata currentData = Map.getMap().getMapData(x, y)[res.isGround() ? Map.DEFAULT_GROUNDLAYER : Map.DEFAULT_BUILDLAYER];
 		if(currentData!=null && (!res.isGround() || currentData.getResource().getID()!=MapResource.Air_Background.getID()))state += 1;
-		currentData = Map.getMap().getChunk(x,y-1).getMapData(x, y-1, res.isGround())[0];
+		currentData = Map.getMap().getMapData(x, y-1)[res.isGround() ? Map.DEFAULT_GROUNDLAYER : Map.DEFAULT_BUILDLAYER];
 		if(currentData!=null && (!res.isGround() || currentData.getResource().getID()!=MapResource.Air_Background.getID()))state += 2;
 		
 		x 	 = Map.getMap().getXOver((mx+1)*Map.DEFAULT_SQUARESIZE)/Map.DEFAULT_SQUARESIZE;
-		currentData = Map.getMap().getChunk(x,y).getMapData(x, y  , res.isGround())[0];
+		currentData = Map.getMap().getMapData(x, y)[res.isGround() ? Map.DEFAULT_GROUNDLAYER : Map.DEFAULT_BUILDLAYER];
 		if(currentData!=null && (!res.isGround() || currentData.getResource().getID()!=MapResource.Air_Background.getID()))state += 10;
-		currentData = Map.getMap().getChunk(x,y-1).getMapData(x, y-1, res.isGround())[0];
+		currentData = Map.getMap().getMapData(x, y-1)[res.isGround() ? Map.DEFAULT_GROUNDLAYER : Map.DEFAULT_BUILDLAYER];
 		if(currentData!=null && (!res.isGround() || currentData.getResource().getID()!=MapResource.Air_Background.getID()))state += 20;
 		
 		if     (state== 0)data.setSpriteState(3);
