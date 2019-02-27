@@ -58,17 +58,17 @@ public class MapLoader {
 						
 						String ground = "";						
 						
-						if(chunk!= null && chunk.getGround()[cx][cy][0]!=null && chunk.getGround()[cx][cy][0] instanceof MapBlock)ground += chunk.getGround()[cx][cy][0].getResource().getID() + seperator;
+						if(chunk!= null && chunk.getInfo()[cx][cy][0] != 0)ground += chunk.getInfo()[cx][cy][0] + seperator;
 						else ground += Resource.noResourceID + seperator;
-						if(chunk!= null && chunk.getGround()[cx][cy][1]!=null && chunk.getGround()[cx][cy][1] instanceof MapBlock)ground += chunk.getGround()[cx][cy][1].getResource().getID();
+						if(chunk!= null && chunk.getInfo()[cx][cy][1] != 0)ground += chunk.getInfo()[cx][cy][1];
 						else ground += Resource.noResourceID;
 						current++;
 						
 						String build = "";						
-						
-						if(chunk!= null && chunk.getBuild()[cx][cy][0]!=null && chunk.getBuild()[cx][cy][0] instanceof MapBlock)build += chunk.getBuild()[cx][cy][0].getResource().getID() + seperator;
+
+						if(chunk!= null && chunk.getInfo()[cx][cy][2] != 0)build += chunk.getInfo()[cx][cy][2] + seperator;
 						else build += Resource.noResourceID + seperator;
-						if(chunk!= null && chunk.getBuild()[cx][cy][1]!=null && chunk.getBuild()[cx][cy][1] instanceof MapBlock)build += chunk.getBuild()[cx][cy][1].getResource().getID();
+						if(chunk!= null && chunk.getInfo()[cx][cy][3] != 0)build += chunk.getInfo()[cx][cy][3];
 						else build += Resource.noResourceID;
 						current++;
 						
@@ -83,27 +83,27 @@ public class MapLoader {
 	}
 
 	public void loadMap() {
-		this.map = new Map(Integer.parseInt(mapFile.get(new Point(1, 2))), Integer.parseInt(mapFile.get(new Point(1, 3))), Integer.parseInt(mapFile.get(new Point(1, 1))));
+
+		int seed = Integer.parseInt(mapFile.get(new Point(1, 1)));
+		int width = Integer.parseInt(mapFile.get(new Point(1, 2)));
+		int height = Integer.parseInt(mapFile.get(new Point(1, 3)));
 		
-		long max = this.map.getWidth()*this.map.getHeight();
+		long max = width*height;
 		long current = 0;
+		
+		int[][][] mapInfo = new int[width][height][4];
 		
 		int idLength = Resource.noResourceID.length();		
 		
-		for(int y = 0; y < map.getHeight(); y++){
-			for(int x = 0; x < map.getWidth(); x++){
+		for(int y = 0; y < height; y++){
+			for(int x = 0; x < width; x++){
 				
-				String squareData = mapFile.get(new Point(x+2, y));		
+				String squareData = mapFile.get(new Point(x+2, y));	
+				
 				for(int i = 0; i < 4; i++) {
 					int from = i*(idLength+1);
 					Integer id = Integer.parseInt(squareData.substring(from, from+idLength)); 					
-					if(id != 0) {
-						if (i >= 2) {
-							map.addToBuild(id, x, y, false);
-						} else {
-							map.addToGround(id, x, y, false);
-						}
-					}
+					mapInfo[x][y][i] = id;
 				}
 				
 				current++;
@@ -111,7 +111,7 @@ public class MapLoader {
 			}
 		}
 		
-		map.finalize();
+		this.map = new Map(mapInfo, seed);
 	}
 
 	public Map getMap(){

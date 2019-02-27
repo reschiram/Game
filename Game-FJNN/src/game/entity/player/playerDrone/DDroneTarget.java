@@ -14,7 +14,7 @@ public class DDroneTarget extends DroneTarget{
 	
 	@Override
 	public boolean interact() {
-		Mapdata data = Map.getMap().getChunks()[blockLocation.x/Map.DEFAULT_CHUNKSIZE][blockLocation.y/Map.DEFAULT_CHUNKSIZE].getMapData(blockLocation, false)[Entity.DEFAULT_ENTITY_UP];
+		Mapdata data = Map.getMap().getMapData(blockLocation)[Entity.DEFAULT_ENTITY_UP + Map.DEFAULT_BUILDLAYER];
 		if(data==null){
 			end(data);
 			return super.interact();

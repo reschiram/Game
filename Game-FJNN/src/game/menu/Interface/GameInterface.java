@@ -11,6 +11,7 @@ import data.map.InteractableBlockData;
 import game.Game;
 import game.map.Map;
 import game.gridData.map.MapBlock;
+import game.gridData.map.Mapdata;
 
 public class GameInterface {
 	
@@ -32,10 +33,10 @@ public class GameInterface {
 			}else currentData.act(new Location(p));
 		}else if(Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON1)){
 //			System.out.println(p.toString());
-			MapBlock[] blocks = this.game.getMap().getBlocks(new Location(p));
+			Mapdata[] blocks = this.game.getMap().getMapData(new Location(p));
 			for(int i = 0; i<blocks.length; i++){
-				MapBlock block = blocks[i];
-				if(block!=null){
+				if(blocks[i] != null && blocks[i] instanceof MapBlock) {
+				MapBlock block = (MapBlock) blocks[i];
 					if(((MapResource)block.getResource()).hasData() && ((MapResource)block.getResource()).getBlockData() instanceof InteractableBlockData){
 						InteractableBlockData data = (InteractableBlockData)((MapResource)block.getResource()).getBlockData();
 						data.act(new Location(p));
