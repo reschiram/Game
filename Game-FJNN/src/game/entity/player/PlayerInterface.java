@@ -40,7 +40,7 @@ public class PlayerInterface {
 			Location digLocation = new Location(Map.getMap().getXOver(this.pointer.getX()+Map.getMap().getMoved().getX()+pointer.getWidth()/2)/Map.DEFAULT_SQUARESIZE,
 												(int)(this.pointer.getY()+Map.getMap().getMoved().getY()+pointer.getHeigth()/2	)/Map.DEFAULT_SQUARESIZE);
 			
-			Mapdata data = Map.getMap().getMapData(digLocation)[Entity.DEFAULT_ENTITY_UP + Map.DEFAULT_BUILDLAYER];
+			Mapdata data = Map.getMap().getChunks()[digLocation.x/Map.DEFAULT_CHUNKSIZE][digLocation.y/Map.DEFAULT_CHUNKSIZE].getMapData(digLocation, false)[Entity.DEFAULT_ENTITY_UP];
 			if(data!=null){
 				data.damage(2);
 				if(data.isDestroyed()){

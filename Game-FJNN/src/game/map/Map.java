@@ -18,7 +18,6 @@ import game.Game;
 import game.GameManager;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
-import game.entity.player.Player;
 import game.gridData.map.*;
 import game.pathFinder.system.PathSystem;
 
@@ -30,8 +29,6 @@ public class Map {
 	public static final int DEFAULT_BUILDLAYER  =  2;
 	
 	public static final int DEFAULT_GROUNDLEVEL = 50; 
-	
-	private static final int DEFAULT_LOADRADIUS =  3; 
 	
 	private static Map Map;
 	public static Map getMap() {
@@ -53,56 +50,53 @@ public class Map {
 	
 	private double acceleration = 0.2;
 	
-	public Map(int[][][] mapInfo, int seed) {
-		loadMap_Step1(mapInfo.length, mapInfo[0].length);
-		
-		for(int x = 0; x < this.chunks.length; x++){
-			for(int y = 0; y < this.chunks[x].length; y++){
-				for(int i = 0; i<2; i++){					
-					this.chunks[x][y] = new MapChunk(x, y, mapInfo);
-				}
-			}
-		}
-		
-		loadMap_Step2(seed);
-	}
-
-	public Map(int[][][] groundData, int[][][] buildData, int seed) {
-		loadMap_Step1(groundData.length, groundData[0].length);
-		
-		for(int x = 0; x < this.chunks.length; x++){
-			for(int y = 0; y < this.chunks[x].length; y++){
-				for(int i = 0; i<2; i++){					
-					this.chunks[x][y] = new MapChunk(x, y, groundData, buildData);
-				}
-			}
-		}
-		
-		loadMap_Step2(seed);
-	}
+	private boolean finalized = false;
 	
-	private void loadMap_Step1(int width, int height) {
+	public Map(int width, int height, int seed) {
 		Map = this;
-		
-		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, DEFAULT_GROUNDLAYER, DEFAULT_GROUNDLAYER + 1);
-		Engine.getEngine(this, this.getClass()).addLayer(true, false, false, DEFAULT_BUILDLAYER, DEFAULT_BUILDLAYER + 1);
-		
+		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0, 1);
+		Engine.getEngine(this, this.getClass()).addLayer(true, false, false, 2, 3);
 		this.Width = width;
 		this.Height = height;
-		this.chunks = new MapChunk
-				[(int) Math.ceil(((double) this.Width ) / ((double) DEFAULT_CHUNKSIZE))]
-				[(int) Math.ceil(((double) this.Height) / ((double) DEFAULT_CHUNKSIZE))];
-	}
-	
-	private void loadMap_Step2( int seed) {		
+		this.chunks = new MapChunk[this.Width / DEFAULT_CHUNKSIZE + 1][this.Height / DEFAULT_CHUNKSIZE + 1];
+		
 		this.seed = seed;
 
 		entityManager = new EntityManager(chunks.length, chunks[0].length);
 		Engine.setGameWidth(Width*DEFAULT_SQUARESIZE);
 		
-		pathSystem = new PathSystem(this);		
+		pathSystem = new PathSystem(this);
+	}
+	
+	public Map(int[][][] ground, int[][][] build, int seed) {
+		Map = this;
+		Engine.getEngine(this, this.getClass()).addLayer(false, false, false, 0, 1);
+		Engine.getEngine(this, this.getClass()).addLayer(true, false, false, 2, 3);
+		this.Width = ground.length;
+		this.Height = ground[0].length;
+		this.chunks = new MapChunk[this.Width / DEFAULT_CHUNKSIZE + 1][this.Height / DEFAULT_CHUNKSIZE + 1];
+		
+		for(int x = 0; x<this.Width; x++){
+			for(int y = 0; y<this.Height; y++){
+				for(int i = 0; i<2; i++){
+					if(ground[x][y][i]!=0)addToGround(ground[x][y][i], x, y, false);
+					if(build [x][y][i]!=0)addToBuild (build [x][y][i], x, y, false);
+				}
+			}
+		}
+		
+		this.seed = seed;
+
+		entityManager = new EntityManager(chunks.length, chunks[0].length);
+		Engine.setGameWidth(Width*DEFAULT_SQUARESIZE);
+		
+		pathSystem = new PathSystem(this);
 	}
 
+	public boolean hasResource(MapResource res, int x, int y){
+		MapChunk chunk = getChunk(x, y);
+		return chunk.getMapData(x, y, res.isGround())[res.getLayerUp()]!=null && chunk.getMapData(x, y, res.isGround())[res.getLayerUp()].getResource().getID() == res.getID();
+	}
 
 	public int getWidth() {
 		return Width;
@@ -111,40 +105,32 @@ public class Map {
 	public int getHeight() {
 		return Height;
 	}
-
-	private void setBlock(Location blockLocation, MapResource resource, boolean publishToServer) {
+	
+	private void setBlock(Location location, MapResource resource, boolean publishToServer){
 		MapBlock b = null;
-		if (resource.isGround())b = new MapBlock(resource, DEFAULT_GROUNDLAYER + resource.getLayerUp(), blockLocation);
-		else b = new MapBlock(resource, DEFAULT_BUILDLAYER + resource.getLayerUp(), blockLocation);
-		
-		deleteBlock(blockLocation, resource.getLayerUp(), resource.isGround(), publishToServer);
-		
-		for (ResourcePart resPart : resource.getResourceParts()) {
-			Location loc = new Location(blockLocation.x + resPart.getLocation().x,
-					blockLocation.y + resPart.getLocation().y);
+		if(resource.isGround())b = new MapBlock(resource, DEFAULT_GROUNDLAYER+resource.getLayerUp(), location);
+		else b = new MapBlock(resource, DEFAULT_BUILDLAYER+resource.getLayerUp(), location);
+		deleteBlock(location, resource.getLayerUp(), resource.isGround(), publishToServer);
+		for(ResourcePart resPart : resource.getResourceParts()){
+			Location loc = new Location(location.x+resPart.getLocation().x, location.y+resPart.getLocation().y);
 			deleteBlock(loc, resource.getLayerUp(), resource.isGround(), publishToServer);
 		}
-		
 		Mapdata[] parts = b.create();
-		for (int i = 1; i < parts.length; i++) {
+		for(int i = 1; i<parts.length; i++){
 			getChunk(parts[i].getLocation()).set(parts[i]);
 			update(parts[i].getLocation().getX(), parts[i].getLocation().getY());
 			Game.getLightOverlay().update(parts[i], false);
 		}
-		b.show();		
-		getChunk(blockLocation).set(b);
-		update(blockLocation.getX(), blockLocation.getY());
+		b.show();
+		getChunk(location).set(b);
+		update(location.getX(), location.getY());
 		Game.getLightOverlay().update(b, false);
-
-		if (publishToServer) GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(b));
+		
+		if(publishToServer) GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(b));
 	}
 	
-	private MapChunk getChunk(Location blockLocation) {
-		return chunks[blockLocation.getX() / DEFAULT_CHUNKSIZE][blockLocation.getY() / DEFAULT_CHUNKSIZE];
-	}
-
 	private void update(int x, int y){
-		if(!this.chunks[x / DEFAULT_CHUNKSIZE][y / DEFAULT_CHUNKSIZE].isFinalized())return;
+		if(!finalized)return;
 		updateSurface(x);
 		updateBlock(x, y);
 		
@@ -165,7 +151,7 @@ public class Map {
 	
 	private void updateBlock(int x, int y){
 		boolean found = false;
-		Mapdata[] data = this.chunks[x / DEFAULT_CHUNKSIZE][y / DEFAULT_CHUNKSIZE].getMapData(x,y);
+		Mapdata[] data = getChunk(x, y).getMapData(x,y);
 		for(int i = data.length-1; i>=0; i--){
 			if(data[i]!=null){
 				if(found)data[i].hide();
@@ -178,7 +164,7 @@ public class Map {
 
 	private void updateSurface(int dx){
 		int surface = Lamp.DEFAULT_SURFACE_LEVELS-1;
-		for(int y = 0; y < this.getHeight(); y++){
+		for(int y = 0; y<=this.getHeight(); y++){
 			Mapdata[] data = getMapData(new Location(dx, y));
 			int found = -1;
 			for(int i = 0; i<data.length; i++){
@@ -192,7 +178,7 @@ public class Map {
 	}
 	
 	public void deleteBlock(Location location, int layerUp, boolean isGround, boolean publishToServer) {
-		Mapdata mapdata = getMapData(location)[layerUp + (isGround ? 0 : 2)];
+		Mapdata mapdata = getChunk(location).getMapData(location, isGround)[layerUp];
 		if(mapdata!=null){
 			if(mapdata instanceof MapBlock){
 				MapBlock b = (MapBlock)mapdata;
@@ -223,6 +209,18 @@ public class Map {
 		}else{			
 			setBlock(location, MapResource.getMapResource(res), publishToServer);
 		}
+	}
+	
+	private MapChunk getChunk(Location location) {
+		return getChunk(location.x, location.y);
+	}
+	
+	public MapChunk getChunk(int x, int y) {
+//		System.out.print(x+"|"+y+" -> ");
+		x/=DEFAULT_CHUNKSIZE;
+		y/=DEFAULT_CHUNKSIZE;
+		if(this.chunks[x][y]==null)this.chunks[x][y] = new MapChunk(x*DEFAULT_CHUNKSIZE, y*DEFAULT_CHUNKSIZE, DEFAULT_CHUNKSIZE, DEFAULT_CHUNKSIZE);
+		return this.chunks[x][y];
 	}
 
 	public void addToGround(int res, int x, int y, boolean publishToServer) {		
@@ -272,6 +270,23 @@ public class Map {
 		}
 	}
 
+	public MapBlock[] getBlocks(Location loc) {
+		MapBlock[] blocks = new MapBlock[4];
+		for(int i = 0; i<2; i++){
+			Mapdata data = getChunk(loc).getMapData(loc, true)[i];
+			if(data!=null){
+				if(data instanceof MapBlock)blocks[0] = (MapBlock) data;
+				else blocks[0+i] = ((MapDummieBlock)data).getBlock();
+			}
+			data = getChunk(loc).getMapData(loc, false)[i];
+			if(data!=null){
+				if(data instanceof MapBlock)blocks[2] = (MapBlock) data;
+				else blocks[2+i] = ((MapDummieBlock)data).getBlock();
+			}
+		}
+		return blocks;
+	}
+
 	public void hide() {
 		for(int x = 0; x<chunks.length; x++){
 			for(int y = 0; y<chunks[x].length; y++){
@@ -310,29 +325,12 @@ public class Map {
 		return blocks;
 	}
 
-	public Mapdata[] getMapData(Location blockLocation) {
-		blockLocation.x = getBlockXOver(blockLocation.getX());
-		
-		int cx = blockLocation.getX() / DEFAULT_CHUNKSIZE;
-		int cy = blockLocation.getY() / DEFAULT_CHUNKSIZE;
-
+	public Mapdata[] getMapData(Location location) {
+		location.x = getBlockXOver(location.getX());
+		MapChunk chunk = getChunk(location);
 		Mapdata[] data = new Mapdata[4];
-		for (int i = 0; i < data.length; i++) {
-			data[i] = this.chunks[cx][cy].getMapData(blockLocation.getX(), blockLocation.getY())[i];
-		}
-		return data;
-	}
-
-	public Mapdata[] getMapData(int blockX, int blockY) {
-		blockX = getBlockXOver(blockX);
-		
-		int cx = blockX / DEFAULT_CHUNKSIZE;
-		int cy = blockY / DEFAULT_CHUNKSIZE;
-		
-		Mapdata[] data = new Mapdata[4];
-		for (int i = 0; i < data.length; i++) {
-			data[i] = this.chunks[cx][cy].getMapData(blockX, blockY)[i];
-		}
+		for(int i = 0; i<2; i++)data[i  ] = chunk.getMapData(location, true )[i];
+		for(int i = 0; i<2; i++)data[i+2] = chunk.getMapData(location, false)[i];
 		return data;
 	}
 
@@ -352,14 +350,14 @@ public class Map {
 	}
 	
 	public int getXOver(int x){
-		while(x<0)x = getWidth()*DEFAULT_SQUARESIZE+x;
-		while(x>= getWidth()*DEFAULT_SQUARESIZE)x = x-getWidth()*DEFAULT_SQUARESIZE;
+		if(x<0)x = getWidth()*DEFAULT_SQUARESIZE+x;
+		else if(x>= getWidth()*DEFAULT_SQUARESIZE)x = x-getWidth()*DEFAULT_SQUARESIZE;
 		return x;
 	}
 	
 	public int getBlockXOver(int x) {
-		while(x<0)x = getWidth()+x;
-		while(x>= getWidth())x = x-getWidth();
+		if(x<0)x = getWidth()+x;
+		else if(x>= getWidth())x = x-getWidth();
 		return x;
 	}
 	
@@ -367,18 +365,18 @@ public class Map {
 		return seed;
 	}
 	
-	public void finalize(MapChunk chunk) {		
-		chunk.setFinalized(true);
-		
-		for (int x = 0; x < DEFAULT_CHUNKSIZE; x++) {
-			for (int y = 0; y < DEFAULT_CHUNKSIZE; y++) {
-				update(x, y);
-				for (int i = 0; i < chunk.getMapData().length; i++) {
-					if (chunk.getMapData()[x][y][0] != null)
-						Game.getLightOverlay().update(getMapData(new Location(x, y))[0], false);
-				}
+	public void finalize(){
+		for(int x = 0; x<Width; x++){
+			for(int y = 0; y<Height; y++){
+				updateBlock(x, y);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[0], false);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[1], false);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[2], false);
+				Game.getLightOverlay().update(getMapData(new Location(x, y))[3], false);
 			}
+			updateSurface(x);
 		}
+		this.finalized = true;
 	}
 
 	public boolean entityCanAcces(Entity entity, int x, int y) {
@@ -412,34 +410,5 @@ public class Map {
 		block.show();
 		getChunk(blockLoc).set(block);
 		if(sendToServer) GameEventManager.getEventManager().publishEvent(new MapBlockAddEvent(block));
-	}
-
-	public void addMapBlock(int blockX, int blockY, int resID, boolean publishToServer) {
-		blockX = getBlockXOver(blockX);
-		
-		this.setBlock(new Location(blockX, blockY), MapResource.getMapResource(resID), publishToServer);
-	}
-
-	public void tick() {
-		if(Player.getPlayer() != null) {
-			Player p = Player.getPlayer();
-			
-			Location blockLoc = p.getBlockLocation();
-			int cx = getBlockXOver(blockLoc.getX()) / DEFAULT_CHUNKSIZE;
-			int cy = blockLoc.getY() / DEFAULT_CHUNKSIZE;
-			
-			for (int dx = cx - DEFAULT_LOADRADIUS; dx <= cx + DEFAULT_LOADRADIUS; dx++) {
-				for (int dy = cy - DEFAULT_LOADRADIUS; dy <= cy + DEFAULT_LOADRADIUS; dy++) {
-					if(dy >= 0 && dy < this.chunks[0].length) {
-						int x = Map.getBlockXOver(dx * DEFAULT_CHUNKSIZE) / DEFAULT_CHUNKSIZE;
-						this.chunks[x][dy].load(this);
-					}
-				}
-			}
-		}
-	}
-
-	public MapChunk getChunk(int blockX, int blockY) {
-		return this.chunks[blockX / DEFAULT_CHUNKSIZE][blockY / DEFAULT_CHUNKSIZE];
 	}
 }
