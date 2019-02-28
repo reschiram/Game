@@ -22,70 +22,16 @@ public abstract class CTModule extends DroneModule{
 	
 	@Override
 	public void tick() {
-		if(currentDroneTarget==null){
-			 if(!targets.isEmpty()){
-				currentDroneTarget = getNextDroneTarget();
-				GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
-				if(currentDroneTarget!=null){
-					if(canSetDroneTarget()) {
-						this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
-					}
-				}
-			 }
-		}else{
-			if(this.drone.getLastMoved()[0] == 0 && this.drone.getLastMoved()[1] == 0 && this.drone.getPathController().isDone()){
-				
-				int distance = this.getDistance(currentDroneTarget);
-				
-				if(distance <= maxDistanceFromTarget){
-					this.drone.setIsWorking(true);
-					if(currentDroneTarget.interact()){
-						this.drone.setIsWorking(false);
-					}
-				}else{
-					if(canSetDroneTarget()) {
-						this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), DroneModule.publishPathToServer);
-					}
-				}
-			} 
-		}
-	}
+		if (currentDroneTarget != null && this.drone.getLastMoved()[0] == 0 && this.drone.getLastMoved()[1] == 0
+				&& this.drone.getPathController().isDone()) {
 
-	private boolean canSetDroneTarget() {
-		if(!this.drone.getPathController().hasTarget())return true;
-		CTModule module = null;
-		if(this instanceof CTDModule){
-			module = (CTModule) this.drone.getModule(CTBModule.class);
-		}else if(this instanceof CTBModule){
-			module = (CTModule) this.drone.getModule(CTDModule.class);
-		}
-		
-//		System.out.println("canSetDroneTarget: "+this.drone.getPathController().getTarget().isEqual(currentDroneTarget.getPixelLocation())+"|"+
-//				(!this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()) || this.drone.getPathController().reachedDestination())+"|"+
-//				(module == null || module.currentDroneTarget==null || (!this.drone.getPathController().getTarget().isEqual(module.currentDroneTarget.getPixelLocation()) || this.drone.getPathController().reachedDestination())));
-//		
-//		System.out.println(this.drone.getPathController().getTarget()+"<~>"+currentDroneTarget.getPixelLocation());
-		
-		if( !this.drone.getPathController().getTarget().isEqual(currentDroneTarget.getPixelLocation()) &&
-		   (!this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()) || this.drone.getPathController().reachedDestination()) &&
-		   (module == null || module.currentDroneTarget==null || (!this.drone.getPathController().getTarget().isEqual(module.currentDroneTarget.getPixelLocation()) || this.drone.getPathController().reachedDestination())))return true;
-		return false;
-	}
-
-	private DroneTarget getNextDroneTarget() {
-		int distance = -1;
-		DroneTarget next = null;
-		for(DroneTarget target: targets.values()){
-			int d = getDistance(target);
-			if(distance == -1 || d < distance){
-				boolean canReach = this.drone.canReach(target.getBlockLocation()); 
-				if(canReach && this.canInteract(target.getBlockLocation())){
-					distance = d;
-					next = target;
+			if (this.getDistance(currentDroneTarget) <= maxDistanceFromTarget) {
+				this.drone.setIsWorking(true);
+				if (currentDroneTarget.interact()) {
+					this.drone.setIsWorking(false);
 				}
 			}
 		}
-		return next;
 	}
 
 	protected boolean canInteract(Location location) {

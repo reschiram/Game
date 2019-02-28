@@ -46,10 +46,10 @@ public class CTBModule extends CTModule{
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected boolean canInteract(Location target) {
-		return Map.getMap().getMapData(target)[Map.DEFAULT_BUILDLAYER]==null;
+		return Map.getMap().getMapData(target)[Map.DEFAULT_BUILDLAYER] == null;
 	}
 	
 	@Override

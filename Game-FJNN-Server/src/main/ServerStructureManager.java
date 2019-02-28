@@ -74,4 +74,8 @@ public class ServerStructureManager {
 		return lobby;
 	}
 
+	public void tick() {
+		this.lobby.tick();
+	}
+
 }

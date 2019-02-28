@@ -1,7 +1,6 @@
 package game.entity.player.playerDrone.module;
 
-import events.GameEventManager;
-import events.entity.DroneUpdateEvent;
+import client.SCUpdateManager;
 
 public class ELModule extends DroneModule{
 	
@@ -12,44 +11,33 @@ public class ELModule extends DroneModule{
 	
 	private boolean isLoading;
 	
+	private SCUpdateManager scum;
+	
 	public ELModule(double energyLoad, double rechargeSpeed, double energyConsumption){
 		this.maxEnergyLoad = energyLoad;
 		this.rechargeSpeed = rechargeSpeed;
 		this.energyConsumption = energyConsumption;
+		
+		this.scum = new SCUpdateManager(SCUpdateManager.Update_Type_Drone_EnergyLoad, this);
 	}
 
 	@Override
 	public void tick() {
 		useEnergy();
+		
 		if(this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
 			this.recharge();
 		}
-		if((energyLoad == 0 || isLoading)){
-			if((!this.drone.getPathController().hasTarget() || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))
-					&& !this.drone.getHitbox().overlaps(this.drone.getHost().getHitbox())){
-				
-				this.drone.getPathController().setBlocked(false);
-				this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation(), true);
-				this.drone.getPathController().setBlocked(true);
-			} else if(!this.isLoading) {
-				this.isLoading = true;
-				
-				System.out.println("Start Loading Energy");
-				GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
-			}
-		}
-		if(energyLoad > 0.8*maxEnergyLoad && isLoading){
-			this.drone.getPathController().setBlocked(false);
-			this.isLoading = false;
-			
-			System.out.println("Stop Loading Energy");
-			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, null));
-		}
+		
+		if (this.energyLoad < 0.01) {
+			this.isLoading = true;
+			scum.update(true);
+		}else scum.update(false);
 	}
 
 	private void useEnergy() {
-		this.energyLoad-=energyConsumption;
-		if(this.energyLoad<0)this.energyLoad = 0;
+		this.energyLoad -= energyConsumption;
+		if (this.energyLoad < 0) this.energyLoad = 0;
 	}
 
 	private void recharge() {
@@ -68,7 +56,6 @@ public class ELModule extends DroneModule{
 	public void updateEnergyLoad(double droneEnergy, boolean droneCharging) {
 		this.energyLoad = droneEnergy;
 		this.isLoading = droneCharging;
-		this.tick();
 	}
 
 }

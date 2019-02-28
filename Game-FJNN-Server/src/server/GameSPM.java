@@ -1,5 +1,6 @@
 package server;
 
+import Data.Location;
 import client.GameCPM;
 import data.PackageType;
 import data.entities.ServerDroneEntity;
@@ -106,5 +107,20 @@ public class GameSPM extends GameCPM{
 				currentClientRequestID, request.getServerEntity().getId(),
 				request.getServerEntity().getExtraInfos(currentClientID))
 		;			
+	}
+
+	public PackageType createDroneEnergyUpdateMessage(int droneID, double energyLoad, boolean isLoading) throws Exception {
+		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+				droneID, energyLoad, isLoading);
+	}
+
+	public PackageType createDroneTargetUpdateMessage(int droneID, Location blockTarget, int targetLevel) throws Exception {
+		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+				droneID, blockTarget.getX(), blockTarget.getY(), targetLevel);
+	}
+
+	public PackageType createDroneActionTargetUpdateMessage(int droneID, int nextActionTargetId, int typeId) throws Exception {
+		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+				droneID, nextActionTargetId, typeId);
 	}
 }

@@ -2,6 +2,7 @@ package data.entities;
 
 import Data.Location;
 import data.Velocity;
+import data.map.ServerMap;
 import game.entity.requester.EntityRequesterService;
 import game.entity.type.EntityType;
 import game.inventory.equipment.EquipmentInventory;
@@ -13,8 +14,8 @@ public class ServerPlayerEntity extends ServerEntity{
 	private EquipmentInventory inv;
 	private Velocity velocity = new Velocity();
 	
-	public ServerPlayerEntity(int id, Location pixeLoc, EntityType entityType, ValidatedUser user, EquipmentInventory inv) {
-		super(id, pixeLoc, entityType);
+	public ServerPlayerEntity(int id, Location pixeLoc, EntityType entityType, ValidatedUser user, EquipmentInventory inv, ServerMap serverMap) {
+		super(id, pixeLoc, entityType, serverMap);
 		this.user = user;
 		this.inv = inv;
 	}

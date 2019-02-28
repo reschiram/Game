@@ -1,9 +1,13 @@
 package data.map;
 
+import Data.Hitbox;
 import Data.Location;
 import data.MapResource;
+import data.entities.ServerEntity;
 import data.server.Lobby;
 import file.csv.CSV_File;
+import game.entity.Entity;
+import game.map.Map;
 import game.map.MapGenerationData;
 import game.map.MapGenerator;
 import server.GameSM;
@@ -19,6 +23,8 @@ public class ServerMap {
 	private ServerMapFile mapFile;
 	private ServerEntityManager entityManager;
 	private InventoryManager inventoryManager;
+	
+	private MapSM mapSM;
 	
 	public ServerMap(CSV_File mapFile) {
 		this.mapFile = new ServerMapFile(this, mapFile);	
@@ -93,6 +99,35 @@ public class ServerMap {
 
 	public void start(Lobby lobby, GameSM gameSM) {
 		new MapSEM(lobby, gameSM);
+		
+		this.mapSM = new MapSM(lobby, gameSM);
+	}
+
+	public void tick() {
+		this.entityManager.tick();
+	}
+
+	public MapSM getMapSM() {
+		return mapSM;
+	}
+
+	public boolean canHost(ServerEntity entity, Location blockLocation) {
+		int resId = this.mapBuild[blockLocation.getX()][blockLocation.getY()][Entity.DEFAULT_ENTITY_UP];
+		if(resId == 0) return true;
+		
+		MapResource res = MapResource.getMapResource(resId);
+		if(res == null) return true;
+		
+		Hitbox hb = new Hitbox(
+				new Location(	(blockLocation.getX() * Map.DEFAULT_SQUARESIZE) + res.getHitbox().getX(),
+								(blockLocation.getY() * Map.DEFAULT_SQUARESIZE) + res.getHitbox().getY()),
+				res.getHitbox().getDimension());
+		
+		return !hb.overlaps(entity.getPixelHitbox());
+	}
+
+	public int getWidth() {
+		return width;
 	}
 
 }

@@ -1,0 +1,68 @@
+package data.droneData.droneModule;
+
+import java.util.HashMap;
+
+import client.ComsData;
+import data.droneData.actionTarget.ActionTarget;
+import game.map.Map;
+
+public class SCTModule extends SDroneModule{
+	
+	private static final int invalidTargetId = -1;
+	
+	private HashMap<Integer, ActionTarget> targets = new HashMap<>();
+	private int currentTarget;
+
+	@Override
+	public void tick() {
+		if(!hasTarget()){
+			 if(!targets.isEmpty()){
+				currentTarget = getNextDroneTarget();				 
+				if(hasTarget()){
+					ActionTarget nextTraget = targets.get(currentTarget);
+					
+					this.drone.getSEPathManager().setBlockTarget(nextTraget.getBlockLocation(), ComsData.TargetLevel_Drone_CommandActionTarget);					
+					this.drone.getCurrentSMap().getMapSM().publishDroneCTUpdate(this.drone.getId(), nextTraget);
+				}
+			 }
+		}
+	}
+	
+	private boolean hasTarget() {
+		return this.currentTarget != invalidTargetId && targets.get(currentTarget) != null;
+	}
+
+	private int getNextDroneTarget() {
+		int distance = -1;
+		ActionTarget next = null;
+		for (ActionTarget target : targets.values()) {
+			int d = getDistance(target);
+			if (distance == -1 || d < distance) {
+				if (this.drone.canReach(target.getBlockLocation())) {
+					distance = d;
+					next = target;
+				}
+			}
+		}
+		
+		return next == null ? invalidTargetId : next.getKey(this.drone.getCurrentSMap());
+	}
+
+	private int getDistance(ActionTarget target) {
+		int x = Math.abs(
+					Map.getMap().getXOver(this.drone.getPixelHitbox().getX() + this.drone.getPixelHitbox().getWidth() / 2)
+					- Map.getMap().getXOver(target.getBlockLocation().getX() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE / 2)
+		);		
+		
+		if (x > (Map.getMap().getWidth() * Map.DEFAULT_SQUARESIZE) / 2) {
+			x -= Map.getMap().getWidth() * Map.DEFAULT_SQUARESIZE;
+		} if (x < -(Map.getMap().getWidth() * Map.DEFAULT_SQUARESIZE) / 2) {
+			x += Map.getMap().getWidth() * Map.DEFAULT_SQUARESIZE;
+		}
+		
+		int y = Math.abs(this.drone.getPixelHitbox().getY() + this.drone.getPixelHitbox().getHeigth() / 2
+				- (target.getBlockLocation().getY() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE / 2));
+
+		return (int) Math.sqrt(x * x + y * y);
+	}
+}

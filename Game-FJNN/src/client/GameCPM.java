@@ -54,14 +54,16 @@ public class GameCPM {
 	public static final int DataPackage_PlayerMoved = 32;
 	public static final int DataPackage_EntityPath = 34;
 	public static final int DataPackage_EntityStatus = 36;
-	public static final int DataPackage_DroneUpdate = 38;
+	public static final int DataPackage_DroneUpdate_Energy = 38;
+	public static final int DataPackage_DroneUpdate_Target = 40;
+	public static final int DataPackage_DroneUpdate_ActionTarget = 42;
 	
-	public static final int DataPackage_ItemAdd = 40;
-	public static final int DataPackage_ItemRemove = 42;
-	public static final int DataPackage_ItemSet = 44;
+	public static final int DataPackage_ItemAdd = 44;
+	public static final int DataPackage_ItemRemove = 46;
+	public static final int DataPackage_ItemSet = 48;
 	
-	public static final int DataPackage_MapBlockAdd = 46;	
-	public static final int DataPackage_MapBlockDelete = 48;
+	public static final int DataPackage_MapBlockAdd = 50;	
+	public static final int DataPackage_MapBlockDelete = 52;
 	
 	public static final int MapDownloadData_DataCount = 63;
 	
@@ -133,10 +135,14 @@ public class GameCPM {
 				new BooleanData("Alive"),
 				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
 		
-		DataPackage.setType(new PackageType(DataPackage_DroneUpdate, "DroneUpdate", new IntegerData("Entity_ID"),
-				new DoubleData("EnergyCount"), new BooleanData("isCharging"),
-				new DroneTargetData("currentBDroneTarget"), new DroneTargetData("currentDDroneTarget"), new DroneTargetData("droneTargetChange"),
-				new IntegerData("PixelPos_X"), new IntegerData("PixelPos_Y")));
+		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_Energy, "DroneUpdate_Energy", new IntegerData("Entity_ID"),
+				new DoubleData("EnergyCount"), new BooleanData("isCharging")));
+		
+		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_Target, "DroneUpdate_Target", new IntegerData("Entity_ID"),
+				new IntegerData("blockLocation_X"), new IntegerData("blockLocation_Y"), new IntegerData("targetLevel")));
+		
+		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_ActionTarget, "DroneUpdate_Target", new IntegerData("Entity_ID"),
+				new IntegerData("newTargetId"), new IntegerData("ActionType")));
 		
 		//<=== Add Inventory-Event Packages ===>
 		

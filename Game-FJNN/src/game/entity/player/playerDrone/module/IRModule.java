@@ -2,6 +2,9 @@ package game.entity.player.playerDrone.module;
 
 import java.util.HashMap;
 
+import client.ComsData;
+import events.GameEventManager;
+import events.entity.DroneTargetUpdateEvent;
 import game.inventory.Inventory;
 import game.inventory.items.Item;
 import game.inventory.items.ItemType;
@@ -15,10 +18,11 @@ public class IRModule extends DroneModule{
 		if(!this.requestedItems.isEmpty() && collectItems()){
 			if(this.drone.getBlockLocation().distance_Math(this.drone.getHost().getBlockLocation()) != 0){
 				if(!this.drone.getPathController().hasTarget() || ((this.drone.getPathController().reachedDestination() && !this.drone.isWorking()) || !this.drone.getPathController().getBlockTarget().isEqual(this.drone.getHost().getBlockLocation()))){
-					this.drone.getPathController().setBlockTarget(this.drone.getHost().getBlockLocation(), DroneModule.publishPathToServer);
+					
+					GameEventManager.getEventManager().publishEvent(new DroneTargetUpdateEvent(this.drone, this.drone.getHost().getBlockLocation(), ComsData.TargetLevel_Drone_ItemRequest));
 				}
 			}else{
-				this.drone.getPathController().setTarget(null, DroneModule.publishPathToServer);
+				GameEventManager.getEventManager().publishEvent(new DroneTargetUpdateEvent(this.drone, null, ComsData.TargetLevel_Reset));
 				
 				Inventory pInv = this.drone.getHost().getInventory();
 				Inventory dInv = ((InvModule)this.drone.getModule(InvModule.class)).getInventory();

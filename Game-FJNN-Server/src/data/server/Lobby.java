@@ -84,4 +84,8 @@ public class Lobby {
 		this.getCurrentMap().start(this, gameSM);
 	}
 
+	public void tick() {
+		this.getCurrentMap().tick();
+	}
+
 }

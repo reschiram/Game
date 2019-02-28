@@ -9,6 +9,11 @@ import tick.TickManager;
 
 public class ServerMain implements Tickable{
 	
+	private static ServerMain serverMain;
+	public static ServerMain getServerMain() {
+		return serverMain;
+	}
+	
 	private ConsoleManager consoleManager;
 	private GameSM gameSM;
 	private ServerStructureManager sdm;
@@ -28,6 +33,9 @@ public class ServerMain implements Tickable{
 		}
 		
 		new GameSEM(this);
+		
+		serverMain = this;
+		
 		tickManager = new TickManager(this);
 		tickManager.release();
 	}
@@ -36,6 +44,8 @@ public class ServerMain implements Tickable{
 	public void tick() {
 		this.gameSM.tick();
 		this.consoleManager.tick();
+		
+		sdm.tick();
 	}
 
 	public ServerFileManager getFileManager() {

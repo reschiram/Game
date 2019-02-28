@@ -30,5 +30,11 @@ public class ServerEntityManager {
 	public Collection<ServerEntity> getAllEntitys() {
 		return entities.values();
 	}
+	
+	public void tick() {
+		for(ServerEntity entity : getAllEntitys()) {
+			if(entity.isAlive()) entity.tick();
+		}
+	}
 
 }
