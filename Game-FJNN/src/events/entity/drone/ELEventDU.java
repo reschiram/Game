@@ -1,15 +1,21 @@
-package events.entity;
+package events.entity.drone;
 
-import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.module.ELModule;
 
-public class DroneEnergyLoadUpdateEvent extends EntityEvent<Drone> {
+public class ELEventDU extends DroneUpdateEvent {
 
 	private double energyLevel;
 	private boolean isCharging;
 
-	public DroneEnergyLoadUpdateEvent(ELModule module) {
-		super(module.getDrone(), module.getDrone().getLocation());
+	public ELEventDU(ELModule module, double energyLevel, boolean isCharging) {
+		super(module.getDrone());
+		
+		this.energyLevel = energyLevel;
+		this.isCharging = isCharging;
+	}
+
+	public ELEventDU(ELModule module) {
+		super(module.getDrone());
 		
 		this.energyLevel = module.getEnergyLevel();
 		this.isCharging = module.isCharging();

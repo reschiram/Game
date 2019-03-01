@@ -1,5 +1,8 @@
 package data.droneData.actionTarget;
 
+import Data.Location;
+import data.map.ServerMap;
+
 public abstract class ActionTargetType {
 	
 	private int typeId;	
@@ -19,5 +22,7 @@ public abstract class ActionTargetType {
 	public int getTypeId() {
 		return typeId;
 	}
+
+	public abstract boolean canInteract(Location blockTarget, ServerMap serverMap);
 
 }

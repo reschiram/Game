@@ -39,6 +39,7 @@ public class DefaultExceptionHandler {
 				if(exception instanceof UnsupportedPackageException){
 					UnsupportedPackageException up = (UnsupportedPackageException)exception;
 					System.out.println(up.getErrorMessage());
+					if(up.getException() != null) up.getException().printStackTrace();
 				}
 			}
 		};

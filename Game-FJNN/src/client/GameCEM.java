@@ -2,17 +2,23 @@ package client;
 
 import data.events.client.ToClientMessageEvent;
 import data.events.client.ToClientMessageEventListener;
-import events.entity.DroneUpdateEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
+import events.entity.drone.CTSelectionEventDU;
+import events.entity.drone.CTStatusEventDU;
+import events.entity.drone.ELEventDU;
+import events.entity.drone.TargetEventDU;
 import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
 import events.inventory.ItemSetEvent;
 import events.map.MapBlockAddEvent;
 import events.map.MapBlockDeleteEvent;
 import game.entity.player.PlayerContext;
-import game.entity.player.playerDrone.Drone;
+import game.entity.player.playerDrone.module.CTBModule;
+import game.entity.player.playerDrone.module.CTDModule;
+import game.entity.player.playerDrone.module.DroneModule;
+import game.entity.player.playerDrone.module.ELModule;
 import game.entity.type.interfaces.PathUser;
 import game.map.Map;
 
@@ -95,32 +101,73 @@ public class GameCEM implements ToClientMessageEventListener{
 				
 				Map.getMap().add(mapBlockAdd.getResource().getID(), mapBlockAdd.getBlockLocation(), mapBlockAdd.getResource().isGround(), false);
 				event.setActive(false);
-			}else if(event.getMessage().getId() == GameCPM.DataPackage_MapBlockDelete) {
+			} else if (event.getMessage().getId() == GameCPM.DataPackage_MapBlockDelete) {
 				MapBlockDeleteEvent mapBlockDelete = gameCM.getClientPackageManager().readBlockDeleteMessage(event.getMessage());
-				if(mapBlockDelete == null) {
-					event.setActive(false);
-					return;
-				}
-				
-				Map.getMap().deleteBlock(mapBlockDelete.getMapBlock().getLocation(), mapBlockDelete.getMapBlock().getResource().getLayerUp(), mapBlockDelete.getMapBlock().getResource().isGround(), false);
 				event.setActive(false);
-			}else if(event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate) {
-				DroneUpdateEvent droneTarget = gameCM.getClientPackageManager().readDroneUpdateMessage(event.getMessage());
-				System.out.println("Drone Update: " + droneTarget + " | " + ((droneTarget == null) ? "null" : (droneTarget.getEntity() + " | " + droneTarget.getDroneTargetInfosChange())));
-				if(droneTarget == null) {
-					return;
-				}				
 				
-				Drone drone = droneTarget.getEntity();
-				try {
-					drone.update(droneTarget);
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
+				if (mapBlockDelete == null) return;
+
+				Map.getMap().deleteBlock(mapBlockDelete.getMapBlock().getLocation(),
+						mapBlockDelete.getMapBlock().getResource().getLayerUp(),
+						mapBlockDelete.getMapBlock().getResource().isGround(), false);
+				
+			} else if (event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate_Energy) {
+				ELEventDU elEvent = gameCM.getClientPackageManager().readELDUMessage(event.getMessage());
 				event.setActive(false);
+
+				if (elEvent == null) return;
+
+				((ELModule) elEvent.getEntity().getModule(ELModule.class)).updateEnergyLoad(elEvent.getEnergyLevel(),
+						elEvent.isCharging());
+				
+			} else if (event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate_Target) {
+				TargetEventDU targetEvent = gameCM.getClientPackageManager().readTargetDUMessage(event.getMessage());
+				event.setActive(false);
+
+				System.out.println(targetEvent + " -> " + targetEvent.getBlockTarget() + " -> " + targetEvent.getTargetLevel() + " : " + targetEvent.getPublishedTick());				
+				if (targetEvent == null) return;
+				
+				targetEvent.getEntity().getPathController().setBlockTarget(targetEvent.getBlockTarget(), false);				
+			} else if (event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate_CMDTarget_Status) {
+				CTStatusEventDU targetEvent = gameCM.getClientPackageManager().readCTStatusDUMessage(event.getMessage());
+
+				if (targetEvent == null) return;				
+				event.setActive(false);			
+				
+				System.out.println(targetEvent.getTarget() + "|" + targetEvent.isFailed() + "->" + targetEvent.getStatusUpdateType());	
+				if (targetEvent.isFailed()) return;	
+
+				if (targetEvent.getStatusUpdateType() == ComsData.ActionTarget_StatusUpdate_Type_Add) {
+					targetEvent.getMaster().addTarget(targetEvent.getTarget());
+				} else if (targetEvent.getStatusUpdateType() == ComsData.ActionTarget_StatusUpdate_Type_Remove) {
+					targetEvent.getMaster().removeTarget(targetEvent.getTarget().getBlockLocation(), targetEvent.getTarget().getTargetType());
+				}
+			} else if (event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate_CMDTarget_Selection) {
+				CTSelectionEventDU targetEvent = gameCM.getClientPackageManager().readCTSelectionDUMessage(event.getMessage());
+				event.setActive(false);
+				
+				System.out.println("new target selection update: " + targetEvent);
+				if (targetEvent == null) return;
+				
+				if (targetEvent.getTargetType() == ComsData.ActionTarget_Type_Build) {					
+					DroneModule module = targetEvent.getEntity().getModule(CTBModule.class);
+					if(module != null) {
+						if(!((CTBModule)module).hasTarget(targetEvent.getTargetKey())) event.setActive(true);
+						else ((CTBModule)module).selectCurrentTarget(targetEvent.getTargetKey());
+					}
+				} else if (targetEvent.getTargetType() == ComsData.ActionTarget_Type_Destroy) {					
+					DroneModule module = targetEvent.getEntity().getModule(CTDModule.class);
+					if(module != null) {
+						if(!((CTDModule)module).hasTarget(targetEvent.getTargetKey())) {
+							System.out.println("No Target at: " + targetEvent.getTargetKey());
+							event.setActive(true);
+						} else ((CTDModule)module).selectCurrentTarget(targetEvent.getTargetKey());
+					}
+				}
 			}
 		}catch (Exception e) {
-			System.out.println("Error");
+			System.out.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

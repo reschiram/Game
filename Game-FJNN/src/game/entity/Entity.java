@@ -9,6 +9,7 @@ import Data.Hitbox;
 import Data.Location;
 import Data.Animation.Animation;
 import Engine.Engine;
+import client.SCUpdateManager;
 import data.ImageData;
 import events.GameEventManager;
 import events.entity.EntityStatusEvent;
@@ -43,6 +44,8 @@ public abstract class Entity {
 	private DataObject<Integer> lightLevel;
 	private long lastLightUpdate;
 	
+	private SCUpdateManager updateManager;
+	
 	public Entity(ArrayList<EntityType> entityTypes){
 		this.entityTypes = entityTypes;
 		this.entityTypes.add(EntityType.Entity);
@@ -58,6 +61,8 @@ public abstract class Entity {
 		this.id = id;
 		EntityManager.getEntityManager().register(this);	
 		this.moveManager = new EntityMoveManager(this);
+		
+		updateManager = new SCUpdateManager(SCUpdateManager.Update_Type_Entity_Position, this);
 	}
 	
 	private boolean created = false;
@@ -100,6 +105,8 @@ public abstract class Entity {
 	public void tick(){
 		this.moveManager.tick();
 		this.setLightLevel(Map.getMap().getMapData(this.getBlockLocation())[Map.DEFAULT_GROUNDLAYER].getLightLevel());
+		
+		updateManager.update(false);
 	}
 	
 	public boolean canReach(Location target) {

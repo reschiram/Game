@@ -4,11 +4,13 @@ import Data.Queue;
 import client.GameCM;
 import data.DataPackage;
 import data.PackageType;
-import events.entity.DroneUpdateEvent;
 import events.entity.EntityEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
+import events.entity.drone.CTStatusEventDU;
+import events.entity.drone.ELEventDU;
+import events.entity.drone.TargetEventDU;
 import events.inventory.InventoryEvent;
 import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
@@ -72,8 +74,10 @@ public class GameEventManager {
 					message = this.gameCM.getClientPackageManager().createEntityPathMessage((EntityPathEvent) event);		
 				} else if (event instanceof EntityStatusEvent) {
 					message = this.gameCM.getClientPackageManager().createEntityStatusMessage((EntityStatusEvent) event);
-				}else if (event instanceof DroneUpdateEvent) {
-					message = this.gameCM.getClientPackageManager().createDroneUpdateMessage((DroneUpdateEvent) event);
+				} else if (event instanceof ELEventDU) {
+					message = this.gameCM.getClientPackageManager().createELDUMessage((ELEventDU) event);
+				} else if (event instanceof TargetEventDU) {
+					message = this.gameCM.getClientPackageManager().createTargetDUMessage((TargetEventDU) event);
 				}
 				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {
@@ -126,7 +130,9 @@ public class GameEventManager {
 			events.remove();
 			try {
 				PackageType message = null;
-				System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
+				if (event instanceof CTStatusEventDU) {
+					message = this.gameCM.getClientPackageManager().createCTStatusDUMessage((CTStatusEventDU) event);
+				} else System.out.println("Error: unknown event has occured! Created: " + event.getPublishedTick());
 				if(message != null) this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {
 				e.printStackTrace();

@@ -15,7 +15,7 @@ public class CompleteStringData extends StringData{
 	@Override
 	public void readData(byte[] data) throws UnsupportedEncodingException {
 		this.data = new String(data, this.format);
-		while(this.data.charAt(this.data.length()-1) == (char)0) {
+		while(this.data.length() > 0 && this.data.charAt(this.data.length()-1) == (char)0) {
 			this.data = this.data.substring(0, this.data.length()-1);
 		}
 	}

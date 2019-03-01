@@ -48,12 +48,13 @@ public class MapSM {
 		}
 	}
 
-	public void publishDroneCTUpdate(int droneID, ActionTarget nextTarget) {
+	public void publishDroneCTSelectionUpdate(int droneID, ActionTarget nextTarget) {
 		try {
-			PackageType msg = gameSM.getGameSPM().createDroneActionTargetUpdateMessage(droneID, nextTarget.getKey(this.lobby.getCurrentMap()), nextTarget.getType().getTypeId());
+			PackageType msg = gameSM.getGameSPM().createDroneCTSelectionUpdateMessage(droneID, nextTarget.getKey(this.lobby.getCurrentMap()), nextTarget.getType().getTypeId());
 			
 			for(Player player : lobby.getConnectedPlayers()) {
 				gameSM.getServerManager().sendMessage(player.getServerClientID(), DataPackage.getPackage(msg));
+				System.out.println("targetSelection published to: " + player.getID());
 			}
 		} catch (Exception | InvalidServerClientIDException e) {
 			e.printStackTrace();

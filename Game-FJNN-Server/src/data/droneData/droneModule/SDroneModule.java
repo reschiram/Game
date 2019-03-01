@@ -8,8 +8,9 @@ public abstract class SDroneModule{
 	
 	public abstract void tick();
 
-	public void register(ServerDroneEntity drone){
+	public SDroneModule register(ServerDroneEntity drone){
 		this.drone = drone;
+		return this;
 	}
 	
 }

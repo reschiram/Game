@@ -1,12 +1,13 @@
 package data;
 
 import Data.Location;
+import client.ComsData;
 import data.entities.ServerEntity;
 
 public class SEPathManager {
 	
 	private Location currentBlockTarget;
-	private int targetLevel = 0;
+	private int targetLevel = ComsData.TargetLevel_Min;
 	
 	private ServerEntity entity;
 	
@@ -28,6 +29,10 @@ public class SEPathManager {
 			this.targetLevel = nextTargetLevel;
 			
 			entity.getCurrentSMap().getMapSM().publishDroneTargetUpdate(this);
+			return true;
+		} else if (nextTargetLevel == ComsData.TargetLevel_Done) {
+			this.currentBlockTarget = null;
+			this.targetLevel = ComsData.TargetLevel_Min;	
 			return true;
 		}
 		return false;

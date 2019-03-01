@@ -1,14 +1,13 @@
 package game.entity.player.playerDrone;
 
 import java.awt.Dimension;
-import java.util.ArrayList;
 
 import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
-import game.entity.player.playerDrone.module.CTBModule;
-import game.entity.player.playerDrone.module.CTDModule;
-import game.entity.player.playerDrone.module.CTModule;
+import client.ComsData;
+import events.GameEventManager;
+import events.entity.drone.CTStatusEventDU;
 import game.map.Map;
 import sprites.Sprites;
 
@@ -21,18 +20,15 @@ public abstract class DroneTarget {
 	
 	protected boolean done = false;
 
-	protected ArrayList<Drone> drones = new ArrayList<>();
+	protected DroneHost master;
+	private int targetType;
 	
-	public DroneTarget(Location blockLocation, Drone... drones){
-		System.out.println("Target: " + blockLocation);
+	public DroneTarget(Location blockLocation, DroneHost master, int targetType){
 		this.blockLocation = blockLocation.clone();
-		for(Drone drone: drones)addDrone(drone);
+		this.master = master;
+		this.targetType = targetType;
 		this.marker = new Image(new Location(blockLocation.getX()*Map.DEFAULT_SQUARESIZE, blockLocation.getY()*Map.DEFAULT_SQUARESIZE), new Dimension(Map.DEFAULT_SQUARESIZE, Map.DEFAULT_SQUARESIZE),
 				"", Sprites.Marker.getSpriteSheet(), null);
-	}
-	
-	public void addDrone(Drone drone) {
-		this.drones.add(drone);
 	}
 
 	public DroneTarget createVisuals(){
@@ -54,13 +50,7 @@ public abstract class DroneTarget {
 
 	public boolean interact(){
 		if(done){
-			while(this.drones.size()>0){
-				Drone drone = this.drones.get(0);
-				CTModule module = (CTModule) drone.getModule(CTBModule.class);
-				if(module != null)module.removeTarget(this.blockLocation);
-				module = (CTModule) drone.getModule(CTDModule.class);
-				if(module!=null)module.removeTarget(this.blockLocation);
-			}
+			GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this.master, this, ComsData.ActionTarget_StatusUpdate_Type_Remove));
 			return true;
 		}
 		return false;
@@ -74,14 +64,6 @@ public abstract class DroneTarget {
 		return new Location(blockLocation.getX() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2, blockLocation.getY() * Map.DEFAULT_SQUARESIZE + Map.DEFAULT_SQUARESIZE/2);
 	}
 
-	public void removeDrone(Drone drone) {
-		this.drones.remove(drone);
-		if(this.done = false) this.done = true;
-		if(this.drones.isEmpty()){
-			this.destroyVisulas();
-		}
-	}
-
 	public boolean isDone() {
 		return done;
 	}
@@ -90,4 +72,11 @@ public abstract class DroneTarget {
 		this.done = done;
 	}
 
+	public int getKey() {
+		return this.blockLocation.getX() + (this.blockLocation.getY() * Map.getMap().getWidth());
+	}
+
+	public int getTargetType() {
+		return targetType;
+	}
 }

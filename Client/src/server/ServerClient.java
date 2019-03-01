@@ -139,7 +139,8 @@ public class ServerClient {
 		}
 	}
 	
-	private void handNewDataPackage(DataPackage dataPackage, Queue<DataPackage> dataStream) throws UnsupportedEncodingException, UnsupportedPackageException {dataStream.add(dataPackage);
+	private void handNewDataPackage(DataPackage dataPackage, Queue<DataPackage> dataStream) throws UnsupportedEncodingException, UnsupportedPackageException {
+		dataStream.add(dataPackage);
 		if(dataPackage.isEnd()){
 			ByteBuffer data = ByteBuffer.allocate(DataPackage.PACKAGESIZE);
 			int actuallLength = 0;

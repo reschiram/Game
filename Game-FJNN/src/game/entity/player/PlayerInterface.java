@@ -7,12 +7,12 @@ import java.awt.event.KeyEvent;
 import Data.Location;
 import Data.Image.Image;
 import Engine.Engine;
+import client.ComsData;
 import data.Mouse;
+import events.GameEventManager;
+import events.entity.drone.CTStatusEventDU;
 import game.entity.Entity;
-import game.entity.player.playerDrone.Drone;
-import game.entity.player.playerDrone.module.CTBModule;
-import game.entity.player.playerDrone.module.CTDModule;
-import game.entity.player.playerDrone.module.CTModule;
+import game.entity.player.playerDrone.DroneTarget;
 import game.gridData.map.Mapdata;
 import game.inventory.equipment.Equipment;
 import game.inventory.equipment.EquipmentInventory;
@@ -44,14 +44,10 @@ public class PlayerInterface {
 			if(data!=null){
 				data.damage(2);
 				if(data.isDestroyed()){
-					for(Drone drone: this.player.getPlayerDrones()){
-						CTModule module = (CTModule) drone.getModule(CTDModule.class);
-						if(module!=null){
-							module.removeTarget(digLocation);
-						}
-						module = (CTModule) drone.getModule(CTBModule.class);
-						if(module!=null){
-							module.removeTarget(digLocation);
+					int key = digLocation.getX() + (digLocation.getY() * Map.getMap().getWidth());
+					if(this.player.hasTarget(key)) {
+						for(DroneTarget target : this.player.getTargets(key)) {
+							GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this.player, target, ComsData.ActionTarget_StatusUpdate_Type_Remove));
 						}
 					}
 					if(data.getResource().hasDrops()){

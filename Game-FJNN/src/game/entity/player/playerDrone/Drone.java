@@ -6,14 +6,13 @@ import java.util.HashMap;
 import Data.Direction;
 import Data.Location;
 import Data.Image.Image;
-import client.commData.DroneTargetInfos;
+import client.ComsData;
 import data.ImageData;
-import events.entity.DroneUpdateEvent;
+import events.GameEventManager;
+import events.entity.drone.TargetEventDU;
+import game.GameManager;
 import game.entity.Entity;
-import game.entity.player.playerDrone.module.CTBModule;
-import game.entity.player.playerDrone.module.CTDModule;
 import game.entity.player.playerDrone.module.DroneModule;
-import game.entity.player.playerDrone.module.ELModule;
 import game.entity.type.EntityType;
 import game.entity.type.interfaces.PathUser;
 import game.map.Map;
@@ -50,14 +49,18 @@ public class Drone extends Entity implements PathUser{
 	public void tick(){
 		super.tick();
 		
-		if(pathFinder.hasTarget()){
-			
+		if(pathFinder.hasTarget()){									
 			int[] directions = this.pathFinder.nextDirection();
+			
+			if(pathFinder.isDone() && pathFinder.reachedDestination()) {
+				System.out.println("PathFinder Done: " + GameManager.TickManager.getCurrentTick());
+				GameEventManager.getEventManager().publishEvent(new TargetEventDU(this, this.getBlockLocation(), ComsData.TargetLevel_Done));
+			}
 			
 			this.lastMoved[0] = this.moveManager.canMoveX()!=0 ? directions[0] : 0;
 			this.moveManager.move(Direction.getDirection(directions[0], 0));
 			
-			this.lastMoved[1] = this.moveManager.canMoveY()!=0 ? directions[0] : 0;
+			this.lastMoved[1] = this.moveManager.canMoveY()!=0 ? directions[1] : 0;
 			this.moveManager.move(Direction.getDirection(0 , directions[1]));
 		}else{
 			this.lastMoved = new int[]{0,0};
@@ -95,32 +98,6 @@ public class Drone extends Entity implements PathUser{
 	
 	public void setIsWorking(boolean isWorking){
 		this.isWorking = isWorking;
-	}
-
-	public void update(DroneUpdateEvent droneUpdate) {
-		if(this.modules.containsKey(ELModule.class)) {
-			ELModule module = (ELModule) this.modules.get(ELModule.class);	
-			module.updateEnergyLoad(droneUpdate.getDroneEnergy(), droneUpdate.isDroneCharging());
-		}
-		
-		DroneTargetInfos changeInfos = droneUpdate.getDroneTargetInfosChange();
-		if(changeInfos != null && !changeInfos.isNull() && !changeInfos.isDone()) {
-			if(droneUpdate.getDroneTargetInfosChange().isBuild()) {
-				this.host.addBuildTarget(changeInfos.getBlockLocation(), changeInfos.doAdd() ? changeInfos.getResID() : -1);
-			} else {
-				this.host.addDestructionTarget(changeInfos.getBlockLocation(), changeInfos.doAdd());
-			}
-		}
-		
-		if(this.modules.containsKey(CTBModule.class)) {
-			CTBModule module = (CTBModule) this.modules.get(CTBModule.class);
-			module.updateTarget(droneUpdate.getCurrentBDroneTarget());
-		}
-		
-		if(this.modules.containsKey(CTDModule.class)) {
-			CTDModule module = (CTDModule) this.modules.get(CTDModule.class);
-			module.updateTarget(droneUpdate.getCurrentBDroneTarget());
-		}
 	}
 	
 }

@@ -34,7 +34,7 @@ public class DigTool extends Tool{
 					 											(int)(Engine.getInputManager().MousePosition().getY()+Map.getMap().getMoved().getY())/Map.DEFAULT_SQUARESIZE);
 			
 			boolean isAdd = !Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON3);
-			player.addDestructionTarget(loc, isAdd);
+			player.createDestructionTarget(loc, isAdd);
 		}
 	}
 	

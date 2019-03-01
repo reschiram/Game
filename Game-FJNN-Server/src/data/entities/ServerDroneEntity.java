@@ -1,7 +1,11 @@
 package data.entities;
 
+import java.util.HashMap;
+
 import Data.Location;
 import data.SEPathManager;
+import data.droneData.SDroneConstructor;
+import data.droneData.droneModule.SDroneModule;
 import data.map.ServerMap;
 import game.entity.requester.EntityRequesterService;
 import game.entity.type.EntityType;
@@ -14,6 +18,7 @@ public class ServerDroneEntity extends ServerEntity{
 	private ServerPlayerEntity droneHost;
 	
 	private SEPathManager sePathManager;
+	private HashMap<Class<?>, SDroneModule> modules = new HashMap<>();
 
 	public ServerDroneEntity(int id, Location pixeLoc, EntityType entityType, int droneType, Inventory inv, ServerPlayerEntity droneHost, ServerMap serverMap) {
 		super(id, pixeLoc, entityType, serverMap);
@@ -22,6 +27,11 @@ public class ServerDroneEntity extends ServerEntity{
 		this.droneHost = droneHost;
 		
 		this.sePathManager = new SEPathManager(this);
+		for(SDroneModule module : SDroneConstructor.constructDrone(this, droneType)) {
+			this.modules.put(module.getClass(), module);
+		}
+		
+		this.droneHost.getPlayer().getActionTargetManager().addDrone(this);
 	}
 	
 	public int getDroneType() {
@@ -45,6 +55,21 @@ public class ServerDroneEntity extends ServerEntity{
 
 	public SEPathManager getSEPathManager() {
 		return sePathManager;
+	}
+
+	public boolean hasModule(Class<?> moduleClass) {
+		return this.modules.containsKey(moduleClass);
+	}
+	
+	public SDroneModule getModule(Class<?> moduleClass) {
+		return this.modules.get(moduleClass);
+	}
+	
+	@Override
+	public void tick() {
+		for (SDroneModule module : this.modules.values()) {
+			module.tick();
+		}
 	}
 
 }

@@ -1,15 +1,15 @@
-package events.entity;
+package events.entity.drone;
 
 import Data.Location;
 import game.entity.player.playerDrone.Drone;
 
-public class DroneTargetUpdateEvent extends EntityEvent<Drone> {
+public class TargetEventDU extends DroneUpdateEvent{
 
 	private Location blockTarget;
 	private int targetLevel;
 
-	public DroneTargetUpdateEvent(Drone entity, Location blockTarget, int targetLevel) {
-		super(entity, entity.getLocation());
+	public TargetEventDU(Drone drone, Location blockTarget, int targetLevel) {
+		super(drone);
 		
 		this.blockTarget = blockTarget;
 		this.targetLevel = targetLevel;

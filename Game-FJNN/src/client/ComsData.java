@@ -4,7 +4,7 @@ public class ComsData {
 	
 	public static final int TargetLevel_Max = 10;	
 	public static final int TargetLevel_Min = 0;
-	public static final int TargetLevel_Reset = -1;
+	public static final int TargetLevel_Done = -1;
 	
 	public static final int TargetLevel_Drone_Energy = 3;
 	public static final int TargetLevel_Drone_ItemRequest = 2;
@@ -12,5 +12,8 @@ public class ComsData {
 	
 	public static final int ActionTarget_Type_Build = 0;
 	public static final int ActionTarget_Type_Destroy = 1;
+	
+	public static final int ActionTarget_StatusUpdate_Type_Add = 0;
+	public static final int ActionTarget_StatusUpdate_Type_Remove = 1;
 
 }

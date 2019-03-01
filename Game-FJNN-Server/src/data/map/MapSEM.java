@@ -6,6 +6,7 @@ import Data.Location;
 import data.DataPackage;
 import data.MapResource;
 import data.PackageType;
+import data.droneData.droneModule.SELModule;
 import data.entities.ServerDroneEntity;
 import data.entities.ServerEntity;
 import data.entities.ServerItemEntity;
@@ -14,6 +15,7 @@ import data.events.server.ToServerMessageEvent;
 import data.events.server.ToServerMessageEventListener;
 import data.exceptions.server.InvalidServerClientIDException;
 import data.readableData.BooleanData;
+import data.readableData.DoubleData;
 import data.readableData.IntegerData;
 import data.readableData.StringData;
 import data.server.Lobby;
@@ -53,6 +55,8 @@ public class MapSEM implements ToServerMessageEventListener{
 		if(event.getMessage().getId() != GameSPM.DataPackage_PlayerMoved) System.out.println("New Message Event: "+event.getMessage().getId());
 		
 		boolean send = false;
+		boolean sendAll = false;
+		
 		if (event.getMessage().getId() == GameSPM.DataPackage_EntityStatus) {
 			int entityID = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();
 			boolean isAlive = ((BooleanData) event.getMessage().getDataStructures()[1]).getData().booleanValue();
@@ -127,11 +131,56 @@ public class MapSEM implements ToServerMessageEventListener{
 
 			event.setActive(false);
 			send = true;
+		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneUpdate_Energy) {	
+			int entityId = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();	
+			double energyLoad = ((DoubleData) event.getMessage().getDataStructures()[1]).getData().doubleValue();
+			boolean isCharging = ((BooleanData) event.getMessage().getDataStructures()[2]).getData().booleanValue();
+
+			ServerDroneEntity drone = (ServerDroneEntity) lobby.getCurrentMap().getEntityManager().getEntity(entityId);
+			if(drone.hasModule(SELModule.class)) {
+				SELModule module = (SELModule) drone.getModule(SELModule.class);
+				module.update(energyLoad, isCharging);
+			}
+			
+			event.setActive(false);
+			send = false;
+		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneUpdate_Target) {	
+			int entityId = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();	
+			int blockPos_X = ((IntegerData) event.getMessage().getDataStructures()[1]).getData().intValue();	
+			int blockPos_Y = ((IntegerData) event.getMessage().getDataStructures()[2]).getData().intValue();	
+			int targetLevel = ((IntegerData) event.getMessage().getDataStructures()[3]).getData().intValue();	
+
+			System.out.println(entityId + ": set Target: " + blockPos_X + " | " + blockPos_Y + " -> " + targetLevel);
+			
+			ServerDroneEntity drone = (ServerDroneEntity) lobby.getCurrentMap().getEntityManager().getEntity(entityId);
+			drone.getSEPathManager().setBlockTarget(new Location(blockPos_X, blockPos_Y), targetLevel);
+			
+			event.setActive(false);
+			send = false;
+		} else if (event.getMessage().getId() == GameSPM.DataPackage_DroneUpdate_CMDTarget_Status) {	
+			System.out.println("CMDTargetUpdate");
+			
+			int entityId = ((IntegerData) event.getMessage().getDataStructures()[0]).getData().intValue();	
+			int blockPos_X = ((IntegerData) event.getMessage().getDataStructures()[1]).getData().intValue();	
+			int blockPos_Y = ((IntegerData) event.getMessage().getDataStructures()[2]).getData().intValue();
+			int ActionType = ((IntegerData) event.getMessage().getDataStructures()[3]).getData().intValue();	
+			int CMDTarget_StatusUpdate_Type = ((IntegerData) event.getMessage().getDataStructures()[4]).getData().intValue();
+			String additionalInformation = ((StringData) event.getMessage().getDataStructures()[5]).getData();
+
+			ServerPlayerEntity player = (ServerPlayerEntity) lobby.getCurrentMap().getEntityManager().getEntity(entityId);
+
+			boolean status = player.getPlayer().getActionTargetManager().updateActionTarget(
+					new Location(blockPos_X, blockPos_Y), ActionType, CMDTarget_StatusUpdate_Type,
+					additionalInformation);
+			
+			event.setActive(false);			
+			send = status;
+			sendAll = status;
 		}
 		
 		if(send) {
 			for (Player player : lobby.getConnectedPlayers()) {
-				if (player.getServerClientID() != event.getClientID()) {
+				if (player.getServerClientID() != event.getClientID() || sendAll) {
 					try {
 						if(event.getMessage().getId() != GameSPM.DataPackage_PlayerMoved) System.out.println("SendPackage: "+event.getMessage().getId());
 						gameSM.getServerManager().sendMessage(player.getServerClientID(), DataPackage.getPackage(event.getMessage()));
@@ -205,7 +254,7 @@ public class MapSEM implements ToServerMessageEventListener{
 				EquipmentInventory inv = (EquipmentInventory) getInventory(40, 9, oldRequestID);
 
 				playerEntity = new ServerPlayerEntity(-1, new Location(blockPos_X * Map.DEFAULT_SQUARESIZE, blockPos_Y * Map.DEFAULT_SQUARESIZE), EntityType.Player,
-						gameSM.getServerUserManager().getValidatedUser(event.getClientID()), inv, lobby.getCurrentMap());
+						lobby.getPlayer(event.getClientID()), inv, lobby.getCurrentMap());
 				lobby.getCurrentMap().getEntityManager().addEntity(playerEntity);
 			} else {
 				playerEntity = (ServerPlayerEntity) getKnownEntity(oldRequestID);

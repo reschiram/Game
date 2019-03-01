@@ -40,7 +40,7 @@ public class Player extends PlayerContext{
 		load(inv);		
 		this.playerInterface = new PlayerInterface(this);
 		
-		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_StarterDrone);
+//		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_StarterDrone);
 		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_BuildDrone);
 		EntityRequester.getEntityRequester().requestDrone(this, DroneConstructor.DefaultDrone_DestructionDrone);
 		player = this;

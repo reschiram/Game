@@ -1,8 +1,6 @@
 package client;
 
 import Data.Location;
-import client.commData.DroneTargetData;
-import client.commData.DroneTargetInfos;
 import data.DataPackage;
 import data.MapResource;
 import data.PackageType;
@@ -14,10 +12,13 @@ import data.readableData.LongData;
 import data.readableData.ReadableData;
 import data.readableData.StringData;
 import data.user.User;
-import events.entity.DroneUpdateEvent;
 import events.entity.EntityPathEvent;
 import events.entity.EntityStatusEvent;
 import events.entity.PlayerMoveEvent;
+import events.entity.drone.CTSelectionEventDU;
+import events.entity.drone.CTStatusEventDU;
+import events.entity.drone.ELEventDU;
+import events.entity.drone.TargetEventDU;
 import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
 import events.inventory.ItemSetEvent;
@@ -27,6 +28,9 @@ import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.entity.player.PlayerDummie;
 import game.entity.player.playerDrone.Drone;
+import game.entity.player.playerDrone.DroneHost;
+import game.entity.player.playerDrone.module.DroneModule;
+import game.entity.player.playerDrone.module.ELModule;
 import game.gridData.map.MapBlock;
 import game.gridData.map.MapDummieBlock;
 import game.gridData.map.Mapdata;
@@ -56,14 +60,15 @@ public class GameCPM {
 	public static final int DataPackage_EntityStatus = 36;
 	public static final int DataPackage_DroneUpdate_Energy = 38;
 	public static final int DataPackage_DroneUpdate_Target = 40;
-	public static final int DataPackage_DroneUpdate_ActionTarget = 42;
+	public static final int DataPackage_DroneUpdate_CMDTarget_Selection = 42;
+	public static final int DataPackage_DroneUpdate_CMDTarget_Status = 44;
 	
-	public static final int DataPackage_ItemAdd = 44;
-	public static final int DataPackage_ItemRemove = 46;
-	public static final int DataPackage_ItemSet = 48;
+	public static final int DataPackage_ItemAdd = 46;
+	public static final int DataPackage_ItemRemove = 48;
+	public static final int DataPackage_ItemSet = 50;
 	
-	public static final int DataPackage_MapBlockAdd = 50;	
-	public static final int DataPackage_MapBlockDelete = 52;
+	public static final int DataPackage_MapBlockAdd = 52;	
+	public static final int DataPackage_MapBlockDelete = 54;
 	
 	public static final int MapDownloadData_DataCount = 63;
 	
@@ -140,9 +145,14 @@ public class GameCPM {
 		
 		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_Target, "DroneUpdate_Target", new IntegerData("Entity_ID"),
 				new IntegerData("blockLocation_X"), new IntegerData("blockLocation_Y"), new IntegerData("targetLevel")));
-		
-		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_ActionTarget, "DroneUpdate_Target", new IntegerData("Entity_ID"),
-				new IntegerData("newTargetId"), new IntegerData("ActionType")));
+
+		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_CMDTarget_Selection, "DroneUpdate_Target",
+				new IntegerData("Entity_ID"), new IntegerData("newTargetId"), new IntegerData("ActionType")));
+
+		DataPackage.setType(new PackageType(DataPackage_DroneUpdate_CMDTarget_Status, "DroneUpdate_Target",
+				new IntegerData("Entity_ID"), new IntegerData("blockLocation_X"), new IntegerData("blockLocation_Y"),
+				new IntegerData("ActionType"), new IntegerData("CMDTarget_StatusUpdate_Type"),
+				new CompleteStringData("additional_Information", DataPackage.MAXPACKAGELENGTH - (1 + 4 + 4 + 4 + 4 + 4))));
 		
 		//<=== Add Inventory-Event Packages ===>
 		
@@ -184,11 +194,20 @@ public class GameCPM {
 				event.getCurrentPixelLocation().getX(),	event.getCurrentPixelLocation().getY());
 	}
 
-	public PackageType createDroneUpdateMessage(DroneUpdateEvent event) throws Exception {
-		return PackageType.readPackageData(DataPackage_DroneUpdate, event.getEntity().getID(),
-				event.getDroneEnergy(),	event.isDroneCharging(),
-				event.getCurrentBDroneTarget(), event.getCurrentDDroneTarget(), event.getDroneTargetInfosChange(),
-				event.getCurrentPixelLocation().getX(),	event.getCurrentPixelLocation().getY());
+	public PackageType createELDUMessage(ELEventDU event) throws Exception {
+		return PackageType.readPackageData(DataPackage_DroneUpdate_Energy, event.getEntity().getID(),
+				event.getEnergyLevel(), event.isCharging());
+	}
+
+	public PackageType createTargetDUMessage(TargetEventDU event) throws Exception {
+		return PackageType.readPackageData(DataPackage_DroneUpdate_Target, event.getEntity().getID(),
+				event.getBlockTarget().getX(), event.getBlockTarget().getY(), event.getTargetLevel());
+	}
+	
+	public PackageType createCTStatusDUMessage(CTStatusEventDU event) throws Exception {
+		return PackageType.readPackageData(DataPackage_DroneUpdate_CMDTarget_Status, event.getMaster().getID(),
+				event.getTarget().getBlockLocation().getX(), event.getTarget().getBlockLocation().getY(),
+				event.getTarget().getTargetType(), event.getStatusUpdateType(), event.getAdditionalInformation());
 	}
 
 	//<=== read: Entity-Events ===>
@@ -242,29 +261,84 @@ public class GameCPM {
 		
 		return new EntityStatusEvent(entity, isAlive, new Location(pixelPosX, pixelPosY));
 	}
-	
-	public DroneUpdateEvent readDroneUpdateMessage(PackageType message) {
+
+	public ELEventDU readELDUMessage(PackageType message) {
 		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
-		double energyLevel = ((DoubleData) message.getDataStructures()[1]).getData().doubleValue();
+		double energyLoad = ((DoubleData) message.getDataStructures()[1]).getData().doubleValue();
 		boolean isCharging = ((BooleanData) message.getDataStructures()[2]).getData().booleanValue();
-		DroneTargetInfos currentBDroneTargetInfos = ((DroneTargetData) message.getDataStructures()[3]).getData();
-		DroneTargetInfos currentDDroneTargetInfos = ((DroneTargetData) message.getDataStructures()[4]).getData();
-		DroneTargetInfos changeTargetInfos = ((DroneTargetData) message.getDataStructures()[5]).getData();
-		int pixelPosX = ((IntegerData) message.getDataStructures()[6]).getData().intValue();
-		int pixelPosY = ((IntegerData) message.getDataStructures()[7]).getData().intValue();
 		
 		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
 		if(entity == null) {
-			System.out.println("Error: entity status update event occourred for a unknown entity: " + entityID);
+			System.out.println("Error: drone energy load update event occourred for a unknown entity: " + entityID);
 			return null;
-		}else if (!(entity instanceof Drone)) {
-			System.out.println("Error: drone target event occoured for a non-drone entity");
-			return new DroneUpdateEvent(null, energyLevel, isCharging, currentDDroneTargetInfos,
-					currentBDroneTargetInfos, changeTargetInfos, new Location(pixelPosX, pixelPosY));
+		}else if(! (entity instanceof Drone)) {
+			System.out.println("Error: drone energy load update event occourred for a non drone entity: " + entityID);
+			return null;
 		}
+		
+		DroneModule module = ((Drone) entity).getModule(ELModule.class);
+		if(module == null) {
+			System.out.println("Error: drone energy load update event occourred for a drone without an energy-load-module entity: " + entityID);
+			return null;			
+		}
+		
+		return new ELEventDU((ELModule) module, energyLoad, isCharging);	
+		
+	}
 
-		return new DroneUpdateEvent((Drone) entity, energyLevel, isCharging, currentDDroneTargetInfos,
-				currentBDroneTargetInfos, changeTargetInfos, new Location(pixelPosX, pixelPosY));
+	public TargetEventDU readTargetDUMessage(PackageType message) {
+		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
+		int blockPos_X = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
+		int blockPos_Y = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
+		int targetLevel = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
+		
+		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
+		if(entity == null) {
+			System.out.println("Error: drone target update event occourred for a unknown entity: " + entityID);
+			return null;
+		}else if(! (entity instanceof Drone)) {
+			System.out.println("Error: drone target update event occourred for a non drone entity: " + entityID);
+			return null;
+		}
+		
+		return new TargetEventDU((Drone) entity, new Location(blockPos_X, blockPos_Y), targetLevel);
+	}
+
+	public CTStatusEventDU readCTStatusDUMessage(PackageType message) {
+		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
+		int blockPos_X = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
+		int blockPos_Y = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
+		int actionType = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
+		int statusUpdateType = ((IntegerData) message.getDataStructures()[4]).getData().intValue();
+		String additionalInformation = ((StringData) message.getDataStructures()[5]).getData();
+		
+		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
+		if(entity == null) {
+			System.out.println("Error: drone command target status update event occourred for a unknown entity: " + entityID);
+			return null;
+		}else if(! (entity instanceof DroneHost)) {
+			System.out.println("Error: drone command target status update event occourred for a non drone-host entity: " + entityID);
+			return null;
+		}		
+		
+		return new CTStatusEventDU((DroneHost) entity, new Location(blockPos_X, blockPos_Y), actionType, statusUpdateType, additionalInformation);
+	}
+
+	public CTSelectionEventDU readCTSelectionDUMessage(PackageType message) {
+		int entityID = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
+		int newTargetId = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
+		int targetType = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
+		
+		Entity entity = EntityManager.getEntityManager().getEntity(entityID);		
+		if(entity == null) {
+			System.out.println("Error: drone command target selection update event occourred for a unknown entity: " + entityID);
+			return null;
+		}else if(! (entity instanceof Drone)) {
+			System.out.println("Error: drone command target selection update event occourred for a non drone entity: " + entityID);
+			return null;
+		}
+		
+		return new CTSelectionEventDU((Drone) entity, newTargetId, targetType);
 	}
 	
 	//<=== create: Inventory-Events ===>

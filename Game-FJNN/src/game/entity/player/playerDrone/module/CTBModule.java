@@ -46,19 +46,14 @@ public class CTBModule extends CTModule{
 		}
 		return false;
 	}
-
-	@Override
-	protected boolean canInteract(Location target) {
-		return Map.getMap().getMapData(target)[Map.DEFAULT_BUILDLAYER] == null;
-	}
 	
 	@Override
 	public void register(Drone drone) {
 		super.register(drone);
-		
-		int maxx = drone.getWidth()/2;
-		int maxy = drone.getHeight()/2;
-		
-		maxDistanceFromTarget = Math.sqrt(maxx*maxx+maxy*maxy);
+
+		int maxx = drone.getWidth() / 2;
+		int maxy = drone.getHeight() / 2;
+
+		maxDistanceFromTarget = Math.sqrt(maxx * maxx + maxy * maxy);
 	}
 }

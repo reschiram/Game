@@ -4,11 +4,6 @@ import java.util.HashMap;
 
 import Data.Location;
 import client.commData.DroneTargetInfos;
-import data.MapResource;
-import events.GameEventManager;
-import events.entity.DroneUpdateEvent;
-import game.entity.player.playerDrone.BDroneTarget;
-import game.entity.player.playerDrone.DDroneTarget;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneTarget;
 import game.map.Map;
@@ -22,6 +17,7 @@ public abstract class CTModule extends DroneModule{
 	
 	@Override
 	public void tick() {
+//		System.out.println(currentDroneTarget);
 		if (currentDroneTarget != null && this.drone.getLastMoved()[0] == 0 && this.drone.getLastMoved()[1] == 0
 				&& this.drone.getPathController().isDone()) {
 
@@ -29,13 +25,10 @@ public abstract class CTModule extends DroneModule{
 				this.drone.setIsWorking(true);
 				if (currentDroneTarget.interact()) {
 					this.drone.setIsWorking(false);
+					currentDroneTarget = null;
 				}
 			}
 		}
-	}
-
-	protected boolean canInteract(Location location) {
-		return true;
 	}
 
 	private int getDistance(DroneTarget target) {
@@ -49,33 +42,25 @@ public abstract class CTModule extends DroneModule{
 
 	public void removeTarget(Location loc) {		
 		int key = loc.getX()+loc.getY()*Map.getMap().getWidth();
+		
 		if(targets.containsKey(key)){
-			DroneTarget target = this.targets.get(key);
-			target.removeDrone(this.drone);
+			DroneTarget target = this.targets.get(key);			
+			if(currentDroneTarget != null && currentDroneTarget.equals(target)) currentDroneTarget = null;
 			this.targets.remove(key);
-			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, new DroneTargetInfos(target, false)));
-		}
-		if(currentDroneTarget!=null && this.currentDroneTarget.getBlockLocation().equals(loc)){
-			this.drone.getPathController().setTarget(null, DroneModule.publishPathToServer);
-			GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, new DroneTargetInfos(currentDroneTarget, false)));
-			this.currentDroneTarget=null;
 		}
 	}
 	
 	public boolean addTarget(DroneTarget target){		
-		Location location = target.getBlockLocation();
-		int key = location.getX()+location.getY()*Map.getMap().getWidth();		
-		if(hasTarget(key, target)) return false;
-		targets.put(location.getX()+location.getY()*Map.getMap().getWidth(), target);
-		GameEventManager.getEventManager().publishEvent(new DroneUpdateEvent(this.drone, new DroneTargetInfos(target, true)));
+		int key = target.getKey();
+		System.out.println("try add target: " + target.getKey() + " -> " + hasTarget(key));
+		if(hasTarget(key)) return false;		
+		this.targets.put(key, target);
 		return true;
 	}
 	
-	private boolean hasTarget(int key, DroneTarget target) {
-		if(targets.containsKey(key)){
-			return true;
-		}
-		return false;
+	public boolean hasTarget(int key) {
+		System.out.println(this.targets.size() + "|" + this.targets.get(key));
+		return this.targets.containsKey(key) && this.targets.get(key) != null;
 	}
 	
 	@Override
@@ -92,37 +77,8 @@ public abstract class CTModule extends DroneModule{
 		return new DroneTargetInfos(currentDroneTarget, false);
 	}
 
-	public void updateTarget(DroneTargetInfos newCurrentTarget) {
-		if(newCurrentTarget == null) return;	
-		int newKey = newCurrentTarget.getBlockLocation().getX()+newCurrentTarget.getBlockLocation().getY()*Map.getMap().getWidth();
-		
-		if(currentDroneTarget != null && (newCurrentTarget.isDone() || newCurrentTarget.isNull())) {			
-			this.currentDroneTarget = null;
-			this.drone.getPathController().setTarget(null, false);			
-		}
-		
-		if (newCurrentTarget.isNull()) {			
-			if(this.targets.containsKey(newKey)) {
-				DroneTarget target = this.targets.get(newKey);
-				this.targets.remove(newKey);
-				target.removeDrone(this.drone);
-			}
-			return;
-		} else if (newCurrentTarget.isDone()) {			
-			if(this.targets.containsKey(newKey)) {
-				DroneTarget target = this.targets.get(newKey);
-				this.targets.remove(newKey);
-				target.setDone(true);
-				target.interact();
-			}
-			return;
-		}
-		
-		DroneTarget newDroneTarget = this.targets.get(newKey);
-		if(newCurrentTarget != null) {
-			this.currentDroneTarget = newDroneTarget;
-			this.drone.getPathController().setTarget(currentDroneTarget.getPixelLocation(), false);
-		}
+	public void selectCurrentTarget(int targetKey) {
+		this.currentDroneTarget = this.targets.get(targetKey);
 	}
 	
 }

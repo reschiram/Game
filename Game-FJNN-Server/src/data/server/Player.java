@@ -1,15 +1,22 @@
 package data.server;
 
+import data.droneData.actionTarget.ActionTargetManager;
+import data.map.ServerMap;
 import server.ValidatedUser;
 
 public class Player{
 	
 	private boolean isHost;
 	private ValidatedUser user;
-
+	
+	private ActionTargetManager actionTargetManager;
+	private ServerMap map;
+	
 	public Player(ValidatedUser user, boolean isHost) {
 		this.user = user;
 		this.isHost = isHost;
+		
+		this.actionTargetManager = new ActionTargetManager(this);
 	}
 
 	public boolean isHost() {
@@ -34,6 +41,18 @@ public class Player{
 
 	public String getUsername() {
 		return user.getUsername();
+	}
+
+	public ActionTargetManager getActionTargetManager() {
+		return actionTargetManager;
+	}
+
+	public ServerMap getCurrentSMap() {
+		return map;
+	}
+
+	public void setCurrentSMap(ServerMap map) {
+		this.map = map;
 	}
 
 }

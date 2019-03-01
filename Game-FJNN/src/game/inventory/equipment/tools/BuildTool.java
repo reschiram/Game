@@ -41,7 +41,7 @@ public class BuildTool extends Tool{
 			
 			boolean isAdd = !Engine.getInputManager().getMouseButton().contains(MouseEvent.BUTTON3);
 			int resID = (((BuildToolMenu) this.menu).getSelected());
-			player.addBuildTarget(loc, isAdd ? resID : -1);
+			player.createBuildTarget(loc, isAdd ? resID : -1);
 		}
 	}
 	

@@ -1,6 +1,8 @@
 package data.droneData.actionTarget;
 
+import Data.Location;
 import client.ComsData;
+import data.map.ServerMap;
 
 public class BuildTargetType extends ActionTargetType {
 
@@ -13,6 +15,11 @@ public class BuildTargetType extends ActionTargetType {
 
 	public int getResID() {
 		return resID;
+	}
+
+	@Override
+	public boolean canInteract(Location blockTarget, ServerMap serverMap) {
+		return !serverMap.hasBuildingBlock(blockTarget);
 	}
 
 }

@@ -1,19 +1,26 @@
 package game.entity.player.playerDrone;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Data.Hitbox;
 import Data.Location;
+import client.ComsData;
 import data.MapResource;
+import events.GameEventManager;
+import events.entity.drone.CTStatusEventDU;
 import game.entity.Entity;
-import game.entity.player.PlayerDummie;
+import game.entity.player.Player;
 import game.entity.player.playerDrone.module.CTBModule;
 import game.entity.player.playerDrone.module.CTDModule;
+import game.entity.player.playerDrone.module.DroneModule;
 import game.gridData.map.Mapdata;
 import game.inventory.Inventory;
 import game.map.Map;
 
 public interface DroneHost {
+	
+	public HashMap<Integer, ArrayList<DroneTarget>> getTargets();
 
 	public Location getLocation();
 
@@ -29,85 +36,122 @@ public interface DroneHost {
 
 	public int getID();
 	
-	public default void addBuildTarget(Location loc, int resID) {		
-		//find BDrones|DDrones
-		ArrayList<Drone> BDrones = new ArrayList<>();
-		ArrayList<Drone> DDrones = new ArrayList<>();
-		for(Drone drone: getPlayerDrones()){
-			CTBModule module = (CTBModule) drone.getModule(CTBModule.class);
-			if(module!=null){
-				BDrones.add(drone);
-			}
-			CTDModule dmodule = (CTDModule) drone.getModule(CTDModule.class);
-			if(dmodule!=null){
-				DDrones.add(drone);
-			}
-		}
+	public default void createBuildTarget(Location loc, int resID) {
+		int key = loc.getX() + (loc.getY() * Map.getMap().getWidth());	
 		
 		//add|remove BDroneTarget
 		if(resID == -1){
-			for(Drone drone: BDrones){
-				CTBModule module = (CTBModule) drone.getModule(CTBModule.class);
-				module.removeTarget(loc);
-			}
+			DroneTarget target = getTarget(key, ComsData.ActionTarget_Type_Build);
+			if(target == null) return;
+			GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this, target, ComsData.ActionTarget_StatusUpdate_Type_Remove));
 			return;
 		} else if(MapResource.getMapResource(resID) != null){
-			BDroneTarget target = new BDroneTarget(loc, MapResource.getMapResource(resID));
-			boolean exists = false;
-			for(Drone drone: BDrones){
-				CTBModule module = (CTBModule) drone.getModule(CTBModule.class);
-				target.addDrone(drone);
-				exists = module.addTarget(target);
-			}
-			if(exists)target.createVisuals();
+			if(getTarget(key, ComsData.ActionTarget_Type_Build) != null) return;
+			
+			BDroneTarget target = new BDroneTarget(loc, MapResource.getMapResource(resID), this);			
+			GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this, target, ComsData.ActionTarget_StatusUpdate_Type_Add));
 		}
 		
 		//add DDroneTarget
 		Mapdata data = Map.getMap().getMapData(loc)[Map.DEFAULT_BUILDLAYER];
 		if(data!=null){
 			if(resID != 0){
-				DDroneTarget target = new DDroneTarget(loc);
-				target.createVisuals();
-				boolean exists = false;
-				for(Drone drone: DDrones){
-					CTDModule module = (CTDModule) drone.getModule(CTDModule.class);
-					target.addDrone(drone);
-					exists = module.addTarget(target);
-				}
-				if(exists)target.createVisuals();
+				if(getTarget(key, ComsData.ActionTarget_Type_Destroy) != null) return;
+				
+				DDroneTarget target = new DDroneTarget(loc, this);
+				GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this, target, ComsData.ActionTarget_StatusUpdate_Type_Add));				
 			}
 		}
 	}
 
-	public default void addDestructionTarget(Location loc, boolean add) {
-		if(this instanceof PlayerDummie) {
-			System.out.println((add ? "add" : "remove") + " destruction target for player dummie : " + loc);
+	public default DroneTarget getTarget(int key, int targetType) {
+		if(!this.hasTarget(key)) {
+			this.getTargets().put(key, new ArrayList<>());		
+			return null;
 		}		
-		//find DDrones
-		ArrayList<Drone> DDrones = new ArrayList<>();
-		for(Drone drone: getPlayerDrones()){
-			CTDModule module = (CTDModule) drone.getModule(CTDModule.class);
-			if(module!=null){
-				DDrones.add(drone);
+		for(DroneTarget target : this.getTargets().get(key)) {
+			if(target.getTargetType() == targetType) {
+				return target;
 			}
 		}
 		
+		return null;
+	}
+
+	public default boolean hasTarget(int key) {
+		System.out.println("has Target: " + key + "->" + this.getTargets().containsKey(key) + "|" + (this.getTargets().containsKey(key) ? this.getTargets().get(key).size() : 0));
+		return this.getTargets().containsKey(key) && !this.getTargets().get(key).isEmpty();
+	}
+
+	public default ArrayList<DroneTarget> getTargets(int key) {
+		if(!this.hasTarget(key)) this.getTargets().put(key, new ArrayList<>());
+		return this.getTargets().get(key);
+	}
+
+	public default void createDestructionTarget(Location loc, boolean add) {	
+		int key = loc.getX() + (loc.getY() * Map.getMap().getWidth());	
+		
 		// add|remove DDroneTarget
 		if(!add){
-			for(Drone drone: DDrones){
-				CTDModule module = (CTDModule) drone.getModule(CTDModule.class);
-				module.removeTarget(loc);
-			}
-			return;
+			DroneTarget target = getTarget(key, ComsData.ActionTarget_Type_Destroy);
+			if(target == null) return;
+			
+			GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this, target, ComsData.ActionTarget_StatusUpdate_Type_Remove));
 		}else if(Map.getMap().getChunks()[loc.getX()/Map.DEFAULT_CHUNKSIZE][loc.getY()/Map.DEFAULT_CHUNKSIZE].getMapData(loc.getX(), loc.getY())[Entity.DEFAULT_ENTITY_UP+Map.DEFAULT_BUILDLAYER] != null){
-			DDroneTarget target = new DDroneTarget(loc);
-			boolean exists = false;
-			for(Drone drone: DDrones){
-				CTDModule module = (CTDModule) drone.getModule(CTDModule.class);
-				target.addDrone(drone);
-				exists = module.addTarget(target);
+			if(getTarget(key, ComsData.ActionTarget_Type_Destroy) != null) return;
+			
+			DDroneTarget target = new DDroneTarget(loc, this);
+			GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this, target, ComsData.ActionTarget_StatusUpdate_Type_Add));
+		}
+	}
+
+	public default void addTarget(DroneTarget target) {
+		if (this.getTarget(target.getKey(), target.getTargetType()) != null) return;
+
+		if (this instanceof Player) target.createVisuals();
+		
+		for(Drone drone : getPlayerDrones()) {
+			if(target instanceof BDroneTarget) {
+				DroneModule module = drone.getModule(CTBModule.class);
+				if(module != null) {
+					((CTBModule) module).addTarget(target);
+				}
+			} else if(target instanceof DDroneTarget) {
+				DroneModule module = drone.getModule(CTDModule.class);
+				if(module != null) {
+					((CTDModule) module).addTarget(target);
+				}
 			}
-			if(exists) target.createVisuals();
+		}
+		
+		this.getTargets(target.getKey()).add(target);
+	}
+
+	public default void removeTarget(Location blockLocation, int droneTargetType) {
+		int key = blockLocation.getX() + (blockLocation.getY() * Map.getMap().getWidth());
+		
+		if (this.getTarget(key, droneTargetType) == null) return;
+		
+		for(Drone drone : getPlayerDrones()) {
+			if(droneTargetType == ComsData.ActionTarget_Type_Build) {
+				DroneModule module = drone.getModule(CTBModule.class);
+				if(module != null) {
+					((CTBModule) module).removeTarget(blockLocation);
+				}
+			} else if(droneTargetType == ComsData.ActionTarget_Type_Destroy) {
+				DroneModule module = drone.getModule(CTDModule.class);
+				if(module != null) {
+					((CTDModule) module).removeTarget(blockLocation);
+				}
+			}
+		}
+		
+		ArrayList<DroneTarget> targets = getTargets(key);
+		for (int i = 0; i < targets.size(); i++) {
+			if (targets.get(i).getTargetType() == droneTargetType) {
+				if (this instanceof Player) targets.get(i).destroyVisulas();
+				targets.remove(i);
+			}
 		}
 	}
 

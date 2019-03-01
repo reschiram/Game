@@ -1,11 +1,13 @@
 package game.entity.player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import data.Velocity;
 import game.entity.Entity;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneHost;
+import game.entity.player.playerDrone.DroneTarget;
 import game.entity.type.interfaces.EntityInventory;
 import game.inventory.Inventory;
 import game.inventory.ItemCollector;
@@ -15,6 +17,8 @@ public class PlayerContext extends Entity implements EntityInventory, DroneHost{
 	
 	protected ItemCollector itemCollector;	
 	protected ArrayList<Drone> drones = new ArrayList<>();
+	
+	private final HashMap<Integer, ArrayList<DroneTarget>> targets = new HashMap<>();
 	
 	public PlayerContext(){		
 		super(new ArrayList<>());	
@@ -51,6 +55,11 @@ public class PlayerContext extends Entity implements EntityInventory, DroneHost{
 	public void tick() {
 		super.tick();
 		itemCollector.tick();
+	}
+
+	@Override
+	public HashMap<Integer, ArrayList<DroneTarget>> getTargets() {
+		return targets;
 	}
 	
 	

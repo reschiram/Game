@@ -29,7 +29,7 @@ public class ELModule extends DroneModule{
 			this.recharge();
 		}
 		
-		if (this.energyLoad < 0.01) {
+		if (this.energyLoad < 0.01 && !isLoading) {
 			this.isLoading = true;
 			scum.update(true);
 		}else scum.update(false);

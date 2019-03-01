@@ -25,6 +25,7 @@ public class Lobby {
 	
 	public void addPlayer(ValidatedUser user) {
 		Player player = new Player(user, this.players.size() == 0);
+		player.setCurrentSMap(this.getCurrentMap());
 		this.players.add(player);
 		gameSM.sendMapToClient(user.getServerClientID(), this.getCurrentMap());
 		

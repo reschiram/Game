@@ -110,17 +110,19 @@ public class GameSPM extends GameCPM{
 	}
 
 	public PackageType createDroneEnergyUpdateMessage(int droneID, double energyLoad, boolean isLoading) throws Exception {
-		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+		return PackageType.readPackageData(DataPackage_DroneUpdate_Energy,
 				droneID, energyLoad, isLoading);
 	}
 
 	public PackageType createDroneTargetUpdateMessage(int droneID, Location blockTarget, int targetLevel) throws Exception {
-		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+		return PackageType.readPackageData(DataPackage_DroneUpdate_Target,
 				droneID, blockTarget.getX(), blockTarget.getY(), targetLevel);
 	}
 
-	public PackageType createDroneActionTargetUpdateMessage(int droneID, int nextActionTargetId, int typeId) throws Exception {
-		return PackageType.readPackageData(DataPackage_EntityCreationResponse,
+	public PackageType createDroneCTSelectionUpdateMessage(int droneID, int nextActionTargetId, int typeId) throws Exception {
+		System.out.println("prepare CTSelectionUpdate: " + nextActionTargetId + " ->" + typeId);
+		
+		return PackageType.readPackageData(DataPackage_DroneUpdate_CMDTarget_Selection,
 				droneID, nextActionTargetId, typeId);
 	}
 }

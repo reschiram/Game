@@ -92,8 +92,8 @@ public class ServerMap {
 	}
 	
 	public int getBlockXOver(int x) {
-		if(x<0)x = width+x;
-		else if(x>= width)x = x-width;
+		while (x < 0) x = width + x;
+		while (x >= width) x = x - width;
 		return x;
 	}
 
@@ -128,6 +128,21 @@ public class ServerMap {
 
 	public int getWidth() {
 		return width;
+	}
+
+	public boolean hasBuildingBlock(Location blockTarget) {
+		int resId = this.mapBuild[blockTarget.getX()][blockTarget.getY()][Entity.DEFAULT_ENTITY_UP];
+		return resId != 0;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getXOver(int x) {
+		while (x < 0) x = (width * Map.DEFAULT_SQUARESIZE) + x;
+		while (x >= (width * Map.DEFAULT_SQUARESIZE)) x = x - (width * Map.DEFAULT_SQUARESIZE);
+		return x;
 	}
 
 }
