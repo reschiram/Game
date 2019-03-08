@@ -13,12 +13,12 @@ public class ELModule extends DroneModule{
 	
 	private SCUpdateManager scum;
 	
-	public ELModule(double energyLoad, double rechargeSpeed, double energyConsumption){
+	public ELModule(double energyLoad, double rechargeSpeed, double energyConsumption, boolean isOwnModule){
 		this.maxEnergyLoad = energyLoad;
 		this.rechargeSpeed = rechargeSpeed;
 		this.energyConsumption = energyConsumption;
 		
-		this.scum = new SCUpdateManager(SCUpdateManager.Update_Type_Drone_EnergyLoad, this);
+		this.scum = new SCUpdateManager(isOwnModule, SCUpdateManager.Update_Type_Drone_EnergyLoad, this);
 	}
 
 	@Override

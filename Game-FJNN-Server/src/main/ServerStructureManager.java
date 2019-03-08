@@ -19,8 +19,8 @@ public class ServerStructureManager {
 		this.sm = sm;
 		
 		Sprites.create();
-		MapResource.create();
 		ItemType.Load();
+		MapResource.create();
 		EntityType.create();
 	}
 

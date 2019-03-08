@@ -23,7 +23,7 @@ import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
 import events.inventory.ItemSetEvent;
 import events.map.MapBlockAddEvent;
-import events.map.MapBlockDeleteEvent;
+import events.map.MapBlockStatusEvent;
 import game.entity.Entity;
 import game.entity.manager.EntityManager;
 import game.entity.player.PlayerDummie;
@@ -68,7 +68,7 @@ public class GameCPM {
 	public static final int DataPackage_ItemSet = 50;
 	
 	public static final int DataPackage_MapBlockAdd = 52;	
-	public static final int DataPackage_MapBlockDelete = 54;
+	public static final int DataPackage_MapBlockStatus = 54;
 	
 	public static final int MapDownloadData_DataCount = 63;
 	
@@ -170,8 +170,9 @@ public class GameCPM {
 		DataPackage.setType(new PackageType(DataPackage_MapBlockAdd, "MapBlockAdd", new IntegerData("resourceID"),
 				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new IntegerData("Layer")));
 		
-		DataPackage.setType(new PackageType(DataPackage_MapBlockDelete, "MapBlockDelete", new BooleanData("doDrops"),
-				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new IntegerData("Layer")));
+		DataPackage.setType(new PackageType(DataPackage_MapBlockStatus, "MapBlockDelete",
+				new IntegerData("BlockPos_X"), new IntegerData("BlockPos_Y"), new IntegerData("Layer"),
+				new IntegerData("BlockHp")));
 	}
 	
 	//<=== create: Entity-Events ===>
@@ -414,10 +415,11 @@ public class GameCPM {
 				event.getMapBlock().getResource().getLayerUp() + (event.getMapBlock().getResource().isGround() ? 0 : 2));
 	}
 
-	public PackageType createMapBlockDeleteMessage(MapBlockDeleteEvent event) throws Exception {
-		return PackageType.readPackageData(DataPackage_MapBlockDelete, event.doDrops(),
+	public PackageType createMapBlockStatusMessage(MapBlockStatusEvent event) throws Exception {
+		return PackageType.readPackageData(DataPackage_MapBlockStatus,
 				event.getMapBlock().getLocation().getX(), event.getMapBlock().getLocation().getY(),
-				event.getMapBlock().getResource().getLayerUp() + (event.getMapBlock().getResource().isGround() ? 0 : 2));
+				event.getMapBlock().getResource().getLayerUp() + (event.getMapBlock().getResource().isGround() ? 0 : 2),
+				event.getHp());
 	}
 	
 	//<=== read: Map-Events ===>
@@ -433,11 +435,11 @@ public class GameCPM {
 		return new MapBlockAddEvent((MapBlock) block, resourceID, new Location(blockPos_X, blockPos_Y));
 	}
 	
-	public MapBlockDeleteEvent readBlockDeleteMessage(PackageType message) {
-		boolean doDrops = ((BooleanData) message.getDataStructures()[0]).getData().booleanValue();
-		int blockPos_X = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
-		int blockPos_Y = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
-		int layer = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
+	public MapBlockStatusEvent readBlockStatusMessage(PackageType message) {
+		int blockPos_X = ((IntegerData) message.getDataStructures()[0]).getData().intValue();
+		int blockPos_Y = ((IntegerData) message.getDataStructures()[1]).getData().intValue();
+		int layer = ((IntegerData) message.getDataStructures()[2]).getData().intValue();
+		int hp = ((IntegerData) message.getDataStructures()[3]).getData().intValue();
 		
 		Mapdata block = Map.getMap().getMapData(new Location(blockPos_X, blockPos_Y))[layer];
 		if(block == null) {
@@ -448,6 +450,6 @@ public class GameCPM {
 			block = ((MapDummieBlock)block).getBlock();
 		}
 		
-		return new MapBlockDeleteEvent((MapBlock) block, doDrops);
+		return new MapBlockStatusEvent((MapBlock) block, hp);
 	}
 }

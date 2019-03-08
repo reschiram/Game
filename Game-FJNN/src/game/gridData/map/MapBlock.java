@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import Data.Location;
 import data.MapResource;
 import data.ResourcePart;
+import events.GameEventManager;
+import events.map.MapBlockStatusEvent;
 import game.map.Map;
 
 public class MapBlock extends Mapdata{
@@ -53,4 +55,28 @@ public class MapBlock extends Mapdata{
 		super.setLocation(loc);
 		for(MapDummieBlock party: blockParts)party.setLocation(new Location(loc.x+party.getLocation().getX()*Map.DEFAULT_SQUARESIZE, loc.y+party.getLocation().getY()*Map.DEFAULT_SQUARESIZE));
 	}
+
+	@Override
+	public void damage(int amount) {
+		super.damage(amount);
+
+		for (MapDummieBlock parts : this.blockParts) {
+			parts.damage(amount);
+		}
+		
+		GameEventManager.getEventManager().publishEvent(new MapBlockStatusEvent(this, this.hp));
+	}
+
+	public void setHP(int hp) {
+		this.hp = hp;
+		if (this.hp < 0) this.hp = 0;
+		else if (this.hp > res.getHP()) this.hp = res.getHP();
+		
+		updateDamageLevel();
+	}
+
+	public void destroy() {
+		Map.getMap().deleteBlock(this.getLocation(), ((MapResource) res).getLayerUp(), ((MapResource) res).isGround());
+	}
+
 }

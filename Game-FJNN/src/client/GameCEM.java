@@ -13,7 +13,7 @@ import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
 import events.inventory.ItemSetEvent;
 import events.map.MapBlockAddEvent;
-import events.map.MapBlockDeleteEvent;
+import events.map.MapBlockStatusEvent;
 import game.entity.player.PlayerContext;
 import game.entity.player.playerDrone.module.CTBModule;
 import game.entity.player.playerDrone.module.CTDModule;
@@ -101,16 +101,17 @@ public class GameCEM implements ToClientMessageEventListener{
 				
 				Map.getMap().add(mapBlockAdd.getResource().getID(), mapBlockAdd.getBlockLocation(), mapBlockAdd.getResource().isGround(), false);
 				event.setActive(false);
-			} else if (event.getMessage().getId() == GameCPM.DataPackage_MapBlockDelete) {
-				MapBlockDeleteEvent mapBlockDelete = gameCM.getClientPackageManager().readBlockDeleteMessage(event.getMessage());
+			} else if (event.getMessage().getId() == GameCPM.DataPackage_MapBlockStatus) {
+				MapBlockStatusEvent mapBlockStatus = gameCM.getClientPackageManager().readBlockStatusMessage(event.getMessage());
 				event.setActive(false);
 				
-				if (mapBlockDelete == null) return;
+				if (mapBlockStatus == null) return;
 
-				Map.getMap().deleteBlock(mapBlockDelete.getMapBlock().getLocation(),
-						mapBlockDelete.getMapBlock().getResource().getLayerUp(),
-						mapBlockDelete.getMapBlock().getResource().isGround(), false);
+				mapBlockStatus.getMapBlock().setHP(mapBlockStatus.getHp());
 				
+				if (mapBlockStatus.getMapBlock().isDestroyed()) {
+					mapBlockStatus.getMapBlock().destroy();
+				}
 			} else if (event.getMessage().getId() == GameCPM.DataPackage_DroneUpdate_Energy) {
 				ELEventDU elEvent = gameCM.getClientPackageManager().readELDUMessage(event.getMessage());
 				event.setActive(false);

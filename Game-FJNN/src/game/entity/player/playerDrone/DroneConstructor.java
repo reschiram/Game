@@ -28,7 +28,7 @@ public class DroneConstructor {
 	public static Drone constructStarterBuildDrone(Drone drone, Inventory inv) {
 		drone.addModule(new InvModule(inv));
 		drone.addModule(new IRModule());
-		drone.addModule(new ELModule(100.0, 0.1, 0.03));
+		drone.addModule(new ELModule(100.0, 0.1, 0.03, drone.getSCUpdateManager().isOwnObject()));
 		drone.addModule(new CTBModule());
 
 		return drone;
@@ -37,7 +37,7 @@ public class DroneConstructor {
 	public static Drone constructStarterDestructionDrone(Drone drone, Inventory inv) {
 		drone.addModule(new InvModule(inv));
 		drone.addModule(new ICModule(2));
-		drone.addModule(new ELModule(100.0, 0.1, 0.03));
+		drone.addModule(new ELModule(100.0, 0.1, 0.03, drone.getSCUpdateManager().isOwnObject()));
 		drone.addModule(new CTDModule());
 
 		return drone;

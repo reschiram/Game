@@ -13,7 +13,6 @@ import data.map.Lamp;
 import data.map.UpdatableBlockData;
 import events.GameEventManager;
 import events.map.MapBlockAddEvent;
-import events.map.MapBlockDeleteEvent;
 import game.Game;
 import game.GameManager;
 import game.entity.Entity;
@@ -110,10 +109,10 @@ public class Map {
 		MapBlock b = null;
 		if(resource.isGround())b = new MapBlock(resource, DEFAULT_GROUNDLAYER+resource.getLayerUp(), location);
 		else b = new MapBlock(resource, DEFAULT_BUILDLAYER+resource.getLayerUp(), location);
-		deleteBlock(location, resource.getLayerUp(), resource.isGround(), publishToServer);
+		deleteBlock(location, resource.getLayerUp(), resource.isGround());
 		for(ResourcePart resPart : resource.getResourceParts()){
 			Location loc = new Location(location.x+resPart.getLocation().x, location.y+resPart.getLocation().y);
-			deleteBlock(loc, resource.getLayerUp(), resource.isGround(), publishToServer);
+			deleteBlock(loc, resource.getLayerUp(), resource.isGround());
 		}
 		Mapdata[] parts = b.create();
 		for(int i = 1; i<parts.length; i++){
@@ -177,7 +176,7 @@ public class Map {
 		}
 	}
 	
-	public void deleteBlock(Location location, int layerUp, boolean isGround, boolean publishToServer) {
+	public void deleteBlock(Location location, int layerUp, boolean isGround) {
 		Mapdata mapdata = getChunk(location).getMapData(location, isGround)[layerUp];
 		if(mapdata!=null){
 			if(mapdata instanceof MapBlock){
@@ -192,11 +191,10 @@ public class Map {
 				update(b.getLocation().getX(), b.getLocation().getY());
 				Game.getLightOverlay().update(mapdata, true);
 				
-				if(publishToServer) GameEventManager.getEventManager().publishEvent(new MapBlockDeleteEvent(b, false));
 			}else if(mapdata instanceof MapDummieBlock){
 				MapDummieBlock part = (MapDummieBlock)mapdata;
 				MapBlock block = part.getBlock();
-				deleteBlock(block.getLocation(), layerUp, isGround, publishToServer);
+				deleteBlock(block.getLocation(), layerUp, isGround);
 			}
 		}
 	}
@@ -204,7 +202,7 @@ public class Map {
 	public void add(int res,Location location, boolean isGround, boolean publishToServer){
 		if(res==0 || MapResource.getMapResource(res)==null){
 			for(int i = 0; i<2; i++){
-				deleteBlock(location, i, isGround, publishToServer);
+				deleteBlock(location, i, isGround);
 			}
 		}else{			
 			setBlock(location, MapResource.getMapResource(res), publishToServer);

@@ -51,7 +51,7 @@ public abstract class Entity {
 		this.entityTypes.add(EntityType.Entity);
 	}
 	
-	protected void create(int id, Animation anim, Location location, Dimension size, int speed, Direction direction, int layer, ImageData... images){
+	protected void create(int id, Animation anim, Location location, Dimension size, int speed, Direction direction, int layer, boolean isOwnEntity, ImageData... images){
 		this.images = images;
 		this.anim = anim;
 		this.hitbox = new Hitbox(location, size);
@@ -62,7 +62,7 @@ public abstract class Entity {
 		EntityManager.getEntityManager().register(this);	
 		this.moveManager = new EntityMoveManager(this);
 		
-		updateManager = new SCUpdateManager(SCUpdateManager.Update_Type_Entity_Position, this);
+		updateManager = new SCUpdateManager(isOwnEntity, SCUpdateManager.Update_Type_Entity_Position, this);
 	}
 	
 	private boolean created = false;
@@ -107,6 +107,10 @@ public abstract class Entity {
 		this.setLightLevel(Map.getMap().getMapData(this.getBlockLocation())[Map.DEFAULT_GROUNDLAYER].getLightLevel());
 		
 		updateManager.update(false);
+	}
+
+	public SCUpdateManager getSCUpdateManager() {
+		return updateManager;
 	}
 	
 	public boolean canReach(Location target) {

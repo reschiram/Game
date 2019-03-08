@@ -17,21 +17,13 @@ public class DDroneTarget extends DroneTarget{
 	public boolean interact() {
 		Mapdata data = Map.getMap().getChunks()[blockLocation.x / Map.DEFAULT_CHUNKSIZE] [blockLocation.y / Map.DEFAULT_CHUNKSIZE].getMapData(blockLocation, false)[Entity.DEFAULT_ENTITY_UP];
 		if (data == null) {
-			end(data);
 			return super.interact();
 		}
 		data.damage(1);
 		if (data.isDestroyed()) {
-			end(data);
 			this.done = true;
 		}
 		return super.interact();
-	}
-
-	private void end(Mapdata data) {
-		if (data != null && data.getResource().hasDrops()) {
-			data.getResource().drop(blockLocation);
-		}
 	}
 
 }

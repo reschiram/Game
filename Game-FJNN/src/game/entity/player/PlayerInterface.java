@@ -50,9 +50,6 @@ public class PlayerInterface {
 							GameEventManager.getEventManager().publishEvent(new CTStatusEventDU(this.player, target, ComsData.ActionTarget_StatusUpdate_Type_Remove));
 						}
 					}
-					if(data.getResource().hasDrops()){
-						data.getResource().drop(digLocation);
-					}
 				}
 			}
 		}

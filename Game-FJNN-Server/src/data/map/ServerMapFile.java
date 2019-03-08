@@ -45,6 +45,8 @@ public class ServerMapFile {
 
 			}
 		}
+
+		serverMap.mapBlocks = new SMapBlock[width][height][4];
 	}
 	
 	public void save(ServerFileManager serverFileManager) {

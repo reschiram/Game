@@ -25,11 +25,11 @@ public class PlayerRequest extends EntityRequest {
 		inv.addItemFunktion(new BuildTool());
 		
 		if(isOwnPlayer) {
-			Player p = new Player(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv);
+			Player p = new Player(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv, isOwnPlayer);
 			p.activate();
 			p.show();
 		} else {
-			PlayerDummie p = new PlayerDummie(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv);
+			PlayerDummie p = new PlayerDummie(new Location(getPixelSpawn_X(), getPixelSpawn_Y()), entityID, (EquipmentInventory) inv, isOwnPlayer);
 			p.activate();
 			p.show();
 		}

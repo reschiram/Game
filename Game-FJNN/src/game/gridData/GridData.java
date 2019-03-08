@@ -121,7 +121,7 @@ public abstract class GridData{
 	}
 	
 	
-	private void updateDamageLevel() {
+	protected void updateDamageLevel() {
 		if(this.isDamaged() && !isDestroyed()){
 			double d = 1.0-(double)this.hp/(double)this.getResource().getHP();
 			int state = (int)(d*Sprites.DamageLevel.getSpriteSheet().getSpriteAmount());

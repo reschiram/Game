@@ -12,7 +12,7 @@ public class FileManager {
 	private static filemanager.FileManager FILEMANAGER;
 	
 	public static void Load(){
-		FILEMANAGER = new filemanager.FileManager(true);
+		FILEMANAGER = new filemanager.FileManager(false);
 		
 		UUID = 		FILEMANAGER.createNewKTVFile("UUID/UUID"			, false);
 		MAP_TEST = 	FILEMANAGER.createNewCSVFile("maps/test"			, false);

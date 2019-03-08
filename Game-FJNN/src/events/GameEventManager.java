@@ -16,7 +16,7 @@ import events.inventory.ItemAddEvent;
 import events.inventory.ItemRemoveEvent;
 import events.inventory.ItemSetEvent;
 import events.map.MapBlockAddEvent;
-import events.map.MapBlockDeleteEvent;
+import events.map.MapBlockStatusEvent;
 import events.map.MapEvent;
 import game.GameManager;
 
@@ -114,8 +114,8 @@ public class GameEventManager {
 				PackageType message = null;
 				if (event instanceof MapBlockAddEvent) {
 					message = this.gameCM.getClientPackageManager().createMapBlockAddMessage((MapBlockAddEvent) event);
-				}else if (event instanceof MapBlockDeleteEvent) {
-					message = this.gameCM.getClientPackageManager().createMapBlockDeleteMessage((MapBlockDeleteEvent) event);
+				}else if (event instanceof MapBlockStatusEvent) {
+					message = this.gameCM.getClientPackageManager().createMapBlockStatusMessage((MapBlockStatusEvent) event);
 				}
 				if(message != null)this.gameCM.getClientManager().sendToServer(DataPackage.getPackage(message));
 			}catch (Exception e) {

@@ -21,7 +21,7 @@ public class ItemEntity extends Entity{
 		Image itemImage = new Image(loc.clone(), EntityType.ItemEntity.getSize(), "", itemType.getSpriteSheet(), null);
 		itemImage.setSpriteState(itemType.getSpriteIds()[0]);
 		
-		super.create(entityID, EntityType.ItemEntity.createAnimation(false, 2+1, itemImage), loc, itemImage.getDimension(), EntityType.ItemEntity.getSpeed(), DEFAULT_DIRECTION, 2+1,
+		super.create(entityID, EntityType.ItemEntity.createAnimation(false, 2+1, itemImage), loc, itemImage.getDimension(), EntityType.ItemEntity.getSpeed(), DEFAULT_DIRECTION, 2+1, false,
 				new ImageData(new Location(0,0), itemImage));
 		
 		this.moveManager.setDoAccelerateXVelocity(false);

@@ -6,6 +6,7 @@ import data.PackageType;
 import data.entities.ServerDroneEntity;
 import data.entities.ServerItemEntity;
 import data.entities.ServerPlayerEntity;
+import data.map.SMapBlock;
 import data.server.request.ServerEntityRequest;
 import game.entity.type.EntityType;
 import game.map.MapGenerationData;
@@ -124,5 +125,10 @@ public class GameSPM extends GameCPM{
 		
 		return PackageType.readPackageData(DataPackage_DroneUpdate_CMDTarget_Selection,
 				droneID, nextActionTargetId, typeId);
+	}
+
+	public PackageType createMapBlockUpdateMessage(SMapBlock mapBlock) throws Exception {
+		return PackageType.readPackageData(DataPackage_MapBlockStatus,
+				mapBlock.getBlockLocation().getX(), mapBlock.getBlockLocation().getY(), mapBlock.getLayer(), mapBlock.getHp());
 	}
 }

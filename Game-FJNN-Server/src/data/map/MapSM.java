@@ -6,19 +6,23 @@ import data.SEPathManager;
 import data.droneData.actionTarget.ActionTarget;
 import data.entities.ServerDroneEntity;
 import data.entities.ServerEntity;
+import data.entities.ServerItemEntity;
 import data.exceptions.server.InvalidServerClientIDException;
 import data.server.Lobby;
 import data.server.Player;
+import data.server.request.ServerEntityRequest;
 import server.GameSM;
 
 public class MapSM {
 	
 	private Lobby lobby;
 	private GameSM gameSM;
+	private MapSEM mapSEM;
 	
-	public MapSM(Lobby lobby, GameSM gameSM) {
+	public MapSM(MapSEM mapSEM, Lobby lobby, GameSM gameSM) {
 		this.lobby = lobby;
 		this.gameSM = gameSM;
+		this.mapSEM = mapSEM;
 	}
 
 	public void publishDroneEnergyUpdate(int droneID, double energyLoad, boolean isLoading) {
@@ -55,6 +59,24 @@ public class MapSM {
 			for(Player player : lobby.getConnectedPlayers()) {
 				gameSM.getServerManager().sendMessage(player.getServerClientID(), DataPackage.getPackage(msg));
 				System.out.println("targetSelection published to: " + player.getID());
+			}
+		} catch (Exception | InvalidServerClientIDException e) {
+			e.printStackTrace();
+		}		
+	}
+
+	public void publishDrop(ServerItemEntity drop) {
+		ServerEntityRequest request = new ServerEntityRequest(-1, drop);
+		mapSEM.publishRequest(-1l, request, -1, -1);
+	}
+
+	public void publishMapBlockUpdate(SMapBlock mapBlock) {
+		try {
+			PackageType msg = gameSM.getGameSPM().createMapBlockUpdateMessage(mapBlock);
+			
+			for(Player player : lobby.getConnectedPlayers()) {
+				gameSM.getServerManager().sendMessage(player.getServerClientID(), DataPackage.getPackage(msg));
+				System.out.println("mapBlockUpdate published to: " + player.getID());
 			}
 		} catch (Exception | InvalidServerClientIDException e) {
 			e.printStackTrace();

@@ -28,7 +28,7 @@ public class Drone extends Entity implements PathUser{
 	
 	private HashMap<Class<?>, DroneModule> modules = new HashMap<>();
 	
-	public Drone(DroneHost host, int entityID){
+	public Drone(DroneHost host, int entityID, boolean isOwnEntity){
 		super(new ArrayList<>());
 		this.entityTypes.add(EntityType.Drone);
 		
@@ -36,7 +36,7 @@ public class Drone extends Entity implements PathUser{
 		Image image = new Image(host.getLocation().clone(), type.getSize(), "", type.getSpriteSheet(), null);
 		image.setSpriteState(type.getSpriteIds()[0]);
 		super.create(entityID, type.createAnimation(false, Entity.DEFAULT_ENTITY_LAYER, image), image.getLocation().clone(), type.getSize(), type.getSpeed(),
-				DEFAULT_DIRECTION, Entity.DEFAULT_ENTITY_LAYER, new ImageData(new Location(0,0), image));
+				DEFAULT_DIRECTION, Entity.DEFAULT_ENTITY_LAYER, isOwnEntity, new ImageData(new Location(0,0), image));
 		
 		this.host = host;		
 		this.pathFinder = new PathController(this, Map.getMap().getPathSystem());

@@ -1,6 +1,7 @@
 package game.entity.requester;
 
 import Data.Location;
+import game.entity.player.Player;
 import game.entity.player.playerDrone.Drone;
 import game.entity.player.playerDrone.DroneConstructor;
 import game.entity.player.playerDrone.DroneHost;
@@ -30,7 +31,9 @@ public class DroneRequest extends EntityRequest{
 		Inventory inv = null;
 		inv = EntityRequesterService.getEntityRequesterService().readInventory(extraInfos, 0);
 		
-		Drone drone = new Drone(host, entityID);
+		boolean isOwnEntity = host instanceof Player;
+		
+		Drone drone = new Drone(host, entityID, isOwnEntity);
 		DroneConstructor.constructDrone(drone, droneType, inv);
 		drone.show();
 		host.addDrone(drone);

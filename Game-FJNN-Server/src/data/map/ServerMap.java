@@ -4,15 +4,20 @@ import Data.Hitbox;
 import Data.Location;
 import data.MapResource;
 import data.entities.ServerEntity;
+import data.entities.ServerItemEntity;
 import data.server.Lobby;
 import file.csv.CSV_File;
 import game.entity.Entity;
+import game.entity.type.EntityType;
+import game.inventory.drops.Drop;
 import game.map.Map;
 import game.map.MapGenerationData;
 import game.map.MapGenerator;
 import server.GameSM;
 
 public class ServerMap {
+	
+	SMapBlock[][][] mapBlocks;
 	
 	int[][][] mapGround;
 	int[][][] mapBuild;
@@ -41,7 +46,9 @@ public class ServerMap {
 		this.seed = seed;
 		
 		this.mapBuild = data.getBuildData();
-		this.mapGround = data.getGroundData();		
+		this.mapGround = data.getGroundData();
+
+		this.mapBlocks = new SMapBlock[width][height][mapGround[0][0].length + mapGround[0][0].length];
 	}
 	
 	public ServerMapFile getMapFile() {
@@ -98,9 +105,9 @@ public class ServerMap {
 	}
 
 	public void start(Lobby lobby, GameSM gameSM) {
-		new MapSEM(lobby, gameSM);
+		MapSEM mapSEM  = new MapSEM(lobby, gameSM);
 		
-		this.mapSM = new MapSM(lobby, gameSM);
+		this.mapSM = new MapSM(mapSEM, lobby, gameSM);
 	}
 
 	public void tick() {
@@ -112,15 +119,18 @@ public class ServerMap {
 	}
 
 	public boolean canHost(ServerEntity entity, Location blockLocation) {
-		int resId = this.mapBuild[blockLocation.getX()][blockLocation.getY()][Entity.DEFAULT_ENTITY_UP];
+		int bx = getBlockXOver(blockLocation.getX());
+		int by = blockLocation.getY();
+		
+		int resId = this.mapBuild[by][by][Entity.DEFAULT_ENTITY_UP];
 		if(resId == 0) return true;
 		
 		MapResource res = MapResource.getMapResource(resId);
 		if(res == null) return true;
 		
 		Hitbox hb = new Hitbox(
-				new Location(	(blockLocation.getX() * Map.DEFAULT_SQUARESIZE) + res.getHitbox().getX(),
-								(blockLocation.getY() * Map.DEFAULT_SQUARESIZE) + res.getHitbox().getY()),
+				new Location(	(bx * Map.DEFAULT_SQUARESIZE) + res.getHitbox().getX(),
+								(by * Map.DEFAULT_SQUARESIZE) + res.getHitbox().getY()),
 				res.getHitbox().getDimension());
 		
 		return !hb.overlaps(entity.getPixelHitbox());
@@ -143,6 +153,83 @@ public class ServerMap {
 		while (x < 0) x = (width * Map.DEFAULT_SQUARESIZE) + x;
 		while (x >= (width * Map.DEFAULT_SQUARESIZE)) x = x - (width * Map.DEFAULT_SQUARESIZE);
 		return x;
+	}
+
+	public void updateMapBlock(Location blockLocation, int layer, int hp) {
+		SMapBlock mapBlock = getSMapBlock(blockLocation, layer);
+		
+		if (mapBlock != null) {
+			System.out.println("MapBlock-Update: " + hp + " -> " + mapBlock);
+			
+			
+			if (hp > mapBlock.getHp()) {
+				System.out.println("Old Update: " + hp + " -> " + mapBlock);
+			} else mapBlock.setHp(hp);
+			
+			this.mapSM.publishMapBlockUpdate(mapBlock);
+			
+			if (mapBlock.getHp() == 0) this.destroyMapBlock(blockLocation, layer);
+		} else System.out.println("Update on non existing MapBlock: " + blockLocation + " - " + layer);
+	}
+
+	private void destroyMapBlock(Location blockLocation, int layer) {
+		SMapBlock mapBlock = getSMapBlock(blockLocation, layer);
+		
+		int bx = getBlockXOver(blockLocation.getX());
+		int by = blockLocation.getY();
+		
+		if (mapBlock != null) {
+			
+			this.mapBlocks[bx][by][layer] = null;
+			if (layer >= this.mapGround[bx][by].length) mapBuild[bx][by][layer - this.mapGround[bx][by].length] = 0;
+			else mapGround[bx][by][layer] = 0;
+			
+			
+			if (mapBlock.getResource().hasDrops()) {
+				for (Drop drop : mapBlock.getResource().getDrops().getDrops()) {
+					int amount = (int) (
+							Math.round(((double) (drop.getMaxAmount() - drop.getMinAmount())) * Math.random())
+							+ drop.getMinAmount()
+					);
+					
+					System.out.println("Drop: " + amount + " x " + drop.getType().getID());
+					
+					for(int i = 0; i < amount; i++) {						
+						ServerItemEntity entity = new ServerItemEntity(-1,
+								new Location(bx * Map.DEFAULT_SQUARESIZE, by * Map.DEFAULT_SQUARESIZE),
+								EntityType.ItemEntity, drop.getType(), this);
+						
+						this.entityManager.addEntity(entity);						
+						this.mapSM.publishDrop(entity);
+					}
+				}
+			}
+		} else System.out.println("Tried to delete non existing MapBlock");
+	}
+
+	private SMapBlock getSMapBlock(Location blockLocation, int layer) {
+		int bx = getBlockXOver(blockLocation.getX());
+		int by = blockLocation.getY();
+		
+		SMapBlock mapBlock = this.mapBlocks[bx][by][layer];
+		
+		if (mapBlock == null) {
+			if (layer >= this.mapGround[bx][by].length) {
+				int index = layer - this.mapGround[bx][by].length;
+				
+				if(mapBuild[bx][by][index] != 0) {
+					mapBlock = new SMapBlock(new Location(bx, by), layer , mapBuild[bx][by][index]);
+					this.mapBlocks[bx][by][layer] = mapBlock;
+				}
+			} else {
+				if(mapGround[bx][by][layer] != 0) {
+					mapBlock = new SMapBlock(new Location(bx, by), layer , mapGround[bx][by][layer]);
+					this.mapGround[bx][by][layer] = layer;
+				}
+			}
+		}
+		
+		return mapBlock;
 	}
 
 }

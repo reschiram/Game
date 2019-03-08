@@ -171,9 +171,9 @@ public class MapResource extends Resource {
 		this.sprites = sheet;
 		this.spriteIds = ids;
 	}
-
-	public void drop(Location blockLoc) {
-		this.drops.drop(blockLoc);
+	
+	public Drops getDrops() {
+		return drops;
 	}
 
 	public boolean hasDrops() {

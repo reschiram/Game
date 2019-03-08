@@ -29,13 +29,13 @@ public class Player extends PlayerContext{
 	private static Location ScreenCenter = new Location(1920/2-Map.DEFAULT_SQUARESIZE/2, 1080/2-Map.DEFAULT_SQUARESIZE);	
 	private PlayerInterface playerInterface;
 	
-	public Player(Location location, int entityID, EquipmentInventory inv){
+	public Player(Location location, int entityID, EquipmentInventory inv, boolean isOwnEntity){
 		super();
 		
 		Image image = new Image(ScreenCenter, EntityType.Player.getSize(), "", EntityType.Player.getSpriteSheet(), null);
 		image.setSpriteState(EntityType.Player.getSpriteIds()[0]);
 		super.create(entityID, EntityType.Player.createAnimation(false, DEFAULT_ENTITY_LAYER + 1, image), ScreenCenter, EntityType.Player.getSize(), EntityType.Player.getSpeed(),
-				Entity.DEFAULT_DIRECTION, DEFAULT_ENTITY_LAYER + 1, new ImageData(new Location(0, 0), image));
+				Entity.DEFAULT_DIRECTION, DEFAULT_ENTITY_LAYER + 1, isOwnEntity, new ImageData(new Location(0, 0), image));
 		
 		load(inv);		
 		this.playerInterface = new PlayerInterface(this);
